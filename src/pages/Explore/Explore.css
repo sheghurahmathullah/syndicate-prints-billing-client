@@ -1,0 +1,721 @@
+.explore-container {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  height: calc(100vh - 5rem);
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.left-column {
+  flex: 0.7;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 2px solid #e0e7ef;
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 33, 66, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.left-column::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
+}
+
+.left-column > p {
+  color: #002142 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 4px solid #e64051;
+}
+
+.first-row {
+  flex: 0.3;
+  box-sizing: border-box;
+  padding-right: 8px;
+}
+
+.first-row::-webkit-scrollbar {
+  width: 8px;
+}
+
+.first-row::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.first-row::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.first-row::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
+
+.horizontal-line {
+  margin: 20px 0;
+  border: 0;
+  border-top: 2px solid #e0e7ef;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #e64051 50%,
+    transparent 100%
+  );
+  height: 2px;
+}
+
+.second-row {
+  flex: 0.7;
+  box-sizing: border-box;
+  padding-right: 8px;
+}
+
+.second-row::-webkit-scrollbar {
+  width: 8px;
+}
+
+.second-row::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.second-row::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.second-row::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
+
+.right-column {
+  flex: 0.3;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 2px solid #e0e7ef;
+  border-radius: 16px;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 33, 66, 0.08);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.right-column::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #002142 0%, #e64051 50%, #002142 100%);
+  z-index: 1;
+}
+
+/* Customer Form Section */
+.customer-form-section {
+  flex-shrink: 0;
+  padding-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* Cart Items Section */
+.cart-items-section {
+  flex: 1;
+  min-height: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 12px;
+  padding-right: 8px;
+}
+
+.cart-items-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cart-items-section::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.cart-items-section::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.cart-items-section::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
+
+/* Cart Summary Section */
+.cart-summary-section {
+  flex-shrink: 0;
+  border-top: 2px solid #e0e7ef;
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.cart-summary-container {
+  padding-top: 0;
+}
+
+.cart-item {
+  background: linear-gradient(135deg, #002142 0%, #003a5c 100%);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.15);
+  transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 64, 81, 0.2);
+}
+
+/* Right column scrollbar */
+.right-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.right-column::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.right-column::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.right-column::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
+
+/* QR Modal Overlay - Page Level (Explore) */
+.explore-qr-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 33, 66, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000 !important;
+  padding: 20px;
+  animation: exploreQRFadeIn 0.3s ease;
+}
+
+@keyframes exploreQRFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* QR Modal Content */
+.explore-qr-modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 33, 66, 0.3);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: exploreQRSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 3px solid #e64051;
+}
+
+@keyframes exploreQRSlideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* QR Modal Header */
+.explore-qr-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 2px solid #e2e8f0;
+  background: linear-gradient(135deg, #002142 0%, #004080 100%);
+  border-radius: 17px 17px 0 0;
+}
+
+.explore-qr-modal-header h3 {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.explore-qr-modal-header h3 i {
+  color: #e64051;
+  font-size: 1.4rem;
+}
+
+.explore-qr-close-btn {
+  background: rgba(230, 64, 81, 0.2);
+  border: 2px solid #e64051;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.explore-qr-close-btn:hover {
+  background: #e64051;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* QR Modal Body */
+.explore-qr-modal-body {
+  padding: 30px;
+}
+
+/* UPI Options Modal */
+.upi-options-modal .explore-qr-modal-body {
+  padding: 35px 30px;
+}
+
+.upi-options-subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 25px;
+  font-weight: 500;
+}
+
+.upi-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.upi-option-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 15px;
+  padding: 30px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.upi-option-card:hover:not(:disabled) {
+  transform: translateY(-5px);
+  border-color: #e64051;
+  box-shadow: 0 10px 30px rgba(230, 64, 81, 0.2);
+}
+
+.upi-option-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upi-option-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e64051 0%, #d32f3f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  box-shadow: 0 8px 20px rgba(230, 64, 81, 0.3);
+}
+
+.upi-option-icon i {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.upi-option-card h4 {
+  color: #002142;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.upi-option-card p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.qr-warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #92400e;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.qr-warning i {
+  font-size: 1.5rem;
+  color: #f59e0b;
+}
+
+/* QR Display Modal */
+.qr-display-modal {
+  max-width: 420px;
+}
+
+.qr-display-modal .explore-qr-modal-body {
+  padding: 20px;
+}
+
+.qr-amount-display {
+  background: linear-gradient(135deg, #002142 0%, #004080 100%);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 16px rgba(0, 33, 66, 0.2);
+}
+
+.qr-amount-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.qr-amount-value {
+  display: block;
+  color: #e64051;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.qr-code-display {
+  background: white;
+  border: 2px solid #e64051;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 20px rgba(0, 33, 66, 0.12);
+}
+
+.qr-code-display img {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.qr-instruction {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #e6f2ff 0%, #dbeafe 100%);
+  border-radius: 8px;
+  border: 2px solid #bfdbfe;
+}
+
+.qr-instruction i {
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.qr-action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn-qr-received,
+.btn-qr-cancel {
+  flex: 1;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-qr-received {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-qr-received:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-qr-cancel {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-qr-cancel:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.btn-qr-received:disabled,
+.btn-qr-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-qr-received i,
+.btn-qr-cancel i {
+  font-size: 1.1rem;
+}
+
+/* Responsive Design for QR Modals */
+@media (max-width: 768px) {
+  .explore-qr-modal-content {
+    max-width: 95%;
+    border-radius: 15px;
+  }
+
+  .explore-qr-modal-header {
+    padding: 16px 18px;
+  }
+
+  .explore-qr-modal-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .explore-qr-modal-header h3 i {
+    font-size: 1.3rem;
+  }
+
+  .explore-qr-modal-body {
+    padding: 18px;
+  }
+
+  .qr-display-modal .explore-qr-modal-body {
+    padding: 16px;
+  }
+
+  .upi-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upi-option-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .upi-option-icon i {
+    font-size: 2rem;
+  }
+
+  .qr-amount-value {
+    font-size: 1.6rem;
+  }
+
+  .qr-code-display {
+    padding: 14px;
+  }
+
+  .qr-code-display img {
+    max-width: 200px;
+  }
+
+  .qr-action-buttons {
+    flex-direction: column;
+  }
+
+  .btn-qr-received,
+  .btn-qr-cancel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .qr-display-modal {
+    max-width: 360px;
+  }
+
+  .explore-qr-modal-header h3 {
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
+  .explore-qr-close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .upi-option-card {
+    padding: 25px 15px;
+  }
+
+  .qr-amount-label {
+    font-size: 0.75rem;
+  }
+
+  .qr-amount-value {
+    font-size: 1.5rem;
+  }
+
+  .qr-code-display {
+    padding: 12px;
+  }
+
+  .qr-code-display img {
+    max-width: 180px;
+  }
+
+  .qr-instruction {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+
+  .btn-qr-received,
+  .btn-qr-cancel {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Receipt Popup Overlay - Page Level */
+.explore-receipt-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001 !important;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Horizontal divider styling */
+.right-column hr {
+  border: 0;
+  border-top: 2px solid #e0e7ef;
+  margin: 12px 0;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .explore-container {
+    flex-direction: column;
+    height: auto;
+    gap: 20px;
+    padding: 16px;
+  }
+
+  .left-column,
+  .right-column {
+    flex: 1;
+    width: 100%;
+    min-height: 400px;
+  }
+
+  .cart-items-section {
+    min-height: 200px;
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .explore-container {
+    padding: 12px;
+  }
+
+  .left-column,
+  .right-column {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .customer-form-section {
+    padding-top: 4px;
+  }
+
+  .cart-items-section {
+    min-height: 180px;
+    max-height: 250px;
+  }
+
+  .cart-summary-section {
+    padding-top: 12px;
+  }
+}

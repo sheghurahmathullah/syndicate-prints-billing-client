@@ -1,0 +1,195 @@
+/* Premium Category Management Container */
+.category-container {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  height: calc(100vh - 5rem);
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #0f1724;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
+  z-index: 1;
+}
+
+.left-column {
+  flex: 0.7;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 2px solid #e0e7ef;
+  border-radius: 16px;
+  padding: 28px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.left-column::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+}
+
+.left-column:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(230, 64, 81, 0.12);
+  border-color: #e64051;
+}
+
+.right-column {
+  flex: 0.3;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 2px solid #e0e7ef;
+  border-radius: 16px;
+  padding: 28px;
+  height: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+.right-column::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #002142 0%, #e64051 100%);
+}
+
+.right-column:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 33, 66, 0.12);
+  border-color: #002142;
+}
+
+/* Custom Scrollbar for Right Column */
+.right-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.right-column::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.right-column::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.right-column::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
+
+/* Section Headers */
+.category-container .left-column > h3,
+.category-container .right-column > h3 {
+  color: #002142;
+  font-weight: 700;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #e64051;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.3rem;
+  position: relative;
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-container .left-column > h3 i,
+.category-container .right-column > h3 i {
+  color: #e64051;
+  font-size: 1.5rem;
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.category-container .left-column > h3::before,
+.category-container .right-column > h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .category-container {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 5rem);
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .left-column,
+  .right-column {
+    flex: 1;
+    min-height: 400px;
+    padding: 20px;
+  }
+
+  .category-container .left-column > h3,
+  .category-container .right-column > h3 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .left-column,
+  .right-column {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .category-container .left-column > h3,
+  .category-container .right-column > h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+}

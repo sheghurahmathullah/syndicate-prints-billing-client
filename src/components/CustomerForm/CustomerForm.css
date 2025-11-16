@@ -1,0 +1,64 @@
+/* CustomerForm Premium Styling */
+.customer-form-container {
+  padding: 16px;
+}
+
+.customer-form-container label {
+  color: #002142 !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.customer-form-container .form-control,
+.customer-form-container .form-select {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #334155;
+  font-weight: 500;
+}
+
+.customer-form-container .form-control:focus,
+.customer-form-container .form-select:focus {
+  outline: none;
+  border-color: #e64051;
+  box-shadow: 0 0 0 3px rgba(230, 64, 81, 0.1);
+  background: #ffffff;
+}
+
+.customer-form-container .form-control:hover,
+.customer-form-container .form-select:hover {
+  border-color: #e64051;
+  box-shadow: 0 2px 8px rgba(230, 64, 81, 0.1);
+}
+
+.customer-form-container select {
+  cursor: pointer;
+}
+
+.customer-form-container input::placeholder {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Form Group Styling */
+.customer-form-container .mb-2 {
+  margin-bottom: 1rem !important;
+}
+
+.customer-form-container .d-flex {
+  gap: 12px;
+}
+
+/* Select Dropdown Styling */
+.customer-form-container select option {
+  padding: 8px;
+  color: #002142;
+}
+
+.customer-form-container select option:hover {
+  background-color: #ffe8eb;
+}

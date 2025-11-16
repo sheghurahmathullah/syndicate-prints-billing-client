@@ -1,0 +1,29 @@
+/* DisplayItems Premium Styling */
+.display-items-container {
+  padding: 16px;
+}
+
+.display-items-container .row {
+  gap: 16px 0;
+}
+
+/* Items grid container */
+.display-items-container .row.g-3 {
+  margin: 0;
+}
+
+/* Items header section */
+.display-items-container .d-flex.justify-content-between {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e7ef;
+}
+
+/* No items message */
+.display-items-container .no-items {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-style: italic;
+  font-size: 1.1rem;
+}
