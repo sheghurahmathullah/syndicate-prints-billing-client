@@ -9,7 +9,7 @@ import CartSummary from "../../components/CartSummary/CartSummary.jsx";
 import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
 
 const Explore = () => {
-  const {categories, cartItems } = useContext(AppContext);
+  const { categories, cartItems } = useContext(AppContext);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
@@ -224,7 +224,7 @@ const Explore = () => {
               </div>
               <p className="qr-instruction">
                 <i className="bi bi-info-circle"></i>
-                Ask customer to scan this QR code using any UPI app
+                <span>Ask customer to scan QR code</span>
               </p>
               <div className="qr-action-buttons">
                 <button
@@ -237,7 +237,7 @@ const Explore = () => {
                   }}
                 >
                   <i className="bi bi-check-circle"></i>
-                  Payment Received
+                  <span>Received</span>
                 </button>
                 <button
                   className="btn-qr-cancel"
@@ -249,7 +249,7 @@ const Explore = () => {
                   }}
                 >
                   <i className="bi bi-x-circle"></i>
-                  Cancel
+                  <span>Cancel</span>
                 </button>
               </div>
             </div>

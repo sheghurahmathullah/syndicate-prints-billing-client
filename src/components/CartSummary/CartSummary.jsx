@@ -1,7 +1,7 @@
 import "./CartSummary.css";
 import { useContext, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AppContext } from "../../context/AppContext.jsx";
-import ReceiptPopup from "../ReceiptPopup/ReceiptPopup.jsx";
 import { createOrder, deleteOrder } from "../../Service/OrderService.js";
 import toast from "react-hot-toast";
 import {
@@ -28,14 +28,29 @@ const CartSummary = ({
   const { cartItems, clearCart } = useContext(AppContext);
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [orderDetails, setOrderDetails] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmPaymentType, setConfirmPaymentType] = useState(null);
+
+  const validateCustomerAndCart = () => {
+    if (!customerName || !mobileNumber) {
+      toast.error("Please enter customer details");
+      return false;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return false;
+    }
+
+    return true;
+  };
 
   // Listen for custom events from Explore page modals
   useEffect(() => {
     const handleUpiOptionSelected = (e) => {
       if (e.detail === "online") {
-        setPendingPaymentMode("upi");
-        setShowConfirm(true);
+        processPayment("upi");
       }
     };
 
@@ -59,7 +74,7 @@ const CartSummary = ({
         handleQRPaymentCancelled
       );
     };
-  }, [customerName, mobileNumber, cartItems, username]);
+  }, [customerName, mobileNumber, cartItems, username, taxPercent]);
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -68,34 +83,38 @@ const CartSummary = ({
   const tax = totalAmount * 0.01;
   const grandTotal = totalAmount + tax;
 
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingPaymentMode, setPendingPaymentMode] = useState(null);
-
   const clearAll = () => {
     setUsername(null);
     setCustomerName("");
     setMobileNumber("");
+    setSelectedPayment(null);
     clearCart();
   };
 
-  const openConfirm = (mode) => {
-    if (mode === "upi") {
-      // Show UPI options modal at Explore page level
-      setShowUpiOptions(true);
-    } else {
-      setPendingPaymentMode(mode);
+  const handlePlaceOrder = () => {
+    if (isProcessing) {
+      return;
+    }
+
+    if (!selectedPayment) {
+      toast.error("Please select a payment method");
+      return;
+    }
+
+    if (!validateCustomerAndCart()) {
+      return;
+    }
+
+    if (selectedPayment === "cash" || selectedPayment === "card") {
+      setConfirmPaymentType(selectedPayment);
       setShowConfirm(true);
+    } else if (selectedPayment === "upi") {
+      setShowUpiOptions(true);
     }
   };
 
   const processQRPayment = async () => {
-    if (!customerName || !mobileNumber) {
-      toast.error("Please enter customer details");
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty");
+    if (!validateCustomerAndCart()) {
       return;
     }
 
@@ -128,33 +147,14 @@ const CartSummary = ({
   };
 
   const handleConfirmNo = () => {
-    clearAll();
     setShowConfirm(false);
+    setConfirmPaymentType(null);
   };
 
   const handleConfirmYes = async () => {
     setShowConfirm(false);
-    if (pendingPaymentMode) {
-      await completePayment(pendingPaymentMode);
-      setPendingPaymentMode(null);
-    }
-  };
-
-  const handlePrintReceipt = () => {
-    window.print();
-  };
-
-  const placeOrder = () => {
-    if (orderDetails) {
-      const event = new CustomEvent("showReceipt", {
-        detail: {
-          ...orderDetails,
-          taxPercent: Number(taxPercent) || 1,
-        },
-      });
-      window.dispatchEvent(event);
-    }
-    clearAll();
+    await processPayment(confirmPaymentType);
+    setConfirmPaymentType(null);
   };
 
   const loadRazorpayScript = () => {
@@ -202,91 +202,6 @@ const CartSummary = ({
     clearAll();
   };
 
-  const completePayment = async (paymentMode) => {
-    if (!customerName || !mobileNumber) {
-      toast.error("Please enter customer details");
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty");
-      return;
-    }
-    const orderData = {
-      username,
-      customerName,
-      phoneNumber: mobileNumber,
-      cartItems,
-      subtotal: totalAmount,
-      tax,
-      grandTotal,
-      paymentMethod: paymentMode.toUpperCase(),
-    };
-    setIsProcessing(true);
-    try {
-      console.log(username);
-      const response = await createOrder(orderData);
-      const savedData = response.data;
-      console.log("order created", savedData);
-      if (response.status === 201 && paymentMode === "cash") {
-        toast.success("Cash received");
-        clearAll();
-        // setOrderDetails(savedData);
-        await printAndClear(savedData);
-      } else if (response.status === 201 && paymentMode === "upi") {
-        const razorpayLoaded = await loadRazorpayScript();
-        if (!razorpayLoaded) {
-          toast.error("Unable to load razorpay");
-          await deleteOrderOnFailure(savedData.orderId);
-          return;
-        }
-
-        //create razorpay order
-        const razorpayResponse = await createRazorpayOrder({
-          amount: grandTotal,
-          currency: "INR",
-        });
-        const options = {
-          key: AppConstants.RAZORPAY_KEY_ID,
-          amount: razorpayResponse.data.amount,
-          currency: razorpayResponse.data.currency,
-          order_id: razorpayResponse.data.id,
-          name: "My Retail Shop",
-          description: "Order payment",
-          handler: async function (response) {
-            await verifyPaymentHandler(response, savedData);
-          },
-          prefill: {
-            username: username,
-            name: customerName,
-            contact: mobileNumber,
-          },
-          theme: {
-            color: "#3399cc",
-          },
-          modal: {
-            ondismiss: async () => {
-              await deleteOrderOnFailure(savedData.orderId);
-              toast.error("Payment cancelled");
-            },
-          },
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.on("payment.failed", async (response) => {
-          await deleteOrderOnFailure(savedData.orderId);
-          toast.error("Payment failed");
-          console.error(response.error.description);
-        });
-        rzp.open();
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Payment processing failed");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   const verifyPaymentHandler = async (response, savedOrder) => {
     const paymentData = {
       razorpayOrderId: response.razorpay_order_id,
@@ -306,16 +221,8 @@ const CartSummary = ({
             razorpaySignature: response.razorpay_signature,
           },
         };
-        setOrderDetails(orderWithPayment);
 
-        // Show receipt
-        const event = new CustomEvent("showReceipt", {
-          detail: {
-            ...orderWithPayment,
-            taxPercent: Number(taxPercent) || 1,
-          },
-        });
-        window.dispatchEvent(event);
+        await printAndClear(orderWithPayment);
       } else {
         toast.error("Payment processing failed");
       }
@@ -329,13 +236,7 @@ const CartSummary = ({
   const displayGrandTotal = totalAmount + displayTax;
 
   const processPayment = async (paymentMode) => {
-    if (!customerName || !mobileNumber) {
-      toast.error("Please enter customer details");
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty");
+    if (!validateCustomerAndCart()) {
       return;
     }
 
@@ -360,7 +261,9 @@ const CartSummary = ({
 
       if (response.status === 201 && paymentMode === "cash") {
         toast.success("Cash received");
-        clearAll();
+        await printAndClear(savedData);
+      } else if (response.status === 201 && paymentMode === "card") {
+        toast.success("Card payment received");
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "upi") {
         const razorpayLoaded = await loadRazorpayScript();
@@ -506,75 +409,102 @@ const CartSummary = ({
         </div>
       </div>
 
-      <div className="d-flex gap-3">
+      <div className="payment-options-grid">
         <button
-          className="btn btn-success flex-grow-1 modern-btn"
-          onClick={() => {
-            openConfirm("cash");
-          }}
+          type="button"
+          className={`payment-option ${
+            selectedPayment === "cash" ? "active" : ""
+          }`}
+          onClick={() => setSelectedPayment("cash")}
           disabled={isProcessing}
         >
-          {isProcessing ? "Processing..." : "Cash"}
+          <span className="payment-option-title">
+            <i className="bi bi-cash-stack"></i> Cash
+          </span>
+          <span className="payment-option-subtitle">
+            Collect cash at counter
+          </span>
         </button>
         <button
-          className="btn btn-primary flex-grow-1 modern-btn"
-          onClick={() => {
-            openConfirm("upi");
-          }}
+          type="button"
+          className={`payment-option ${
+            selectedPayment === "card" ? "active" : ""
+          }`}
+          onClick={() => setSelectedPayment("card")}
           disabled={isProcessing}
         >
-          {isProcessing ? "Processing..." : "UPI"}
+          <span className="payment-option-title">
+            <i className="bi bi-credit-card"></i> Card
+          </span>
+          <span className="payment-option-subtitle">
+            Process card payment
+          </span>
+        </button>
+        <button
+          type="button"
+          className={`payment-option ${
+            selectedPayment === "upi" ? "active" : ""
+          }`}
+          onClick={() => setSelectedPayment("upi")}
+          disabled={isProcessing}
+        >
+          <span className="payment-option-title">
+            <i className="bi bi-upc-scan"></i> UPI
+          </span>
+          <span className="payment-option-subtitle">
+            Show UPI options & QR
+          </span>
         </button>
       </div>
 
-      <div className="d-flex gap-3 mt-2 py-1">
+      <div className="d-flex gap-3 mt-3 py-1">
         <button
           className="btn btn-warning flex-grow-1 modern-btn"
-          onClick={placeOrder}
-          disabled={isProcessing || !orderDetails}
+          onClick={handlePlaceOrder}
+          disabled={isProcessing || !selectedPayment}
         >
-          Place Order
-          {/* {isProcessing ? 'Place order...' : 'Order Summary'}  */}
+          {isProcessing ? "Processing..." : "Place Order"}
         </button>
       </div>
 
-      {showConfirm && (
-        <div className="confirm-overlay" role="dialog" aria-modal="true">
-          <div className="confirm-box">
-            <h4 style={{ margin: 0, fontSize: 18 }}>Confirm the order</h4>
-            <p style={{ margin: 0, color: "#555" }}>
-              Proceed with the selected payment method?
-            </p>
-            <div
-              className="d-flex gap-2 justify-content-center"
-              style={{ marginTop: 12 }}
-            >
-              <button
-                className="btn btn-sm btn-primary modern-btn"
-                onClick={async () => {
-                  setShowConfirm(false);
-                  if (pendingPaymentMode) {
-                    await processPayment(pendingPaymentMode);
-                    setPendingPaymentMode(null);
-                  }
-                }}
-                style={{ minWidth: 92 }}
-                disabled={isProcessing}
+      {showConfirm &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="confirm-overlay" role="dialog" aria-modal="true">
+            <div className="confirm-box">
+              <h4 style={{ margin: 0, fontSize: 18 }}>
+                Confirm {confirmPaymentType === "cash" ? "cash" : "card"} payment?
+              </h4>
+              <p style={{ margin: 0, color: "#555" }}>
+                {confirmPaymentType === "cash" 
+                  ? "Please verify before collecting cash. Continue?"
+                  : "Please verify before processing card payment. Continue?"}
+              </p>
+              <div
+                className="d-flex gap-2 justify-content-center"
+                style={{ marginTop: 12 }}
               >
-                Yes
-              </button>
-              <button
-                className="btn btn-sm btn-outline-secondary modern-btn"
-                onClick={handleConfirmNo}
-                style={{ minWidth: 92 }}
-                disabled={isProcessing}
-              >
-                No
-              </button>
+                <button
+                  className="btn btn-sm btn-primary modern-btn"
+                  onClick={handleConfirmYes}
+                  style={{ minWidth: 92 }}
+                  disabled={isProcessing}
+                >
+                  Yes
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-secondary modern-btn"
+                  onClick={handleConfirmNo}
+                  style={{ minWidth: 92 }}
+                  disabled={isProcessing}
+                >
+                  No
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

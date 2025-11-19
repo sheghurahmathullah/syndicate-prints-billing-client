@@ -223,7 +223,7 @@
   align-items: center;
   justify-content: center;
   z-index: 10000 !important;
-  padding: 20px;
+  padding: 10px;
   animation: exploreQRFadeIn 0.3s ease;
 }
 
@@ -239,14 +239,16 @@
 /* QR Modal Content */
 .explore-qr-modal-content {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 33, 66, 0.3);
   max-width: 600px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 95vh;
+  overflow: hidden;
   animation: exploreQRSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 3px solid #e64051;
+  border: 2px solid #e64051;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes exploreQRSlideUp {
@@ -265,40 +267,42 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 22px;
+  padding: 10px 14px;
   border-bottom: 2px solid #e2e8f0;
   background: linear-gradient(135deg, #002142 0%, #004080 100%);
-  border-radius: 17px 17px 0 0;
+  border-radius: 14px 14px 0 0;
+  flex-shrink: 0;
 }
 
 .explore-qr-modal-header h3 {
   color: white;
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 800;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .explore-qr-modal-header h3 i {
   color: #e64051;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
 }
 
 .explore-qr-close-btn {
   background: rgba(230, 64, 81, 0.2);
   border: 2px solid #e64051;
   color: white;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .explore-qr-close-btn:hover {
@@ -308,7 +312,11 @@
 
 /* QR Modal Body */
 .explore-qr-modal-body {
-  padding: 30px;
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* UPI Options Modal */
@@ -407,101 +415,106 @@
 
 /* QR Display Modal */
 .qr-display-modal {
-  max-width: 420px;
+  max-width: 320px;
 }
 
 .qr-display-modal .explore-qr-modal-body {
-  padding: 20px;
+  padding: 12px;
 }
 
 .qr-amount-display {
   background: linear-gradient(135deg, #002142 0%, #004080 100%);
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: 8px;
+  padding: 8px 12px;
   text-align: center;
-  margin-bottom: 18px;
-  box-shadow: 0 6px 16px rgba(0, 33, 66, 0.2);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.2);
+  flex-shrink: 0;
 }
 
 .qr-amount-label {
   display: block;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.8rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
 }
 
 .qr-amount-value {
   display: block;
   color: #e64051;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 800;
 }
 
 .qr-code-display {
   background: white;
   border: 2px solid #e64051;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 14px;
-  box-shadow: 0 6px 20px rgba(0, 33, 66, 0.12);
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0, 33, 66, 0.12);
+  flex-shrink: 0;
 }
 
 .qr-code-display img {
   width: 100%;
-  max-width: 220px;
+  max-width: 180px;
   height: auto;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .qr-instruction {
   text-align: center;
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  margin: 14px 0;
+  margin: 6px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 6px;
+  padding: 6px 10px;
   background: linear-gradient(135deg, #e6f2ff 0%, #dbeafe 100%);
-  border-radius: 8px;
-  border: 2px solid #bfdbfe;
+  border-radius: 6px;
+  border: 1px solid #bfdbfe;
+  flex-shrink: 0;
 }
 
 .qr-instruction i {
   color: #3b82f6;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .qr-action-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 8px;
+  flex-shrink: 0;
 }
 
 .btn-qr-received,
 .btn-qr-cancel {
   flex: 1;
-  padding: 12px 18px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .btn-qr-received {
@@ -535,116 +548,197 @@
 
 .btn-qr-received i,
 .btn-qr-cancel i {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 /* Responsive Design for QR Modals */
 @media (max-width: 768px) {
+  .explore-qr-modal-overlay {
+    padding: 8px;
+  }
+
   .explore-qr-modal-content {
     max-width: 95%;
-    border-radius: 15px;
+    border-radius: 12px;
+    max-height: 98vh;
   }
 
   .explore-qr-modal-header {
-    padding: 16px 18px;
+    padding: 8px 12px;
   }
 
   .explore-qr-modal-header h3 {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
   }
 
   .explore-qr-modal-header h3 i {
-    font-size: 1.3rem;
+    font-size: 1rem;
+  }
+
+  .explore-qr-close-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
   }
 
   .explore-qr-modal-body {
-    padding: 18px;
+    padding: 10px;
+  }
+
+  .qr-display-modal {
+    max-width: 300px;
   }
 
   .qr-display-modal .explore-qr-modal-body {
-    padding: 16px;
+    padding: 10px;
   }
 
   .upi-options-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .upi-option-icon {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
   }
 
   .upi-option-icon i {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .qr-amount-display {
+    padding: 6px 10px;
+    margin-bottom: 8px;
+  }
+
+  .qr-amount-label {
+    font-size: 0.6rem;
+    margin-bottom: 3px;
   }
 
   .qr-amount-value {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
   }
 
   .qr-code-display {
-    padding: 14px;
+    padding: 8px;
+    margin-bottom: 6px;
   }
 
   .qr-code-display img {
-    max-width: 200px;
+    max-width: 160px;
+  }
+
+  .qr-instruction {
+    font-size: 0.65rem;
+    padding: 5px 8px;
+    margin: 5px 0;
+    gap: 5px;
+  }
+
+  .qr-instruction i {
+    font-size: 0.85rem;
   }
 
   .qr-action-buttons {
-    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
   }
 
   .btn-qr-received,
   .btn-qr-cancel {
-    width: 100%;
+    padding: 7px 10px;
+    font-size: 0.7rem;
+  }
+
+  .btn-qr-received i,
+  .btn-qr-cancel i {
+    font-size: 0.85rem;
   }
 }
 
 @media (max-width: 480px) {
+  .explore-qr-modal-overlay {
+    padding: 5px;
+  }
+
   .qr-display-modal {
-    max-width: 360px;
+    max-width: 280px;
+  }
+
+  .explore-qr-modal-header {
+    padding: 7px 10px;
   }
 
   .explore-qr-modal-header h3 {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+
+  .explore-qr-modal-header h3 i {
     font-size: 0.95rem;
-    gap: 8px;
   }
 
   .explore-qr-close-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.9rem;
-  }
-
-  .upi-option-card {
-    padding: 25px 15px;
-  }
-
-  .qr-amount-label {
+    width: 24px;
+    height: 24px;
     font-size: 0.75rem;
   }
 
+  .qr-display-modal .explore-qr-modal-body {
+    padding: 8px;
+  }
+
+  .qr-amount-display {
+    padding: 6px 8px;
+    margin-bottom: 6px;
+  }
+
+  .qr-amount-label {
+    font-size: 0.55rem;
+    margin-bottom: 2px;
+  }
+
   .qr-amount-value {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .qr-code-display {
-    padding: 12px;
+    padding: 6px;
+    margin-bottom: 5px;
   }
 
   .qr-code-display img {
-    max-width: 180px;
+    max-width: 140px;
   }
 
   .qr-instruction {
+    font-size: 0.6rem;
+    padding: 5px 6px;
+    margin: 4px 0;
+    gap: 4px;
+  }
+
+  .qr-instruction i {
     font-size: 0.8rem;
-    padding: 10px;
+  }
+
+  .qr-action-buttons {
+    gap: 5px;
+    margin-top: 5px;
+    flex-direction: row;
   }
 
   .btn-qr-received,
   .btn-qr-cancel {
-    padding: 10px 14px;
-    font-size: 0.85rem;
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+
+  .btn-qr-received i,
+  .btn-qr-cancel i {
+    font-size: 0.8rem;
   }
 }
 
