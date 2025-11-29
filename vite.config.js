@@ -5,21 +5,24 @@ import react from "@vitejs/plugin-react";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  // Use root path - Vite proxy handles /api/* in dev, Vercel handles it in prod
-  // Services use ${API_URL}api/v1.0/... which becomes /api/v1.0/...
+  // For production: use relative path to leverage Vercel proxy (avoids CORS)
+  // For development: use relative path to leverage Vite proxy
   const apiUrl = "/";
+  
+  // Backend URL for Vite dev server proxy
   const backendUrl =
-    env.API_URL || "https://prod-billing-app-server.onrender.com";
+    env.VITE_API_URL || "https://billing-app-server-det4.onrender.com/";
 
   return {
     plugins: [react()],
     define: {
-      "import.meta.env.API_URL": JSON.stringify(apiUrl),
+      // Use VITE_API_URL for services, default to "/" for relative paths
+      "import.meta.env.VITE_API_URL": JSON.stringify(apiUrl),
     },
     server: {
       proxy: {
         "/api": {
-          target: backendUrl,
+          target: backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl,
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path, // Keep /api in the path when forwarding
