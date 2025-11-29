@@ -1,12 +1,10 @@
 import {useContext, useState} from "react";
-import {assets} from "../../assets/assets.js";
 import {AppContext} from "../../context/AppContext.jsx";
 import toast from "react-hot-toast";
 import {addItem} from "../../Service/ItemService.js";
 
 const ItemForm = () => {
     const {categories, setItemsData, itemsData, setCategories} = useContext(AppContext);
-    const [image, setImage] = useState(false);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState({
         name: "",
@@ -26,16 +24,9 @@ const ItemForm = () => {
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const formData = new FormData();
-        formData.append("item", JSON.stringify(data));
-        formData.append("file", image);
         try {
-            if (!image) {
-                toast.error("Select image");
-                return;
-            }
-
-            const response = await addItem(formData);
+            // Send plain JSON object; backend expects application/json
+            const response = await addItem(data);
             if (response.status === 201) {
                 setItemsData([...itemsData, response.data]);
                 setCategories((prevCategories) =>
@@ -49,7 +40,6 @@ const ItemForm = () => {
                     priceBack:"",
                     categoryId: "",
                 })
-                setImage(false);
             } else {
                 toast.error("Unable to add item");
             }
@@ -68,13 +58,6 @@ const ItemForm = () => {
                     <div className="card col-md-12 form-container">
                         <div className="card-body">
                             <form onSubmit={onSubmitHandler}>
-                                <div className="mb-3">
-                                    <p className="fw-bold" >Image</p>
-                                    <label htmlFor="image" className="form-label">
-                                        <img src={image ? URL.createObjectURL(image) : assets.upload} alt="" width={48}/>
-                                    </label>
-                                    <input type="file" name="image" id="image" className='form-control' hidden onChange={(e) => setImage(e.target.files[0])} />
-                                </div>
                                 <div className="mb-3">
                                     <label htmlFor="name" className="form-label">Name</label>
                                     <input type="text"

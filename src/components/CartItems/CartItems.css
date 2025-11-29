@@ -176,6 +176,21 @@
   height: 32px !important;
 }
 
+/* Custom price input styling */
+.custom-price-input {
+  border: 1px solid #e0e7ef !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-size: 0.85rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-price-input:focus {
+  border-color: #002142 !important;
+  box-shadow: 0 0 0 2px rgba(0, 33, 66, 0.1) !important;
+  outline: none !important;
+}
+
 /* Responsive adjustments for cart items */
 @media (max-width: 768px) {
   .cart-item {
@@ -204,5 +219,10 @@
   .cart-item .d-flex.align-items-center.gap-2 {
     padding: 5px 8px !important;
     gap: 6px !important;
+  }
+
+  .custom-price-input {
+    width: 70px !important;
+    font-size: 0.8rem !important;
   }
 }

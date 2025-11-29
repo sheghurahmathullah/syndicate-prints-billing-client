@@ -2,13 +2,8 @@ import "./CartSummary.css";
 import { useContext, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AppContext } from "../../context/AppContext.jsx";
-import { createOrder, deleteOrder } from "../../Service/OrderService.js";
+import { createOrder } from "../../Service/OrderService.js";
 import toast from "react-hot-toast";
-import {
-  createRazorpayOrder,
-  verifyPayment,
-} from "../../Service/PaymentService.js";
-import { AppConstants } from "../../util/constants.js";
 
 const CartSummary = ({
   customerName,
@@ -46,47 +41,65 @@ const CartSummary = ({
     return true;
   };
 
-  // Listen for custom events from Explore page modals
+  // Listen for QR proceed event - show confirmation dialog
   useEffect(() => {
-    const handleUpiOptionSelected = (e) => {
-      if (e.detail === "online") {
-        processPayment("upi");
-      }
+    const handleQRProceed = () => {
+      setConfirmPaymentType("upi");
+      setShowConfirm(true);
     };
 
-    const handleQRPaymentReceived = () => {
-      processQRPayment();
-    };
-
-    const handleQRPaymentCancelled = () => {
-      toast.info("Payment cancelled");
-    };
-
-    window.addEventListener("upiOptionSelected", handleUpiOptionSelected);
-    window.addEventListener("qrPaymentReceived", handleQRPaymentReceived);
-    window.addEventListener("qrPaymentCancelled", handleQRPaymentCancelled);
+    window.addEventListener("qrProceedClicked", handleQRProceed);
 
     return () => {
-      window.removeEventListener("upiOptionSelected", handleUpiOptionSelected);
-      window.removeEventListener("qrPaymentReceived", handleQRPaymentReceived);
-      window.removeEventListener(
-        "qrPaymentCancelled",
-        handleQRPaymentCancelled
-      );
+      window.removeEventListener("qrProceedClicked", handleQRProceed);
     };
-  }, [customerName, mobileNumber, cartItems, username, taxPercent]);
+  }, []); 
+  
+  // Empty dependency array to prevent multiple API calls
+  // Commented out unnecessary event listeners to prevent multiple API calls
+  // useEffect(() => {
+  //   const handleUpiOptionSelected = (e) => {
+  //     if (e.detail === "online") {
+  //       processPayment("upi");
+  //     }
+  //   };
+
+  //   const handleQRPaymentReceived = () => {
+  //     processQRPayment();
+  //   };
+
+  //   const handleQRPaymentCancelled = () => {
+  //     toast.info("Payment cancelled");
+  //   };
+
+  //   window.addEventListener("upiOptionSelected", handleUpiOptionSelected);
+  //   window.addEventListener("qrPaymentReceived", handleQRPaymentReceived);
+  //   window.addEventListener("qrPaymentCancelled", handleQRPaymentCancelled);
+
+  //   return () => {
+  //     window.removeEventListener("qrPaymentReceived", handleQRPaymentReceived);
+  //     window.removeEventListener(
+  //       "qrPaymentCancelled",
+  //       handleQRPaymentCancelled
+  //     );
+  //   };
+  // }, [customerName, mobileNumber, cartItems, username, taxPercent]);
 
   const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => {
+      const unitPrice = item.customPrice !== null && item.customPrice !== undefined ? item.customPrice : item.price;
+      return total + unitPrice * item.quantity;
+    },
     0
   );
+      // window.removeEventListener("upiOptionSelected", handleUpiOptionSelected);
   const tax = totalAmount * 0.01;
   const grandTotal = totalAmount + tax;
 
   const clearAll = () => {
-    setUsername(null);
     setCustomerName("");
     setMobileNumber("");
+    setUsername("");
     setSelectedPayment(null);
     clearCart();
   };
@@ -109,42 +122,48 @@ const CartSummary = ({
       setConfirmPaymentType(selectedPayment);
       setShowConfirm(true);
     } else if (selectedPayment === "upi") {
-      setShowUpiOptions(true);
-    }
-  };
-
-  const processQRPayment = async () => {
-    if (!validateCustomerAndCart()) {
-      return;
-    }
-
-    const orderData = {
-      customerName,
-      username,
-      phoneNumber: mobileNumber,
-      cartItems,
-      subtotal: totalAmount,
-      tax: displayTax,
-      grandTotal: displayGrandTotal,
-      paymentMethod: "UPI",
-    };
-
-    setIsProcessing(true);
-    try {
-      const response = await createOrder(orderData);
-      const savedData = response.data;
-
-      if (response.status === 201) {
-        toast.success("Payment received successfully");
-        await printAndClear(savedData);
+      
+      if (!qrCodeImage) {
+        toast.error("UPI QR not configured. Please add it in Settings.");
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Payment processing failed");
-    } finally {
-      setIsProcessing(false);
+      setShowQRModal(true);
     }
   };
+
+  // Commented out - now using processPayment("upi") with confirmation dialog
+  // const processQRPayment = async () => {
+  //   if (!validateCustomerAndCart()) {
+  //     return;
+  //   }
+
+  //   const orderData = {
+  //     customerName,
+  //     username,
+  //     phoneNumber: mobileNumber,
+  //     cartItems,
+  //     subtotal: totalAmount,
+  //     tax: displayTax,
+  //     grandTotal: displayGrandTotal,
+  //     paymentMethod: "UPI",
+  //   };
+
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await createOrder(orderData);
+  //     const savedData = response.data;
+
+  //     if (response.status === 201) {
+  //       toast.success("Payment received successfully");
+  //       await printAndClear(savedData);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Payment processing failed");
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   const handleConfirmNo = () => {
     setShowConfirm(false);
@@ -155,25 +174,6 @@ const CartSummary = ({
     setShowConfirm(false);
     await processPayment(confirmPaymentType);
     setConfirmPaymentType(null);
-  };
-
-  const loadRazorpayScript = () => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
-  const deleteOrderOnFailure = async (orderId) => {
-    try {
-      await deleteOrder(orderId);
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-    }
   };
 
   const printAndClear = async (savedOrder) => {
@@ -202,35 +202,8 @@ const CartSummary = ({
     clearAll();
   };
 
-  const verifyPaymentHandler = async (response, savedOrder) => {
-    const paymentData = {
-      razorpayOrderId: response.razorpay_order_id,
-      razorpayPaymentId: response.razorpay_payment_id,
-      razorpaySignature: response.razorpay_signature,
-      orderId: savedOrder.orderId,
-    };
-    try {
-      const paymentResponse = await verifyPayment(paymentData);
-      if (paymentResponse.status === 200) {
-        toast.success("Payment successful");
-        const orderWithPayment = {
-          ...savedOrder,
-          paymentDetails: {
-            razorpayOrderId: response.razorpay_order_id,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature,
-          },
-        };
-
-        await printAndClear(orderWithPayment);
-      } else {
-        toast.error("Payment processing failed");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Payment failed");
-    }
-  };
+  // Razorpay / online gateway helpers have been removed for now to keep
+  // the implementation fully manual for CASH, CARD and UPI payments.
 
   const displayTax = totalAmount * (taxPercent / 100);
   const displayGrandTotal = totalAmount + displayTax;
@@ -260,55 +233,62 @@ const CartSummary = ({
       const savedData = response.data;
 
       if (response.status === 201 && paymentMode === "cash") {
+        console.log("Cash")
         toast.success("Cash received");
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "card") {
+        console.log("upi")
         toast.success("Card payment received");
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "upi") {
-        const razorpayLoaded = await loadRazorpayScript();
-        if (!razorpayLoaded) {
-          toast.error("Unable to load razorpay");
-          await deleteOrderOnFailure(savedData.orderId);
-          return;
-        }
+        console.log("card")
 
-        // create razorpay order
-        const razorpayResponse = await createRazorpayOrder({
-          amount: displayGrandTotal,
-          currency: "INR",
-        });
-        const options = {
-          key: AppConstants.RAZORPAY_KEY_ID,
-          amount: razorpayResponse.data.amount,
-          currency: razorpayResponse.data.currency,
-          order_id: razorpayResponse.data.id,
-          name: "My Retail Shop",
-          description: "Order payment",
-          handler: async function (response) {
-            await verifyPaymentHandler(response, savedData);
-          },
-          prefill: {
-            name: customerName,
-            contact: mobileNumber,
-          },
-          theme: {
-            color: "#3399cc",
-          },
-          modal: {
-            ondismiss: async () => {
-              await deleteOrderOnFailure(savedData.orderId);
-              toast.error("Payment cancelled");
-            },
-          },
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.on("payment.failed", async (response) => {
-          await deleteOrderOnFailure(savedData.orderId);
-          toast.error("Payment failed");
-          console.error(response.error.description);
-        });
-        rzp.open();
+        toast.success("UPI payment Successfully done");
+        await printAndClear(savedData);
+
+        // const razorpayLoaded = await loadRazorpayScript();
+        // if (!razorpayLoaded) {
+        //   toast.error("Unable to load razorpay");
+        //   await deleteOrderOnFailure(savedData.orderId);
+        //   return;
+        // }
+
+        // // create razorpay order
+        // const razorpayResponse = await createRazorpayOrder({
+        //   amount: displayGrandTotal,
+        //   currency: "INR",
+        // });
+        // const options = {
+        //   key: AppConstants.RAZORPAY_KEY_ID,
+        //   amount: razorpayResponse.data.amount,
+        //   currency: razorpayResponse.data.currency,
+        //   order_id: razorpayResponse.data.id,
+        //   name: "My Retail Shop",
+        //   description: "Order payment",
+        //   handler: async function (response) {
+        //     await verifyPaymentHandler(response, savedData);
+        //   },
+        //   prefill: {
+        //     name: customerName,
+        //     contact: mobileNumber,
+        //   },
+        //   theme: {
+        //     color: "#3399cc",
+        //   },
+        //   modal: {
+        //     ondismiss: async () => {
+        //       await deleteOrderOnFailure(savedData.orderId);
+        //       toast.error("Payment cancelled");
+        //     },
+        //   },
+        // };
+        // const rzp = new window.Razorpay(options);
+        // rzp.on("payment.failed", async (response) => {
+        //   await deleteOrderOnFailure(savedData.orderId);
+        //   toast.error("Payment failed");
+        //   console.error(response.error.description);
+        // });
+        // rzp.open();
       }
     } catch (error) {
       console.error(error);
@@ -440,6 +420,7 @@ const CartSummary = ({
             Process card payment
           </span>
         </button>
+
         <button
           type="button"
           className={`payment-option ${
@@ -473,12 +454,14 @@ const CartSummary = ({
           <div className="confirm-overlay" role="dialog" aria-modal="true">
             <div className="confirm-box">
               <h4 style={{ margin: 0, fontSize: 18 }}>
-                Confirm {confirmPaymentType === "cash" ? "cash" : "card"} payment?
+                Confirm {confirmPaymentType === "cash" ? "cash" : confirmPaymentType === "card" ? "card" : "UPI"} payment?
               </h4>
               <p style={{ margin: 0, color: "#555" }}>
                 {confirmPaymentType === "cash" 
                   ? "Please verify before collecting cash. Continue?"
-                  : "Please verify before processing card payment. Continue?"}
+                  : confirmPaymentType === "card"
+                  ? "Please verify before processing card payment. Continue?"
+                  : "Please verify payment received via QR code. Continue?"}
               </p>
               <div
                 className="d-flex gap-2 justify-content-center"

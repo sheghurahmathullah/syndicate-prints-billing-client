@@ -1,6 +1,13 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.API_URL || 'http://localhost:8080/';
+// Get API URL from environment variable (must be prefixed with VITE_ in Vite)
+const getApiUrl = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:8080/';
+  // Ensure URL ends with a slash
+  return url.endsWith('/') ? url : url + '/';
+};
+
+const API_URL = getApiUrl();
 
 export const addCategory = async (category) => {
     return await axios.post(`${API_URL}api/v1.0/admin/categories`, category, {headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}});

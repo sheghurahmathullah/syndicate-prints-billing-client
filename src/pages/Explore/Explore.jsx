@@ -25,9 +25,12 @@ const Explore = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptOrderDetails, setReceiptOrderDetails] = useState(null);
 
-  // Calculate total amount for QR modal
+  // Calculate total amount for QR modal (using custom prices if available)
   const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => {
+      const unitPrice = item.customPrice !== null && item.customPrice !== undefined ? item.customPrice : item.price;
+      return total + unitPrice * item.quantity;
+    },
     0
   );
   const displayTax = totalAmount * (taxPercent / 100);
@@ -118,7 +121,8 @@ const Explore = () => {
       </div>
 
       {/* QR Modals - Rendered at page level, not in cart container */}
-      {showUpiOptions && (
+      {/* Commented out UPI options modal - now showing QR code directly */}
+      {/* {showUpiOptions && (
         <div
           className="explore-qr-modal-overlay"
           onClick={() => setShowUpiOptions(false)}
@@ -189,7 +193,7 @@ const Explore = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {showQRModal && qrCodeImage && (
         <div
@@ -228,24 +232,62 @@ const Explore = () => {
               </p>
               <div className="qr-action-buttons">
                 <button
-                  className="btn-qr-received"
+                  className="btn-qr-proceed"
                   onClick={() => {
                     setShowQRModal(false);
-                    // Trigger QR payment received in CartSummary
-                    const event = new CustomEvent("qrPaymentReceived");
+                    // Trigger proceed to show confirmation dialog in CartSummary
+                    const event = new CustomEvent("qrProceedClicked");
                     window.dispatchEvent(event);
+                  }}
+                  style={{
+                    background: "linear-gradient(135deg, #002142 0%, #003a5c 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "12px 24px",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    width: "100%",
+                    justifyContent: "center",
+                    fontSize: "16px",
+                    boxShadow: "0 4px 12px rgba(0, 33, 66, 0.25)",
+                    transition: "all 0.3s ease"
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.transform = "scale(1.02)";
+                    e.target.style.boxShadow = "0 6px 16px rgba(0, 33, 66, 0.35)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.transform = "scale(1)";
+                    e.target.style.boxShadow = "0 4px 12px rgba(0, 33, 66, 0.25)";
                   }}
                 >
                   <i className="bi bi-check-circle"></i>
-                  <span>Received</span>
+                  <span>Proceed</span>
                 </button>
                 <button
                   className="btn-qr-cancel"
                   onClick={() => {
                     setShowQRModal(false);
-                    // Trigger QR payment cancel in CartSummary
-                    const event = new CustomEvent("qrPaymentCancelled");
-                    window.dispatchEvent(event);
+                  }}
+                  style={{
+                    background: "transparent",
+                    color: "#666",
+                    border: "1px solid #ddd",
+                    padding: "12px 24px",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    width: "100%",
+                    justifyContent: "center",
+                    fontSize: "16px",
+                    marginTop: "8px"
                   }}
                 >
                   <i className="bi bi-x-circle"></i>

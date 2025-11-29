@@ -3,7 +3,13 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext.jsx";
 
 const CartItems = () => {
-  const { cartItems, removeFromCart, updateQuantity } = useContext(AppContext);
+  const { cartItems, removeFromCart, updateQuantity, updateCustomPrice } = useContext(AppContext);
+  
+  const getItemPrice = (item) => {
+    const unitPrice = item.customPrice !== null && item.customPrice !== undefined ? item.customPrice : item.price;
+    return unitPrice * item.quantity;
+  };
+
   return (
     <div className="h-100">
       {cartItems.length === 0 ? (
@@ -15,8 +21,28 @@ const CartItems = () => {
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h6 className="mb-0 text-dark">{item.name}</h6>
                 <p className="mb-0 text-dark">
-                  ₹{(item.price * item.quantity).toFixed(2)}
+                  ₹{getItemPrice(item).toFixed(2)}
                 </p>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <div className="d-flex align-items-center gap-2" style={{ flex: 1 }}>
+                  <label className="text-dark" style={{ fontSize: "0.85rem", margin: 0, whiteSpace: "nowrap" }}>
+                    Price:
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control form-control-sm custom-price-input"
+                    placeholder={item.price.toFixed(2)}
+                    value={item.customPrice !== null && item.customPrice !== undefined ? item.customPrice : ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      updateCustomPrice(item.itemId, value);
+                    }}
+                    min="0"
+                    step="0.01"
+                    style={{ width: "80px" }}
+                  />
+                </div>
               </div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-2">

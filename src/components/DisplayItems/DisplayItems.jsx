@@ -33,8 +33,7 @@ const DisplayItems = ({selectedCategory}) => {
                         <Item
                             itemName={item.name}
                             itemPrice={item.price}
-                            itemPriceBack = {item.priceBack}
-                            itemImage={item.imgUrl}
+                            itemPriceBack={item.priceBack}
                             itemId={item.itemId}
                         />
                     </div>

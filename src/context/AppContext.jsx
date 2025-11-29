@@ -47,6 +47,26 @@ export const AppContextProvider = (props) => {
     );
   };
 
+  const updateCustomPrice = (itemId, customPrice) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.itemId === itemId
+          ? {
+              ...item,
+              customPrice:
+                customPrice !== "" &&
+                customPrice !== null &&
+                customPrice !== undefined &&
+                !isNaN(parseFloat(customPrice)) &&
+                parseFloat(customPrice) >= 0
+                  ? parseFloat(customPrice)
+                  : null,
+            }
+          : item
+      )
+    );
+  };
+
   // on mount, restore auth from localStorage (so refresh keeps login)
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -124,6 +144,7 @@ export const AppContextProvider = (props) => {
     cartItems,
     removeFromCart,
     updateQuantity,
+    updateCustomPrice,
     clearCart,
   };
 

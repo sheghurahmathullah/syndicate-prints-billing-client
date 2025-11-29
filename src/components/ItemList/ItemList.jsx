@@ -52,13 +52,6 @@ const ItemList = () => {
             <div className="col-12" key={index}>
               <div className="card item-card">
                 <div className="d-flex align-items-center">
-                  <div style={{ marginRight: "15px" }}>
-                    <img
-                      src={item.imgUrl}
-                      alt={item.name}
-                      className="item-image"
-                    />
-                  </div>
                   <div className="flex-grow-1">
                     <h6>{item.name}</h6>
                     <p>Category: {item.categoryName}</p>

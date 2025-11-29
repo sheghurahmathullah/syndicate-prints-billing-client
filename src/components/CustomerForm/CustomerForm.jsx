@@ -30,14 +30,27 @@ const CustomerForm = ({customerName, mobileNumber, username, setUsername, setMob
             {/* select existing user (parent should pass `users` prop: [{ id, name, mobile }] ) */}
             <div className="mb-2">
                 <div className="d-flex align-items-center gap-2">
-                    <label htmlFor="selectUser" className="text-dark col-4">Select user: </label>
-                    
+                    <label htmlFor="selectUser" className="text-dark col-4">
+                        Select user:{" "}
+                    </label>
 
-                    <select name="username" id="username" className="form-control" onChange={(e) => setUsername (e.target.value)} value={users.name} required>
-                                        <option value="">--SELECT USER--</option>
-                                        {users.map((user, index) => (
-                                            <option key={index} value={user.name}>{user.name}</option>
-                                        ))}
+                    <select
+                        name="username"
+                        id="username"
+                        className="form-control"
+                        onChange={(e) => setUsername(e.target.value)}
+                        // when username is empty string, the placeholder
+                        // option \"--SELECT USER--\" will be shown
+                        value={username || ""}
+                        required
+                    >
+                        <option value="">--SELECT USER--</option>
+                        {Array.isArray(users) &&
+                            users.map((user, index) => (
+                                <option key={index} value={user.name}>
+                                    {user.name}
+                                </option>
+                            ))}
                     </select>
                 </div>
             </div>
