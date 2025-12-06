@@ -20,117 +20,98 @@ import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Date filter state
+  const [dateFilter, setDateFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [presetRange, setPresetRange] = useState("");
-  const [paymentMode, setPaymentMode] = useState("");
 
   // Invoice print state
   const [showInvoice, setShowInvoice] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // Load data with filters
+  const loadDashboardData = async (filter = "last_30_days", startDate = null, endDate = null, paymentType = null) => {
+    try {
+      setLoading(true);
+      console.log(filter, startDate, endDate, paymentType);
+      const response = await fetchDashboardData(filter, startDate, endDate, paymentType);
+      setData(response.data);
+      setFilteredOrders(response.data.recentOrders || []);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to view the data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetchDashboardData();
-        setData(response.data);
-        setFilteredOrders(response.data.recentOrders || []);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to view the data");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+    // Load initial data with "last_30_days" filter
+    setPresetRange("last_30_days");
+    // Don't show loading on initial load
+    loadDashboardDataInitial();
   }, []);
 
-  // Date filter functions
-  const getDateRange = (range) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let from, to;
+  // Special handler for initial load (no loading spinner)
+  const loadDashboardDataInitial = async () => {
+    try {
+      setInitialLoading(true);
+      const response = await fetchDashboardData("last_30_days", null, null, null);
+      setData(response.data);
+      setFilteredOrders(response.data.recentOrders || []);
 
-    switch (range) {
-      case "today":
-        from = new Date(today);
-        to = new Date(today);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "week":
-        from = new Date(today);
-        from.setDate(today.getDate() - today.getDay());
-        to = new Date(today);
-        to.setDate(today.getDate() - today.getDay() + 6);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "month":
-        from = new Date(today.getFullYear(), today.getMonth(), 1);
-        to = new Date(
-          today.getFullYear(),
-          today.getMonth() + 1,
-          0,
-          23,
-          59,
-          59,
-          999
-        );
-        break;
-      default:
-        return null;
+      console.log("Initial data loaded:", response.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to view the data");
+    } finally {
+      setInitialLoading(false);
     }
-    return { from, to };
   };
+
+  
+
 
   const handlePresetChange = (e) => {
+    e.preventDefault();
     const value = e.target.value;
+    console.log("Filter changed to:", value);
     setPresetRange(value);
+
+    setDateFilter(value);
+    // setPaymentMode(""); // Reset payment mode
+    setCurrentPage(1); // Reset to first page
+
     if (value === "custom" || value === "") return;
-    const dates = getDateRange(value);
-    if (dates) {
-      const fromDate = dates.from.toISOString().split("T")[0];
-      const toDate = dates.to.toISOString().split("T")[0];
+    
+    if (value != null) {
+      let fromDate = null;
+      let toDate = null;
+      
       setDateFrom(fromDate);
       setDateTo(toDate);
-      applyFilter(dates.from, dates.to);
+      // Call API with filter (no payment type when changing date filter)
+      console.log("Loading dashboard data with filter:", value);
+      loadDashboardData(value, fromDate, toDate, paymentMode);
     }
   };
 
-  const applyFilter = (from, to) => {
-    if (!data) return;
-
-    const filtered = data.recentOrders.filter((order) => {
-      const orderDate = new Date(order.createdAt);
-      const dateMatch = orderDate >= from && orderDate <= to;
-
-      // If payment mode is selected, filter by it
-      if (paymentMode) {
-        return (
-          dateMatch &&
-          order.paymentMethod &&
-          order.paymentMethod.toLowerCase() === paymentMode.toLowerCase()
-        );
-      }
-      return dateMatch;
-    });
-    setFilteredOrders(filtered);
-    setCurrentPage(1); // Reset to first page
-  };
+  
 
   const handleCustomDateFilter = () => {
+    console.log(dateFilter);  
     if (dateFrom && dateTo) {
-      const from = new Date(dateFrom);
-      from.setHours(0, 0, 0, 0);
-      const to = new Date(dateTo);
-      to.setHours(23, 59, 59, 999);
-      applyFilter(from, to);
+      // Call API with custom date range (no payment type)
+      loadDashboardData(dateFilter, dateFrom, dateTo, paymentMode);
     }
   };
 
@@ -138,66 +119,25 @@ const Dashboard = () => {
     setDateFrom("");
     setDateTo("");
     setPaymentMode("");
-    setPresetRange("");
-    setFilteredOrders(data?.recentOrders || []);
+    setDateFilter("last_30_days");
+    setPresetRange("last_30_days");
     setCurrentPage(1);
+    // Reload with default "last_30_days" filter and no payment type
+    loadDashboardData("last_30_days", null, null, null);
   };
 
   const handlePaymentModeChange = (e) => {
     const mode = e.target.value;
     setPaymentMode(mode);
-
-    // Apply payment mode filter to existing filtered orders
+    setCurrentPage(1); // Reset to first page
+     
+    // If no payment mode selected, reload with current date filter
     if (!mode) {
-      // If no payment mode selected, reapply date filter only
-      if (presetRange && presetRange !== "custom") {
-        const dates = getDateRange(presetRange);
-        if (dates) {
-          applyFilter(dates.from, dates.to);
-        }
-      } else if (dateFrom && dateTo) {
-        const from = new Date(dateFrom);
-        from.setHours(0, 0, 0, 0);
-        const to = new Date(dateTo);
-        to.setHours(23, 59, 59, 999);
-        applyFilter(from, to);
-      }
+      loadDashboardData("last_30_days", dateFrom, dateTo, mode);
       return;
     }
 
-    // Apply combined filter
-    if (data) {
-      let filtered = data.recentOrders;
-
-      // Apply date filter if exists
-      if (presetRange && presetRange !== "custom") {
-        const dates = getDateRange(presetRange);
-        if (dates) {
-          filtered = filtered.filter((order) => {
-            const orderDate = new Date(order.createdAt);
-            return orderDate >= dates.from && orderDate <= dates.to;
-          });
-        }
-      } else if (dateFrom && dateTo) {
-        const from = new Date(dateFrom);
-        from.setHours(0, 0, 0, 0);
-        const to = new Date(dateTo);
-        to.setHours(23, 59, 59, 999);
-        filtered = filtered.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate >= from && orderDate <= to;
-        });
-      }
-
-      // Apply payment mode filter
-      const finalFiltered = filtered.filter(
-        (order) =>
-          order.paymentMethod &&
-          order.paymentMethod.toLowerCase() === mode.toLowerCase()
-      );
-      setFilteredOrders(finalFiltered);
-      setCurrentPage(1);
-    }
+    loadDashboardData(dateFilter, dateFrom, dateTo, mode);
   };
 
   // Calculate payment breakdown
@@ -857,7 +797,7 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  if (initialLoading) {
     return <div className="loading">Loading dashboard...</div>;
   }
 
@@ -895,6 +835,9 @@ const Dashboard = () => {
     }
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
+
+
+// Component starts from 
 
   return (
     <div className="dashboard-wrapper">
@@ -978,8 +921,10 @@ const Dashboard = () => {
               >
                 <option value="">Preset Ranges</option>
                 <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">This Week</option>
+                <option value="last_30_days">Last 30 days</option>
+                <option value="annual">Annual</option>
                 <option value="custom">Custom Range</option>
               </select>
 
@@ -1141,72 +1086,79 @@ const Dashboard = () => {
            */}
 
           <div className="orders-table-container">
-            <table className="orders-table">
-              <thead>
-                <tr>
-                  <th>Order Id</th>
-                  <th>Employee name</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th>Time</th>
-                  <th>Invoice</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedOrders.length > 0 ? (
-                  paginatedOrders.map((order) => (
-                    <tr key={order.orderId}>
-                      <td>{order.orderId.substring(0, 8)}...</td>
-                      <td> {order.username} </td>
-                      <td>
-                        {order.customerName} <br />
-                        <small className="text-muted">
-                          {order.phoneNumber}
-                        </small>
-                      </td>
-                      <td>₹{order.grandTotal.toFixed(2)}</td>
-                      <td>
-                        <span
-                          className={`payment-method ${order.paymentMethod.toLowerCase()}`}
-                        >
-                          {order.paymentMethod}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`status-badge ${order.paymentDetails.status.toLowerCase()}`}
-                        >
-                          {order.paymentDetails.status}
-                        </span>
-                      </td>
-                      <td>
-                        {new Date(order.createdAt).toLocaleDateString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </td>
-                      <td>
-                        <button
-                          className="print-invoice-btn"
-                          onClick={() => handlePrintInvoice(order)}
-                          title="Print Invoice"
-                        >
-                          <i className="bi bi-printer-fill"></i>
-                        </button>
+            {loading ? (
+              <div className="loading-spinner-container">
+                <div className="loading-spinner"></div>
+                <p>Loading data...</p>
+              </div>
+            ) : (
+              <table className="orders-table">
+                <thead>
+                  <tr>
+                    <th>Order Id</th>
+                    <th>Employee name</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                    <th>Invoice</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedOrders.length > 0 ? (
+                    paginatedOrders.map((order) => (
+                      <tr key={order.orderId}>
+                        <td>{order.orderId.substring(0, 8)}...</td>
+                        <td> {order.username} </td>
+                        <td>
+                          {order.customerName} <br />
+                          <small className="text-muted">
+                            {order.phoneNumber}
+                          </small>
+                        </td>
+                        <td>₹{order.grandTotal.toFixed(2)}</td>
+                        <td>
+                          <span
+                            className={`payment-method ${order.paymentMethod.toLowerCase()}`}
+                          >
+                            {order.paymentMethod}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={`status-badge ${order.paymentDetails.status.toLowerCase()}`}
+                          >
+                            {order.paymentDetails.status}
+                          </span>
+                        </td>
+                        <td>
+                          {new Date(order.createdAt).toLocaleDateString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                        <td>
+                          <button
+                            className="print-invoice-btn"
+                            onClick={() => handlePrintInvoice(order)}
+                            title="Print Invoice"
+                          >
+                            <i className="bi bi-printer-fill"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="no-data">
+                        No orders found for the selected date range
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="no-data">
-                      No orders found for the selected date range
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Pagination Controls */}

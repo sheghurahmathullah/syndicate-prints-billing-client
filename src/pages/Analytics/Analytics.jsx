@@ -12,7 +12,7 @@ const Analytics = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetchDashboardData();
+        const response = await fetchDashboardData('annual',null, null, null);
         setData(response.data);
         setOrders(response.data.recentOrders || []);
       } catch (error) {

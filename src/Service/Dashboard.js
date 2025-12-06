@@ -15,7 +15,25 @@ const getApiUrl = () => {
 
 const API_URL = getApiUrl();
 
-export const fetchDashboardData = async () => {
-    return await axios.get(`${API_URL}api/v1.0/dashboard`, {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}});
+export const fetchDashboardData = async (filter = "today", startDate = null, endDate = null, paymentType = null) => {
+    const params = new URLSearchParams();
+    params.append('filter', filter);
+    
+    // Only append dates if they're provided
+    if (startDate) {
+        params.append('startDate', startDate);
+    }
+    if (endDate) {
+        params.append('endDate', endDate);
+    }
+    
+    // Only append payment type if it's provided
+    if (paymentType) {
+        params.append('paymentType', paymentType);
+    }
+    
+    return await axios.get(`${API_URL}api/v1.0/dashboard/dashboard-all?${params.toString()}`, {
+        headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}
+    });
 }
 

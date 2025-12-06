@@ -190,7 +190,7 @@ const CartSummary = ({
     console.log(username);
 
     // small delay to ensure popup is visible
-    await new Promise((r) => setTimeout(r, 13000));
+    await new Promise((r) => setTimeout(r, 1300));
     try {
       // window.print();
       await new Promise((r) => setTimeout(r, 600));
