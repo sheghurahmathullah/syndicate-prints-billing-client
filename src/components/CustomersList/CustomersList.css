@@ -70,31 +70,35 @@
 }
 
 .btn-edit {
-  background: linear-gradient(135deg, #002142 0%, #003a5c 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 .btn-edit:hover {
-  background: linear-gradient(135deg, #003a5c 0%, #004d76 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
 }
 
 .btn-delete {
-  background: linear-gradient(135deg, #e64051 0%, #c23544 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .btn-delete:hover {
-  background: linear-gradient(135deg, #c23544 0%, #a82d3a 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
 .empty-state {

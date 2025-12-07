@@ -38,7 +38,12 @@ const ManageCustomers = () => {
 
   const onUpdateCustomer = (updated) => {
     setCustomers((prev) =>
-      prev.map((c) => (c.customerId === updated.customerId ? updated : c))
+      prev.map((c) => {
+        // Support both customerId and id fields
+        const cId = c.customerId || c.id;
+        const updatedId = updated.customerId || updated.id;
+        return (cId === updatedId) ? updated : c;
+      })
     );
     setSelectedCustomer(null);
   };

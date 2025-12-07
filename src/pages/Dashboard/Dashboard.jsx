@@ -1,6 +1,7 @@
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
 import { fetchDashboardData } from "../../Service/Dashboard.js";
+import { fetchCustomers } from "../../Service/CustomerService.js";
 import toast from "react-hot-toast";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -30,12 +31,27 @@ const Dashboard = () => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
+  const [customerFilter, setCustomerFilter] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null); // Track selected customer for exact matching
+  const [customers, setCustomers] = useState([]);
+  const [showCustomerSuggestions, setShowCustomerSuggestions] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [presetRange, setPresetRange] = useState("");
 
   // Invoice print state
   const [showInvoice, setShowInvoice] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Load customers list
+  const loadCustomers = async () => {
+    try {
+      const response = await fetchCustomers();
+      const allCustomers = Array.isArray(response?.data) ? response.data : [];
+      setCustomers(allCustomers);
+    } catch (error) {
+      console.error("Error loading customers:", error);
+    }
+  };
 
   // Load data with filters
   const loadDashboardData = async (filter = "last_30_days", startDate = null, endDate = null, paymentType = null) => {
@@ -44,7 +60,68 @@ const Dashboard = () => {
       console.log(filter, startDate, endDate, paymentType);
       const response = await fetchDashboardData(filter, startDate, endDate, paymentType);
       setData(response.data);
-      setFilteredOrders(response.data.recentOrders || []);
+      const orders = response.data.recentOrders || [];
+      // Apply customer filter if selected
+      let filtered = orders;
+      if (customerFilter) {
+        if (selectedCustomer) {
+          // Smart matching when customer is selected from autocomplete
+          filtered = orders.filter(order => {
+            const orderCustomerName = (order.customerName || "").toLowerCase().trim();
+            const orderPhoneNumber = (order.phoneNumber || "").toLowerCase().trim();
+            const customerName = (selectedCustomer.name || "").toLowerCase().trim();
+            const customerPhone = (selectedCustomer.phoneNumber || "").toLowerCase().trim();
+            
+            // Priority 1: Match by phone number (most reliable identifier)
+            if (customerPhone && orderPhoneNumber) {
+              // Remove any spaces, dashes, or special characters for comparison
+              const normalizedCustomerPhone = customerPhone.replace(/\D/g, '');
+              const normalizedOrderPhone = orderPhoneNumber.replace(/\D/g, '');
+              
+              // Match if phone numbers are the same (exact) or if one contains the other
+              if (normalizedCustomerPhone === normalizedOrderPhone || 
+                  normalizedCustomerPhone.includes(normalizedOrderPhone) ||
+                  normalizedOrderPhone.includes(normalizedCustomerPhone)) {
+                return true;
+              }
+            }
+            
+            // Priority 2: Match by name (flexible matching)
+            if (customerName && orderCustomerName) {
+              // Exact match
+              if (orderCustomerName === customerName) {
+                return true;
+              }
+              
+              // Check if order name contains customer name or vice versa
+              if (orderCustomerName.includes(customerName) || customerName.includes(orderCustomerName)) {
+                return true;
+              }
+              
+              // Check if they're similar (same base name, just different endings)
+              const customerBaseName = customerName.replace(/s$/, ''); // Remove trailing 's'
+              const orderBaseName = orderCustomerName.replace(/s$/, '');
+              if (customerBaseName === orderBaseName || orderBaseName === customerBaseName) {
+                return true;
+              }
+            }
+            
+            return false;
+          });
+        } else {
+          // Partial matching when typing manually
+          filtered = orders.filter(order => {
+            const orderCustomerName = (order.customerName || "").toLowerCase();
+            const orderPhoneNumber = (order.phoneNumber || "").toLowerCase();
+            const filterValue = customerFilter.toLowerCase();
+            
+            // Match by name or phone number (partial match for search)
+            return orderCustomerName.includes(filterValue) || 
+                   orderPhoneNumber.includes(filterValue);
+          });
+        }
+      }
+      setFilteredOrders(filtered);
       console.log(response.data);
     } catch (error) {
       console.error(error);
@@ -59,22 +136,88 @@ const Dashboard = () => {
     setPresetRange("last_30_days");
     // Don't show loading on initial load
     loadDashboardDataInitial();
+    // Load customers list lazily (after a short delay to not block initial render)
+    setTimeout(() => {
+      loadCustomers();
+    }, 500);
   }, []);
 
-  // Special handler for initial load (no loading spinner)
+  // Special handler for initial load - show UI immediately, load data in background
   const loadDashboardDataInitial = async () => {
+    // Show UI immediately without waiting for data
+    setInitialLoading(false);
+    
+    // Load data in background
     try {
-      setInitialLoading(true);
       const response = await fetchDashboardData("last_30_days", null, null, null);
       setData(response.data);
-      setFilteredOrders(response.data.recentOrders || []);
+      const orders = response.data.recentOrders || [];
+      // Apply customer filter if selected
+      let filtered = orders;
+      if (customerFilter) {
+        if (selectedCustomer) {
+          // Smart matching when customer is selected from autocomplete
+          filtered = orders.filter(order => {
+            const orderCustomerName = (order.customerName || "").toLowerCase().trim();
+            const orderPhoneNumber = (order.phoneNumber || "").toLowerCase().trim();
+            const customerName = (selectedCustomer.name || "").toLowerCase().trim();
+            const customerPhone = (selectedCustomer.phoneNumber || "").toLowerCase().trim();
+            
+            // Priority 1: Match by phone number (most reliable identifier)
+            if (customerPhone && orderPhoneNumber) {
+              // Remove any spaces, dashes, or special characters for comparison
+              const normalizedCustomerPhone = customerPhone.replace(/\D/g, '');
+              const normalizedOrderPhone = orderPhoneNumber.replace(/\D/g, '');
+              
+              // Match if phone numbers are the same (exact) or if one contains the other
+              if (normalizedCustomerPhone === normalizedOrderPhone || 
+                  normalizedCustomerPhone.includes(normalizedOrderPhone) ||
+                  normalizedOrderPhone.includes(normalizedCustomerPhone)) {
+                return true;
+              }
+            }
+            
+            // Priority 2: Match by name (flexible matching)
+            if (customerName && orderCustomerName) {
+              // Exact match
+              if (orderCustomerName === customerName) {
+                return true;
+              }
+              
+              // Check if order name contains customer name or vice versa
+              if (orderCustomerName.includes(customerName) || customerName.includes(orderCustomerName)) {
+                return true;
+              }
+              
+              // Check if they're similar (same base name, just different endings)
+              const customerBaseName = customerName.replace(/s$/, ''); // Remove trailing 's'
+              const orderBaseName = orderCustomerName.replace(/s$/, '');
+              if (customerBaseName === orderBaseName || orderBaseName === customerBaseName) {
+                return true;
+              }
+            }
+            
+            return false;
+          });
+        } else {
+          // Partial matching when typing manually
+          filtered = orders.filter(order => {
+            const orderCustomerName = (order.customerName || "").toLowerCase();
+            const orderPhoneNumber = (order.phoneNumber || "").toLowerCase();
+            const filterValue = customerFilter.toLowerCase();
+            
+            // Match by name or phone number (partial match for search)
+            return orderCustomerName.includes(filterValue) || 
+                   orderPhoneNumber.includes(filterValue);
+          });
+        }
+      }
+      setFilteredOrders(filtered);
 
       console.log("Initial data loaded:", response.data);
     } catch (error) {
       console.error(error);
       toast.error("Unable to view the data");
-    } finally {
-      setInitialLoading(false);
     }
   };
 
@@ -119,6 +262,8 @@ const Dashboard = () => {
     setDateFrom("");
     setDateTo("");
     setPaymentMode("");
+    setCustomerFilter("");
+    setSelectedCustomer(null);
     setDateFilter("last_30_days");
     setPresetRange("last_30_days");
     setCurrentPage(1);
@@ -139,6 +284,94 @@ const Dashboard = () => {
 
     loadDashboardData(dateFilter, dateFrom, dateTo, mode);
   };
+
+  const handleCustomerFilterChange = (e) => {
+    const value = e.target.value;
+    setCustomerFilter(value);
+    setSelectedCustomer(null); // Clear selected customer when typing manually
+    setShowCustomerSuggestions(value.length > 0);
+    setCurrentPage(1); // Reset to first page
+    
+    // Apply customer filter to existing orders
+    if (data && data.recentOrders) {
+      let filtered = data.recentOrders;
+      if (value) {
+        filtered = data.recentOrders.filter(order => {
+          const orderCustomerName = (order.customerName || "").toLowerCase();
+          const orderPhoneNumber = (order.phoneNumber || "").toLowerCase();
+          const filterValue = value.toLowerCase();
+          
+          // Match by name or phone number (partial match for search)
+          return orderCustomerName.includes(filterValue) || 
+                 orderPhoneNumber.includes(filterValue);
+        });
+      }
+      setFilteredOrders(filtered);
+    }
+  };
+
+  const handleCustomerSuggestionClick = (customer) => {
+    setCustomerFilter(customer.name);
+    setSelectedCustomer(customer); // Store selected customer for exact matching
+    setShowCustomerSuggestions(false);
+    setCurrentPage(1);
+    
+    // Apply customer filter to existing orders with smart matching
+    if (data && data.recentOrders) {
+      const filtered = data.recentOrders.filter(order => {
+        const orderCustomerName = (order.customerName || "").toLowerCase().trim();
+        const orderPhoneNumber = (order.phoneNumber || "").toLowerCase().trim();
+        const customerName = (customer.name || "").toLowerCase().trim();
+        const customerPhone = (customer.phoneNumber || "").toLowerCase().trim();
+        
+        // Priority 1: Match by phone number (most reliable identifier)
+        if (customerPhone && orderPhoneNumber) {
+          // Remove any spaces, dashes, or special characters for comparison
+          const normalizedCustomerPhone = customerPhone.replace(/\D/g, '');
+          const normalizedOrderPhone = orderPhoneNumber.replace(/\D/g, '');
+          
+          // Match if phone numbers are the same (exact) or if one contains the other (handles partial numbers)
+          if (normalizedCustomerPhone === normalizedOrderPhone || 
+              normalizedCustomerPhone.includes(normalizedOrderPhone) ||
+              normalizedOrderPhone.includes(normalizedCustomerPhone)) {
+            return true;
+          }
+        }
+        
+        // Priority 2: Match by name (flexible matching)
+        if (customerName && orderCustomerName) {
+          // Exact match
+          if (orderCustomerName === customerName) {
+            return true;
+          }
+          
+          // Check if order name contains customer name or vice versa (handles variations like "Vembarasan" vs "Vembarasans")
+          if (orderCustomerName.includes(customerName) || customerName.includes(orderCustomerName)) {
+            return true;
+          }
+          
+          // Check if they're similar (same base name, just different endings)
+          const customerBaseName = customerName.replace(/s$/, ''); // Remove trailing 's'
+          const orderBaseName = orderCustomerName.replace(/s$/, '');
+          if (customerBaseName === orderBaseName || orderBaseName === customerBaseName) {
+            return true;
+          }
+        }
+        
+        return false;
+      });
+      setFilteredOrders(filtered);
+    }
+  };
+
+  // Filter customer suggestions based on search input
+  const filteredCustomerSuggestions = customers.filter(customer => {
+    if (!customerFilter) return false;
+    const searchValue = customerFilter.toLowerCase();
+    const customerName = (customer.name || "").toLowerCase();
+    const customerPhone = (customer.phoneNumber || "").toLowerCase();
+    return customerName.includes(searchValue) || customerPhone.includes(searchValue);
+  });
 
   // Calculate payment breakdown
   const getPaymentBreakdown = () => {
@@ -797,12 +1030,46 @@ const Dashboard = () => {
     }
   };
 
-  if (initialLoading) {
+  // Show skeleton/loading state only briefly, then show UI with data loading in background
+  if (initialLoading && !data) {
     return <div className="loading">Loading dashboard...</div>;
   }
 
+  // Show UI even if data is not loaded yet (data will populate when ready)
   if (!data) {
-    return <div className="error">Failed to load the dashboard data...</div>;
+    // Return skeleton UI instead of error
+    return (
+      <div className="dashboard-wrapper">
+        <div className="dashboard-container">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="bi bi-currency-rupee"></i>
+              </div>
+              <div className="stat-content">
+                <h3>Today's Sales</h3>
+                <p>₹0.00</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="bi bi-cart-check"></i>
+              </div>
+              <div className="stat-content">
+                <h3>Today's Orders</h3>
+                <p>0</p>
+              </div>
+            </div>
+          </div>
+          <div className="recent-orders-card">
+            <div className="loading-spinner-container">
+              <div className="loading-spinner"></div>
+              <p>Loading data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Pagination logic
@@ -938,6 +1205,63 @@ const Dashboard = () => {
                 <option value="UPI">UPI</option>
                 <option value="CARD">Card</option>
               </select>
+
+              <div className="customer-search-container">
+                <input
+                  type="text"
+                  value={customerFilter}
+                  onChange={handleCustomerFilterChange}
+                  onFocus={() => customerFilter && setShowCustomerSuggestions(true)}
+                  onBlur={(e) => {
+                    // Don't close if clicking inside suggestions
+                    if (!e.relatedTarget || !e.relatedTarget.closest('.customer-suggestions')) {
+                      setTimeout(() => setShowCustomerSuggestions(false), 200);
+                    }
+                  }}
+                  placeholder="Search customer..."
+                  className="customer-search-input"
+                  autoComplete="off"
+                />
+                {customerFilter && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomerFilter("");
+                      setSelectedCustomer(null);
+                      setShowCustomerSuggestions(false);
+                      if (data && data.recentOrders) {
+                        setFilteredOrders(data.recentOrders);
+                      }
+                    }}
+                    className="customer-search-clear"
+                    title="Clear filter"
+                  >
+                    <i className="bi bi-x-circle"></i>
+                  </button>
+                )}
+                {showCustomerSuggestions && filteredCustomerSuggestions.length > 0 && (
+                  <div 
+                    className="customer-suggestions"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
+                    {filteredCustomerSuggestions.slice(0, 8).map((customer) => (
+                      <div
+                        key={customer.customerId || customer.id}
+                        className="suggestion-item"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleCustomerSuggestionClick(customer);
+                        }}
+                      >
+                        <div className="suggestion-name">{customer.name}</div>
+                        {customer.phoneNumber && (
+                          <div className="suggestion-phone">{customer.phoneNumber}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="custom-date-filters">
