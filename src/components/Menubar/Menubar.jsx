@@ -101,6 +101,15 @@ const Menubar = () => {
                   Manage Users
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  id={`${isActive ? "active" : ""}`}
+                  className={`nav-link ${isActive("/customers") ? "fw-bold " : ""}`}
+                  to="/customers"
+                >
+                  Manage Customers
+                </Link>
+              </li>
             </>
           )}
 
