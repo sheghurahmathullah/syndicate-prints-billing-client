@@ -48,7 +48,10 @@ const Login = () => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
         setAuthData(response.data.token, response.data.role);
+        // Navigate immediately without waiting
         navigate("/dashboard");
+        // Don't wait for loading to finish - let it happen in background
+        setLoading(false);
       }
     } catch (error) {
       console.error(error);

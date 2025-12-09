@@ -7,7 +7,8 @@ const CustomersList = ({ customers, setCustomers, onEdit }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const editCustomer = (id) => {
-    const customer = customers.find((c) => c.customerId === id);
+    // Support both customerId and id fields
+    const customer = customers.find((c) => (c.customerId === id) || (c.id === id));
     console.log("editing customer", customer);
     if (customer && typeof onEdit === "function") {
       onEdit(customer);
@@ -23,11 +24,18 @@ const CustomersList = ({ customers, setCustomers, onEdit }) => {
   const deleteByCustomerId = async (id) => {
     try {
       await deleteCustomer(id);
-      setCustomers((prevCustomers) => prevCustomers.filter((customer) => customer.customerId !== id));
-      toast.success("Customer deleted");
+      setCustomers((prevCustomers) => 
+        prevCustomers.filter((customer) => 
+          (customer.customerId !== id) && (customer.id !== id)
+        )
+      );
+      toast.success("Customer deleted successfully");
+      // Dispatch event to refresh customer suggestions in Explore page
+      window.dispatchEvent(new CustomEvent('customerDeleted', { detail: { id } }));
     } catch (e) {
       console.error(e);
-      toast.error("Unable to delete customer");
+      const errorMessage = e.response?.data?.message || e.message || "Unknown error";
+      toast.error(`Unable to delete customer: ${errorMessage}`);
     }
   };
 
@@ -51,33 +59,37 @@ const CustomersList = ({ customers, setCustomers, onEdit }) => {
       </div>
       <div className="row g-3">
         {filteredCustomers.length > 0 ? (
-          filteredCustomers.map((customer) => (
-            <div key={customer.customerId} className="col-12">
-              <div className="customer-card">
-                <div className="d-flex align-items-center">
-                  <div className="flex-grow-1">
-                    <h5>{customer.name}</h5>
-                    <p><i className="bi bi-telephone"></i> {customer.phoneNumber}</p>
-                    {customer.email && <p><i className="bi bi-envelope"></i> {customer.email}</p>}
-                  </div>
-                  <div className="action-buttons">
-                    <button
-                      className="btn btn-sm btn-edit"
-                      onClick={() => editCustomer(customer.customerId)}
-                    >
-                      <i className="bi bi-pencil-fill"></i>
-                    </button>
-                    <button
-                      className="btn btn-sm btn-delete"
-                      onClick={() => deleteByCustomerId(customer.customerId)}
-                    >
-                      <i className="bi bi-trash-fill"></i>
-                    </button>
+          filteredCustomers.map((customer) => {
+            // Support both customerId and id fields
+            const customerId = customer.customerId || customer.id;
+            return (
+              <div key={customerId} className="col-12">
+                <div className="customer-card">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-grow-1">
+                      <h5>{customer.name}</h5>
+                      <p><i className="bi bi-telephone"></i> {customer.phoneNumber}</p>
+                      {customer.email && <p><i className="bi bi-envelope"></i> {customer.email}</p>}
+                    </div>
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-sm btn-edit"
+                        onClick={() => editCustomer(customerId)}
+                      >
+                        <i className="bi bi-pencil-fill"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-delete"
+                        onClick={() => deleteByCustomerId(customerId)}
+                      >
+                        <i className="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="col-12">
             <div className="empty-state">

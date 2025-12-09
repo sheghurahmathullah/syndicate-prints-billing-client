@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import './CustomerForm.css';
 import { AppContext } from "../../context/AppContext.jsx";
 import { fetchDashboardData } from "../../Service/Dashboard.js";
-import { addCustomer, updateCustomer } from "../../Service/CustomerService.js";
+import { addCustomer, updateCustomer, fetchCustomers } from "../../Service/CustomerService.js";
 import toast from "react-hot-toast";
 
 // This component handles two use cases:
@@ -50,35 +50,77 @@ const CustomerForm = ({
         email: ""
     });
 
-    // Fetch orders to get customer data for auto-complete (Explore mode only)
+    // Function to load customer data for auto-complete
+    const loadCustomerData = async () => {
+        try {
+            const customerMap = new Map();
+            
+            // 1. Fetch customers from the customers API
+            try {
+                const customersResponse = await fetchCustomers();
+                const customers = Array.isArray(customersResponse?.data) ? customersResponse.data : [];
+                
+                customers.forEach(customer => {
+                    if (customer.name && customer.phoneNumber) {
+                        const key = `${customer.name.toLowerCase()}_${customer.phoneNumber}`;
+                        if (!customerMap.has(key)) {
+                            customerMap.set(key, {
+                                name: customer.name,
+                                phoneNumber: customer.phoneNumber
+                            });
+                        }
+                    }
+                });
+            } catch (customerError) {
+                console.error("Error loading customers from API:", customerError);
+                // Continue to load from orders even if API fails
+            }
+            
+            // 2. Also fetch from recent orders to include customers who haven't been added to the customers table
+            try {
+                const response = await fetchDashboardData("last_30_days", null, null, null);
+                const orders = response.data?.recentOrders || [];
+                
+                orders.forEach(order => {
+                    if (order.customerName && order.phoneNumber) {
+                        const key = `${order.customerName.toLowerCase()}_${order.phoneNumber}`;
+                        if (!customerMap.has(key)) {
+                            customerMap.set(key, {
+                                name: order.customerName,
+                                phoneNumber: order.phoneNumber
+                            });
+                        }
+                    }
+                });
+            } catch (orderError) {
+                console.error("Error loading customer data from orders:", orderError);
+            }
+            
+            setCustomerSuggestions(Array.from(customerMap.values()));
+        } catch (error) {
+            console.error("Error loading customer data:", error);
+        }
+    };
+
+    // Fetch customers from API and orders for auto-complete (Explore mode only)
     useEffect(() => {
         if (!isManageMode) {
-            const loadCustomerData = async () => {
-                try {
-                    const response = await fetchDashboardData("last_30_days", null, null, null);
-                    const orders = response.data?.recentOrders || [];
-                    
-                    // Create unique customer list from orders
-                    const customerMap = new Map();
-                    orders.forEach(order => {
-                        if (order.customerName && order.phoneNumber) {
-                            const key = `${order.customerName.toLowerCase()}_${order.phoneNumber}`;
-                            if (!customerMap.has(key)) {
-                                customerMap.set(key, {
-                                    name: order.customerName,
-                                    phoneNumber: order.phoneNumber
-                                });
-                            }
-                        }
-                    });
-                    
-                    setCustomerSuggestions(Array.from(customerMap.values()));
-                } catch (error) {
-                    console.error("Error loading customer data:", error);
-                }
+            loadCustomerData();
+            
+            // Listen for customer updates to refresh suggestions
+            const handleCustomerUpdate = () => {
+                loadCustomerData();
             };
             
-            loadCustomerData();
+            window.addEventListener('customerAdded', handleCustomerUpdate);
+            window.addEventListener('customerUpdated', handleCustomerUpdate);
+            window.addEventListener('customerDeleted', handleCustomerUpdate);
+            
+            return () => {
+                window.removeEventListener('customerAdded', handleCustomerUpdate);
+                window.removeEventListener('customerUpdated', handleCustomerUpdate);
+                window.removeEventListener('customerDeleted', handleCustomerUpdate);
+            };
         }
     }, [isManageMode]);
 
@@ -122,12 +164,14 @@ const CustomerForm = ({
     // when selectedCustomer changes, populate or clear the form (ManageCustomers mode)
     useEffect(() => {
         if (isManageMode) {
-            if (selectedCustomer && selectedCustomer.customerId) {
+            if (selectedCustomer && (selectedCustomer.customerId || selectedCustomer.id)) {
+                // Support both customerId (from backend) and id (fallback)
+                const customerId = selectedCustomer.customerId || selectedCustomer.id;
                 setData({
                     name: selectedCustomer.name || '',
                     phoneNumber: selectedCustomer.phoneNumber || '',
                     email: selectedCustomer.email || '',
-                    customerId: selectedCustomer.customerId
+                    customerId: customerId
                 });
             } else if (!selectedCustomer) {
                 setData({ name: '', phoneNumber: '', email: '' });
@@ -141,22 +185,36 @@ const CustomerForm = ({
         try {
             if (data.customerId) { // update existing customer
                 const response = await updateCustomer(data.customerId, data);
-                const updatedCustomer = (response && response.data && response.data.customerId) ? response.data : { ...data };
+                const updatedCustomer = (response && response.data && response.data.customerId) ? response.data : { ...data, customerId: data.customerId };
                 onUpdateCustomer && onUpdateCustomer(updatedCustomer);
-                toast.success("Customer updated");
+                toast.success("Customer updated successfully");
+                // Dispatch event to refresh customer suggestions in Explore page
+                window.dispatchEvent(new CustomEvent('customerUpdated', { detail: updatedCustomer }));
+                // Clear form after update
+                setData({
+                    name: "",
+                    phoneNumber: "",
+                    email: ""
+                });
             } else { // create new customer
                 const response = await addCustomer(data);
-                setCustomers((prevCustomers) => [...prevCustomers, response.data]);
-                toast.success("Customer Added");
+                if (response && response.data) {
+                    setCustomers((prevCustomers) => [...prevCustomers, response.data]);
+                    toast.success("Customer added successfully");
+                    // Dispatch event to refresh customer suggestions in Explore page
+                    window.dispatchEvent(new CustomEvent('customerAdded', { detail: response.data }));
+                }
+                // Clear form after create
+                setData({
+                    name: "",
+                    phoneNumber: "",
+                    email: ""
+                });
             }
-            setData({
-                name: "",
-                phoneNumber: "",
-                email: ""
-            })
         } catch (e) {
             console.error(e);
-            toast.error("Error adding customer");
+            const errorMessage = e.response?.data?.message || e.message || "An error occurred";
+            toast.error(data.customerId ? `Error updating customer: ${errorMessage}` : `Error adding customer: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
