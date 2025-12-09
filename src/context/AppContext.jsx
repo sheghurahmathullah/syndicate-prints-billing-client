@@ -75,8 +75,10 @@ export const AppContextProvider = (props) => {
   }, []);
 
   // fetch protected data only when authenticated
+  // This runs in the background and doesn't block navigation
   useEffect(() => {
     let cancelled = false;
+    
     async function loadProtectedData() {
       if (!auth || !auth.token) {
         // clear sensitive data when not authenticated
@@ -86,36 +88,42 @@ export const AppContextProvider = (props) => {
         return;
       }
 
-      try {
-        // Fetch categories and items for all authenticated users
-        const [response, itemResponse] = await Promise.all([
-          fetchCategories(),
-          fetchItems(),
-        ]);
+      // Load categories and items in parallel (non-blocking)
+      Promise.all([
+        fetchCategories().catch(err => {
+          console.error("Failed to load categories", err);
+          return { data: [] };
+        }),
+        fetchItems().catch(err => {
+          console.error("Failed to load items", err);
+          return { data: [] };
+        }),
+      ]).then(([categoryResponse, itemResponse]) => {
         if (cancelled) return;
-        setCategories(response.data || []);
+        setCategories(categoryResponse.data || []);
         setItemsData(itemResponse.data || []);
+      });
 
-        // Only fetch users if admin role
-        // if (auth.role === "ROLE_ADMIN") { }
-
-          try {
-            const userResponse = await fetchUsers();
+      // Only fetch users if admin role (non-blocking)
+      if (auth.role === "ROLE_ADMIN") {
+        fetchUsers()
+          .then((userResponse) => {
             if (!cancelled) {
               setUsers(userResponse.data || []);
-              console.log("users loaded:", userResponse.data );
+              console.log("users loaded:", userResponse.data);
             }
-          } catch (userErr) {
+          })
+          .catch((userErr) => {
             console.error("Failed to load users", userErr);
             // Don't block other data if users fail
-          }
-        
-      } catch (err) {
-        console.error("Failed to load protected data", err);
-        // keep previous data or clear depending on policy
+          });
+      } else {
+        // Clear users for non-admin users
+        setUsers([]);
       }
     }
 
+    // Load data asynchronously without blocking
     loadProtectedData();
 
     return () => {

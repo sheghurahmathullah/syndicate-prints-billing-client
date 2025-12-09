@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import ManageCategory from "./pages/ManageCategory/ManageCategory.jsx";
 import ManageUsers from "./pages/ManageUsers/ManageUsers.jsx";
 import ManageItems from "./pages/ManageItems/ManageItems.jsx";
+import ManageCustomers from "./pages/ManageCustomers/ManageCustomers.jsx";
 import Explore from "./pages/Explore/Explore.jsx";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
@@ -67,6 +68,15 @@ const App = () => {
           element={
             <ProtectedRoute
               element={<ManageUsers />}
+              allowedRoles={["ROLE_ADMIN"]}
+            />
+          }
+        />
+        <Route
+          path="/customers"
+          element={
+            <ProtectedRoute
+              element={<ManageCustomers />}
               allowedRoles={["ROLE_ADMIN"]}
             />
           }

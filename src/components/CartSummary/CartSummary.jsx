@@ -33,6 +33,11 @@ const CartSummary = ({
       return false;
     }
 
+    if(username.trim().length === 0) {
+      toast.error("Username cannot be empty! Please select user.");
+      return false;
+    }
+
     if (cartItems.length === 0) {
       toast.error("Your cart is empty");
       return false;
@@ -99,7 +104,7 @@ const CartSummary = ({
   const clearAll = () => {
     setCustomerName("");
     setMobileNumber("");
-    setUsername("");
+    setUsername(null);
     setSelectedPayment(null);
     clearCart();
   };
@@ -118,7 +123,7 @@ const CartSummary = ({
       return;
     }
 
-    if (selectedPayment === "cash" || selectedPayment === "card") {
+    if (selectedPayment === "cash" || selectedPayment === "card" || selectedPayment === "credit") {
       setConfirmPaymentType(selectedPayment);
       setShowConfirm(true);
     } else if (selectedPayment === "upi") {
@@ -190,14 +195,14 @@ const CartSummary = ({
     console.log(username);
 
     // small delay to ensure popup is visible
-    await new Promise((r) => setTimeout(r, 1300));
-    try {
-      // window.print();
-      await new Promise((r) => setTimeout(r, 600));
-      // window.print();
-    } catch (e) {
-      console.error("Print failed", e);
-    }
+    // await new Promise((r) => setTimeout(r, 1300));
+    // try {
+    //   // window.print();
+    //   await new Promise((r) => setTimeout(r, 600));
+    //   // window.print();
+    // } catch (e) {
+    //   console.error("Print failed", e);
+    // }
 
     clearAll();
   };
@@ -237,13 +242,16 @@ const CartSummary = ({
         toast.success("Cash received");
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "card") {
-        console.log("upi")
+        console.log("Card")
         toast.success("Card payment received");
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "upi") {
-        console.log("card")
-
+        console.log("UPI")
         toast.success("UPI payment Successfully done");
+        await printAndClear(savedData);
+      } else if (response.status === 201 && paymentMode === "credit") {
+        console.log("Credit")
+        toast.success("Credit order created");
         await printAndClear(savedData);
 
         // const razorpayLoaded = await loadRazorpayScript();
@@ -389,53 +397,48 @@ const CartSummary = ({
         </div>
       </div>
 
-      <div className="payment-options-grid">
-        <button
-          type="button"
-          className={`payment-option ${
-            selectedPayment === "cash" ? "active" : ""
-          }`}
-          onClick={() => setSelectedPayment("cash")}
-          disabled={isProcessing}
-        >
-          <span className="payment-option-title">
-            <i className="bi bi-cash-stack"></i> Cash
-          </span>
-          <span className="payment-option-subtitle">
-            Collect cash at counter
-          </span>
-        </button>
-        <button
-          type="button"
-          className={`payment-option ${
-            selectedPayment === "card" ? "active" : ""
-          }`}
-          onClick={() => setSelectedPayment("card")}
-          disabled={isProcessing}
-        >
-          <span className="payment-option-title">
-            <i className="bi bi-credit-card"></i> Card
-          </span>
-          <span className="payment-option-subtitle">
-            Process card payment
-          </span>
-        </button>
+      {/* Payment Options - Simple Design */}
+      <div className="simple-payment-container">
+        <div className="payment-dropdown-wrapper">
+          <label className="payment-label">Payment:</label>
+          <div className="dropdown-wrapper">
+            <select
+              className="form-select payment-dropdown"
+              value={selectedPayment === "credit" ? "" : selectedPayment || ""}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedPayment(e.target.value);
+                }
+              }}
+              disabled={isProcessing || selectedPayment === "credit"}
+            >
+              <option value="">Select Payment Method</option>
+              <option value="cash">Cash</option>
+              <option value="upi">UPI</option>
+              <option value="card">Card</option>
+            </select>
+            <i className="bi bi-chevron-down dropdown-arrow"></i>
+          </div>
+        </div>
 
-        <button
-          type="button"
-          className={`payment-option ${
-            selectedPayment === "upi" ? "active" : ""
-          }`}
-          onClick={() => setSelectedPayment("upi")}
-          disabled={isProcessing}
-        >
-          <span className="payment-option-title">
-            <i className="bi bi-upc-scan"></i> UPI
-          </span>
-          <span className="payment-option-subtitle">
-            Show UPI options & QR
-          </span>
-        </button>
+        <div className="credit-option-wrapper">
+          <label className="credit-checkbox-label">
+            <input
+              type="checkbox"
+              className="credit-checkbox"
+              checked={selectedPayment === "credit"}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedPayment("credit");
+                } else {
+                  setSelectedPayment(null);
+                }
+              }}
+              disabled={isProcessing}
+            />
+            <span className="credit-label-text">Credit</span>
+          </label>
+        </div>
       </div>
 
       <div className="d-flex gap-3 mt-3 py-1">
@@ -454,13 +457,15 @@ const CartSummary = ({
           <div className="confirm-overlay" role="dialog" aria-modal="true">
             <div className="confirm-box">
               <h4 style={{ margin: 0, fontSize: 18 }}>
-                Confirm {confirmPaymentType === "cash" ? "cash" : confirmPaymentType === "card" ? "card" : "UPI"} payment?
+                Confirm {confirmPaymentType === "cash" ? "cash" : confirmPaymentType === "card" ? "card" : confirmPaymentType === "credit" ? "credit" : "UPI"} payment?
               </h4>
               <p style={{ margin: 0, color: "#555" }}>
                 {confirmPaymentType === "cash" 
                   ? "Please verify before collecting cash. Continue?"
                   : confirmPaymentType === "card"
                   ? "Please verify before processing card payment. Continue?"
+                  : confirmPaymentType === "credit"
+                  ? "This order will be billed to customer account. Continue?"
                   : "Please verify payment received via QR code. Continue?"}
               </p>
               <div

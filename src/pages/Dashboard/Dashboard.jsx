@@ -65,6 +65,8 @@ const Dashboard = () => {
   const loadDashboardDataInitial = async () => {
     try {
       setInitialLoading(true);
+      setPresetRange("last_30_days");
+      setDateFilter("last_30_days");
       const response = await fetchDashboardData("last_30_days", null, null, null);
       setData(response.data);
       setFilteredOrders(response.data.recentOrders || []);

@@ -177,7 +177,7 @@ const Analytics = () => {
       <div className="analytics-header">
         <div className="header-content">
           <h1>
-            <i className="bi bi-graph-up-arrow"></i>
+            {/* <i className="bi bi-graph-up-arrow"></i> */}
             Analytics Dashboard
           </h1>
           <p className="header-subtitle">
