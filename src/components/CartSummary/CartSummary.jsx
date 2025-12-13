@@ -183,10 +183,12 @@ const CartSummary = ({
 
   const printAndClear = async (savedOrder) => {
     // Dispatch event to show receipt at Explore page level
+    // Use nullish coalescing to allow 0 as a valid value (not default to 1)
+    const taxPercentValue = taxPercent !== null && taxPercent !== undefined ? Number(taxPercent) : 0;
     const event = new CustomEvent("showReceipt", {
       detail: {
         ...savedOrder,
-        taxPercent: Number(taxPercent) || 1,
+        taxPercent: taxPercentValue,
       },
     });
     window.dispatchEvent(event);

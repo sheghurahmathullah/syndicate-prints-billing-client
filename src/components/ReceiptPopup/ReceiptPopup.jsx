@@ -11,6 +11,28 @@ const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
         return date.toLocaleString('en-IN');
     };
 
+    // Calculate tax percentage
+    const calculateTaxPercent = () => {
+        // If taxPercent is explicitly provided (including 0), use it
+        if (orderDetails.taxPercent !== undefined && orderDetails.taxPercent !== null) {
+            const percent = Number(orderDetails.taxPercent);
+            // Return 0 if it's NaN or negative, otherwise return the value
+            return isNaN(percent) || percent < 0 ? 0 : percent;
+        }
+        // Otherwise calculate from tax and subtotal
+        if (orderDetails.subtotal && orderDetails.subtotal > 0 && orderDetails.tax !== undefined && orderDetails.tax !== null) {
+            const calculatedPercent = (orderDetails.tax / orderDetails.subtotal) * 100;
+            return isNaN(calculatedPercent) || calculatedPercent < 0 ? 0 : calculatedPercent;
+        }
+        // Default to 0 if no tax information
+        return 0;
+    };
+
+    const taxPercent = calculateTaxPercent();
+    // Show GST only if tax is 1% or more (hide if 0%)
+    const showGST = taxPercent >= 1;
+    const invoiceTitle = showGST ? "TAX INVOICE" : "INVOICE";
+
     return (
         <div className="receipt-popup-overlay text-dark">
             <div className="receipt-popup">
@@ -29,7 +51,7 @@ const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
 
                 {/* Receipt Title */}
                 <div className="receipt-title-section">
-                    <h2 className="receipt-title">TAX INVOICE</h2>
+                    <h2 className="receipt-title">{invoiceTitle}</h2>
                 </div>
 
                 {/* Order Info */}
@@ -82,10 +104,12 @@ const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
                         <span>Subtotal:</span>
                         <span>₹{orderDetails.subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="receipt-summary-row">
-                        <span>Tax ({(orderDetails.taxPercent ?? (orderDetails.subtotal ? ((orderDetails.tax / orderDetails.subtotal) * 100) : 1)).toString()}%):</span>
-                        <span>₹{orderDetails.tax.toFixed(2)}</span>
-                    </div>
+                    {showGST && (
+                        <div className="receipt-summary-row">
+                            <span>GST ({taxPercent.toFixed(2)}%):</span>
+                            <span>₹{orderDetails.tax.toFixed(2)}</span>
+                        </div>
+                    )}
                     <div className="receipt-summary-row receipt-total-row">
                         <span>Total Amount:</span>
                         <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
