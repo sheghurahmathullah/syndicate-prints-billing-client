@@ -13,6 +13,7 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [customerGstin, setCustomerGstin] = useState("");
   const [taxPercent, setTaxPercent] = useState(1);
   const [username, setUsername] = useState("");
 
@@ -89,10 +90,12 @@ const Explore = () => {
           <CustomerForm
             customerName={customerName}
             mobileNumber={mobileNumber}
+            customerGstin={customerGstin}
             username={username}
             setUsername={setUsername}
             setMobileNumber={setMobileNumber}
             setCustomerName={setCustomerName}
+            setCustomerGstin={setCustomerGstin}
             taxPercent={taxPercent}
             setTaxPercent={setTaxPercent}
           />
@@ -105,6 +108,7 @@ const Explore = () => {
           <CartSummary
             customerName={customerName}
             mobileNumber={mobileNumber}
+            customerGstin={customerGstin}
             username={username}
             setUsername={setUsername}
             setMobileNumber={setMobileNumber}

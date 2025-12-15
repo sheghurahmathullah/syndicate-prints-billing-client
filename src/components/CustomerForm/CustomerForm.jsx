@@ -12,10 +12,12 @@ const CustomerForm = ({
     // Explore page props
     customerName, 
     mobileNumber, 
+    customerGstin,
     username, 
     setUsername, 
     setMobileNumber, 
-    setCustomerName, 
+    setCustomerName,
+    setCustomerGstin,
     taxPercent, 
     setTaxPercent,
     // ManageCustomers page props
@@ -370,6 +372,27 @@ const CustomerForm = ({
                         pattern="\d{10}"
                         maxLength={10}
                         title="Please enter a valid 10-digit phone number"
+                    />
+                </div>
+            </div>
+            <div className="mb-2">
+                <div className="d-flex align-items-center gap-2">
+                    <label htmlFor="customerGstin" className="text-dark col-4">GSTIN: </label>
+                    <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="customerGstin"
+                        onChange={(e) => {
+                            const value = e.target.value.toUpperCase();
+                            // GSTIN format: 15 alphanumeric characters
+                            if (/^[A-Z0-9]{0,15}$/.test(value)) {
+                                setCustomerGstin(value);
+                            }
+                        }}
+                        value={customerGstin}
+                        maxLength={15}
+                        placeholder="Optional"
+                        title="15-character GSTIN number (optional)"
                     />
                 </div>
             </div>

@@ -63,6 +63,9 @@ const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
                     <div>
                         <p><strong>Customer Name:</strong> {orderDetails.customerName}</p>
                         <p><strong>Phone:</strong> {orderDetails.phoneNumber}</p>
+                        {orderDetails.gstin && (
+                            <p><strong>GSTIN:</strong> {orderDetails.gstin}</p>
+                        )}
                     </div>
                 </div>
 

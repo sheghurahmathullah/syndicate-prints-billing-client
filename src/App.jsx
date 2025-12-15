@@ -11,6 +11,7 @@ import Login from "./pages/Login/Login.jsx";
 import OrderHistory from "./pages/OrderHistory/OrderHistory.jsx";
 import Analytics from "./pages/Analytics/Analytics.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
+import CreditManagement from "./pages/CreditManagement/CreditManagement.jsx";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext.jsx";
 import NotFound from "./pages/NotFound/NotFound.jsx";
@@ -51,6 +52,16 @@ const App = () => {
         <Route path="/explore" element={<Explore />} />
         
         <Route path="/orders" element={<OrderHistory />} />
+
+        <Route
+          path="/credits"
+          element={
+            <ProtectedRoute
+              element={<CreditManagement />}
+              allowedRoles={["ROLE_ADMIN"]}
+            />
+          }
+        />
 
 
         {/*Admin only routes*/}

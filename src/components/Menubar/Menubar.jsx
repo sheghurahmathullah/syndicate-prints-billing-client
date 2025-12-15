@@ -122,6 +122,17 @@ const Menubar = () => {
               Order History
             </Link>
           </li>
+          {isAdmin && (
+            <li className="nav-item">
+              <Link
+                id={`${isActive ? "active" : ""}`}
+                className={`nav-link ${isActive("/credits") ? "fw-bold " : ""}`}
+                to="/credits"
+              >
+                Credit Management
+              </Link>
+            </li>
+          )}
         </ul>
         {/*Add the dropdown for userprofile*/}
         <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">

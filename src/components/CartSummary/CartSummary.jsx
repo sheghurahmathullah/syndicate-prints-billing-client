@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 const CartSummary = ({
   customerName,
   mobileNumber,
+  customerGstin,
   username,
   setUsername,
   setMobileNumber,
@@ -26,6 +27,8 @@ const CartSummary = ({
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmPaymentType, setConfirmPaymentType] = useState(null);
+  const [enableCredit, setEnableCredit] = useState(false);
+  const [paidAmount, setPaidAmount] = useState("");
 
   const validateCustomerAndCart = () => {
     if (!customerName || !mobileNumber) {
@@ -106,6 +109,8 @@ const CartSummary = ({
     setMobileNumber("");
     setUsername(null);
     setSelectedPayment(null);
+    setEnableCredit(false);
+    setPaidAmount("");
     clearCart();
   };
 
@@ -121,6 +126,19 @@ const CartSummary = ({
 
     if (!validateCustomerAndCart()) {
       return;
+    }
+
+    // If credit is enabled with payment, validate paid amount
+    if (enableCredit && selectedPayment !== "credit") {
+      const paid = parseFloat(paidAmount);
+      if (!paidAmount || isNaN(paid) || paid < 0) {
+        toast.error("Please enter a valid paid amount");
+        return;
+      }
+      if (paid > displayGrandTotal) {
+        toast.error("Paid amount cannot exceed total amount");
+        return;
+      }
     }
 
     if (selectedPayment === "cash" || selectedPayment === "card" || selectedPayment === "credit") {
@@ -224,12 +242,23 @@ const CartSummary = ({
       customerName,
       username,
       phoneNumber: mobileNumber,
+      gstin: customerGstin || null,
       cartItems,
       subtotal: totalAmount,
       tax: displayTax,
       grandTotal: displayGrandTotal,
       paymentMethod: paymentMode.toUpperCase(),
     };
+
+    // Add credit information if credit is enabled
+    if (enableCredit && paymentMode !== "credit") {
+      const paid = parseFloat(paidAmount) || 0;
+      orderData.creditType = "CREDIT";
+      orderData.paidAmount = paid;
+    } else if (paymentMode === "credit") {
+      orderData.creditType = "CREDIT";
+      orderData.paidAmount = 0;
+    }
 
     setIsProcessing(true);
     try {
@@ -241,15 +270,27 @@ const CartSummary = ({
 
       if (response.status === 201 && paymentMode === "cash") {
         console.log("Cash")
-        toast.success("Cash received");
+        if (enableCredit) {
+          toast.success("Order created with credit payment");
+        } else {
+          toast.success("Cash received");
+        }
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "card") {
         console.log("Card")
-        toast.success("Card payment received");
+        if (enableCredit) {
+          toast.success("Order created with credit payment");
+        } else {
+          toast.success("Card payment received");
+        }
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "upi") {
         console.log("UPI")
-        toast.success("UPI payment Successfully done");
+        if (enableCredit) {
+          toast.success("Order created with credit payment");
+        } else {
+          toast.success("UPI payment Successfully done");
+        }
         await printAndClear(savedData);
       } else if (response.status === 201 && paymentMode === "credit") {
         console.log("Credit")
@@ -428,20 +469,62 @@ const CartSummary = ({
             <input
               type="checkbox"
               className="credit-checkbox"
-              checked={selectedPayment === "credit"}
+              checked={enableCredit}
               onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedPayment("credit");
-                } else {
-                  setSelectedPayment(null);
+                setEnableCredit(e.target.checked);
+                if (!e.target.checked) {
+                  setPaidAmount("");
                 }
               }}
-              disabled={isProcessing}
+              disabled={isProcessing || !selectedPayment || selectedPayment === "credit"}
             />
-            <span className="credit-label-text">Credit</span>
+            <span className="credit-label-text">Enable Credit</span>
           </label>
         </div>
       </div>
+
+      {/* Credit Payment Details Box */}
+      {enableCredit && selectedPayment && selectedPayment !== "credit" && (
+        <div className="credit-payment-box">
+          <div className="credit-box-header">
+            <span className="credit-box-title">
+              <i className="bi bi-credit-card"></i> Credit Payment Details
+            </span>
+          </div>
+          <div className="credit-box-content">
+            <div className="credit-amount-row">
+              <label>Total Amount:</label>
+              <span className="credit-amount-value">₹{displayGrandTotal.toFixed(2)}</span>
+            </div>
+            <div className="credit-input-row">
+              <label htmlFor="paidAmount">Paid Amount:</label>
+              <input
+                id="paidAmount"
+                type="number"
+                className="form-control credit-amount-input"
+                value={paidAmount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)) {
+                    setPaidAmount(value);
+                  }
+                }}
+                placeholder="0.00"
+                min="0"
+                max={displayGrandTotal}
+                step="0.01"
+                disabled={isProcessing}
+              />
+            </div>
+            <div className="credit-amount-row">
+              <label>Balance Amount:</label>
+              <span className="credit-balance-value">
+                ₹{Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="d-flex gap-3 mt-3 py-1">
         <button
@@ -463,12 +546,18 @@ const CartSummary = ({
               </h4>
               <p style={{ margin: 0, color: "#555" }}>
                 {confirmPaymentType === "cash" 
-                  ? "Please verify before collecting cash. Continue?"
+                  ? enableCredit 
+                    ? `Create credit order with cash payment of ₹${(parseFloat(paidAmount) || 0).toFixed(2)}. Balance: ₹${Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}. Continue?`
+                    : "Please verify before collecting cash. Continue?"
                   : confirmPaymentType === "card"
-                  ? "Please verify before processing card payment. Continue?"
+                  ? enableCredit
+                    ? `Create credit order with card payment of ₹${(parseFloat(paidAmount) || 0).toFixed(2)}. Balance: ₹${Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}. Continue?`
+                    : "Please verify before processing card payment. Continue?"
                   : confirmPaymentType === "credit"
                   ? "This order will be billed to customer account. Continue?"
-                  : "Please verify payment received via QR code. Continue?"}
+                  : enableCredit
+                    ? `Create credit order with UPI payment of ₹${(parseFloat(paidAmount) || 0).toFixed(2)}. Balance: ₹${Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}. Continue?`
+                    : "Please verify payment received via QR code. Continue?"}
               </p>
               <div
                 className="d-flex gap-2 justify-content-center"
