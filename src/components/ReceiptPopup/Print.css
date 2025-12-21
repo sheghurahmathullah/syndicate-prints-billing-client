@@ -11,145 +11,145 @@
         width: 80mm;
         max-width: 100%;
         box-shadow: none;
-        border: none;
+        border: 1px solid #000;
         padding: 8px;
         margin: 0;
-    }
-
-    .receipt-actions {
-        display: none !important;
     }
 
     .d-flex.justify-content-center {
         display: none !important;
     }
 
-    /* Compact Company Header */
+    /* Company Header */
     .receipt-company-header {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+    }
+
+    .company-logo-name {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 10px;
+        margin-bottom: 8px;
     }
 
     .company-logo {
-        width: 50px;
-        max-height: 40px;
-    }
-
-    .company-info {
-        flex: 1;
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
     }
 
     .company-name {
-        font-size: 0.9rem;
-        margin-bottom: 2px;
-        line-height: 1.2;
-    }
-
-    .company-address {
-        font-size: 0.65rem;
-        margin-bottom: 2px;
-        line-height: 1.2;
-    }
-
-    .company-contact {
-        font-size: 0.65rem;
-        margin-bottom: 0;
-        line-height: 1.2;
-    }
-
-    /* Compact Dividers */
-    .receipt-divider {
-        height: 1px;
-        margin: 5px 0;
-    }
-
-    /* Compact Title */
-    .receipt-title-section {
-        margin: 5px 0;
-    }
-
-    .receipt-title {
-        font-size: 0.85rem;
-        letter-spacing: 1px;
+        font-size: 1.2rem;
         margin: 0;
     }
 
-    /* Compact Info Grid */
-    .receipt-info-grid {
-        grid-template-columns: 1fr;
-        gap: 3px;
-        margin: 5px 0;
-    }
-
-    .receipt-info-grid p {
-        margin: 2px 0;
-        font-size: 0.7rem;
+    .company-address {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
         line-height: 1.3;
     }
 
-    /* Compact Table */
+    .company-contact {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+
+    .company-gstin {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+
+    .customer-gstin {
+        font-size: 0.75rem;
+        margin-bottom: 0;
+    }
+
+    /* Divider */
+    .receipt-divider {
+        height: 1px;
+        background-color: #000 !important;
+        margin: 8px 0;
+        width: 100%;
+    }
+
+    /* Transaction Details */
+    .receipt-transaction-details {
+        margin: 10px 0;
+        padding-bottom: 0;
+    }
+
+    .transaction-row-two-columns {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 4px 0;
+        font-size: 0.8rem;
+    }
+
+    .transaction-left {
+        flex: 1;
+        text-align: left;
+    }
+
+    .transaction-right {
+        flex: 1;
+        text-align: right;
+    }
+
+    /* Table */
     .receipt-table-container {
-        margin: 5px 0;
+        margin: 10px 0;
     }
 
     .receipt-table {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
     }
 
     .receipt-table th {
-        padding: 3px 2px;
+        padding: 5px 4px;
         font-size: 0.7rem;
         font-weight: 600;
     }
 
     .receipt-table td {
-        padding: 3px 2px;
+        padding: 4px;
         font-size: 0.7rem;
     }
 
-    /* Compact Summary */
+    /* Summary */
     .receipt-summary {
-        margin: 5px 0;
+        margin: 10px 0;
+        padding: 10px 0;
     }
 
     .receipt-summary-row {
-        padding: 3px 0;
-        font-size: 0.75rem;
+        padding: 4px 0;
+        font-size: 0.8rem;
         line-height: 1.3;
     }
 
-    .receipt-total-row {
-        border-top: 1px solid #2c3e50;
-        border-bottom: 1px solid #2c3e50;
-        padding: 5px 0;
-        margin-top: 3px;
-        font-size: 0.85rem;
+    .receipt-total-amount-row {
+        font-size: 1rem;
+        font-weight: 700;
     }
 
-    /* Compact Payment Info */
-    .receipt-payment-info {
-        padding: 5px 8px;
-        margin: 5px 0;
+    .receipt-divider {
+        height: 1px;
+        background-color: #000 !important;
+        margin: 6px 0;
+        width: 100%;
     }
 
-    .receipt-payment-info p {
-        margin: 2px 0;
-        font-size: 0.7rem;
-        line-height: 1.3;
-    }
-
-    /* Compact Footer */
+    /* Footer */
     .receipt-footer {
-        margin: 8px 0 5px;
+        margin: 15px 0 10px;
+        padding-top: 10px;
     }
 
-    .thank-you {
-        font-size: 0.75rem;
-        margin-bottom: 3px;
-    }
-
-    .footer-note {
-        font-size: 0.65rem;
+    .footer-message {
+        font-size: 0.85rem;
     }
 
     @page {
@@ -160,5 +160,20 @@
     body {
         margin: 0;
         padding: 0;
+    }
+
+    /* Ensure black and white only */
+    * {
+        color: #000 !important;
+        background-color: white !important;
+    }
+
+    .receipt-table thead {
+        background-color: #000 !important;
+        color: white !important;
+    }
+
+    .receipt-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
     }
 }

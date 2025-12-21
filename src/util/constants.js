@@ -1,6 +1,8 @@
 export const AppConstants = {
-    RAZORPAY_KEY_ID: "your_key_id",
-    SHOP_NAME: "Syndicate Printers",
-    SHOP_ADDRESS: "123 Business Street, City - 123456",
-    SHOP_CONTACT: "Phone: +91 9876543210 | Email: info@shop.com"
-}
+  RAZORPAY_KEY_ID: "your_key_id",
+  SHOP_NAME: "SYNDICATE PRINTERS",
+  SHOP_ADDRESS_LINE1: "BHARATHY SALAI, OPP JAMBAZAR POLICE STATION,",
+  SHOP_ADDRESS_LINE2: "ROYAPETTAH, CHENNAI - 14",
+  SHOP_CONTACT: "PH: +91 9840031990 | EMAIL: printsyndicate2023@gmail.com",
+  SHOP_GSTIN: "33ALSPS7215E1ZW",
+};

@@ -1,157 +1,218 @@
-import './ReceiptPopup.css';
-import './Print.css';
-import {assets} from "../../assets/assets.js";
-import {AppConstants} from "../../util/constants.js";
+import "./ReceiptPopup.css";
+import "./Print.css";
+import { AppConstants } from "../../util/constants.js";
+import { assets } from "../../assets/assets.js";
 
-const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
-    // Format date and time
-    const formatDateTime = (dateString) => {
-        if (!dateString) return new Date().toLocaleString();
-        const date = new Date(dateString);
-        return date.toLocaleString('en-IN');
-    };
+const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
+  // Format date and time to match receipt format: YYYY-MM-DD HH:MM:S
+  const formatDateTime = (dateString) => {
+    if (!dateString) return new Date().toLocaleString();
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = date.getSeconds(); // No padding to match image format
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
-    // Calculate tax percentage
-    const calculateTaxPercent = () => {
-        // If taxPercent is explicitly provided (including 0), use it
-        if (orderDetails.taxPercent !== undefined && orderDetails.taxPercent !== null) {
-            const percent = Number(orderDetails.taxPercent);
-            // Return 0 if it's NaN or negative, otherwise return the value
-            return isNaN(percent) || percent < 0 ? 0 : percent;
-        }
-        // Otherwise calculate from tax and subtotal
-        if (orderDetails.subtotal && orderDetails.subtotal > 0 && orderDetails.tax !== undefined && orderDetails.tax !== null) {
-            const calculatedPercent = (orderDetails.tax / orderDetails.subtotal) * 100;
-            return isNaN(calculatedPercent) || calculatedPercent < 0 ? 0 : calculatedPercent;
-        }
-        // Default to 0 if no tax information
-        return 0;
-    };
+  // Calculate tax percentage
+  const calculateTaxPercent = () => {
+    if (
+      orderDetails.taxPercent !== undefined &&
+      orderDetails.taxPercent !== null
+    ) {
+      const percent = Number(orderDetails.taxPercent);
+      return isNaN(percent) || percent < 0 ? 0 : percent;
+    }
+    if (
+      orderDetails.subtotal &&
+      orderDetails.subtotal > 0 &&
+      orderDetails.tax !== undefined &&
+      orderDetails.tax !== null
+    ) {
+      const calculatedPercent =
+        (orderDetails.tax / orderDetails.subtotal) * 100;
+      return isNaN(calculatedPercent) || calculatedPercent < 0
+        ? 0
+        : calculatedPercent;
+    }
+    return 0;
+  };
 
-    const taxPercent = calculateTaxPercent();
-    // Show GST only if tax is 1% or more (hide if 0%)
-    const showGST = taxPercent >= 1;
-    const invoiceTitle = showGST ? "TAX INVOICE" : "INVOICE";
+  const taxPercent = calculateTaxPercent();
+  const showGST = taxPercent >= 1;
 
-    return (
-        <div className="receipt-popup-overlay text-dark">
-            <div className="receipt-popup">
-                {/* Header with Logo */}
-                <div className="receipt-company-header">
-                    <img src={assets.logo} alt="Company Logo" className="company-logo" />
-                    <div className="company-info">
-                        <h3 className="company-name">{AppConstants.SHOP_NAME}</h3>
-                        <p className="company-address">{AppConstants.SHOP_ADDRESS}</p>
-                        <p className="company-contact">{AppConstants.SHOP_CONTACT}</p>
-                    </div>
-                </div>
+  // Calculate net amount and credit
+  // For credit orders: NET AMOUNT = GRAND TOTAL - CREDIT (pending amount)
+  // CREDIT = pendingAmount
+  // TOTAL PAID = paidAmount
+  const creditAmount =
+    orderDetails.creditType === "CREDIT" ? orderDetails.pendingAmount || 0 : 0;
+  const netAmount =
+    orderDetails.creditType === "CREDIT" && creditAmount > 0
+      ? orderDetails.grandTotal - creditAmount
+      : orderDetails.grandTotal;
+  const totalPaid =
+    orderDetails.creditType === "CREDIT"
+      ? orderDetails.paidAmount || 0
+      : orderDetails.grandTotal;
 
-                {/* Divider */}
-                <div className="receipt-divider"></div>
+  // Get bill number - use invoiceNumber if available, otherwise use orderId
+  const billNumber =
+    orderDetails.invoiceNumber || orderDetails.orderId || "N/A";
 
-                {/* Receipt Title */}
-                <div className="receipt-title-section">
-                    <h2 className="receipt-title">{invoiceTitle}</h2>
-                </div>
-
-                {/* Order Info */}
-                <div className="receipt-info-grid">
-                    <div>
-                        <p><strong>Invoice No:</strong> {orderDetails.orderId || 'N/A'}</p>
-                        <p><strong>Date & Time:</strong> {formatDateTime(orderDetails.createdAt)}</p>
-                    </div>
-                    <div>
-                        <p><strong>Customer Name:</strong> {orderDetails.customerName}</p>
-                        <p><strong>Phone:</strong> {orderDetails.phoneNumber}</p>
-                        {orderDetails.gstin && (
-                            <p><strong>GSTIN:</strong> {orderDetails.gstin}</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Divider */}
-                <div className="receipt-divider"></div>
-
-                {/* Items Table */}
-                <div className="receipt-table-container">
-                    <table className="receipt-table">
-                        <thead>
-                            <tr>
-                                <th>Sr.</th>
-                                <th>Item Name</th>
-                                <th className="text-center">Qty</th>
-                                <th className="text-right">Rate</th>
-                                <th className="text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orderDetails.items && orderDetails.items.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.name}</td>
-                                    <td className="text-center">{item.quantity}</td>
-                                    <td className="text-right">₹{item.price.toFixed(2)}</td>
-                                    <td className="text-right">₹{(item.price * item.quantity).toFixed(2)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Divider */}
-                <div className="receipt-divider"></div>
-
-                {/* Summary */}
-                <div className="receipt-summary">
-                    <div className="receipt-summary-row">
-                        <span>Subtotal:</span>
-                        <span>₹{orderDetails.subtotal.toFixed(2)}</span>
-                    </div>
-                    {showGST && (
-                        <div className="receipt-summary-row">
-                            <span>GST ({taxPercent.toFixed(2)}%):</span>
-                            <span>₹{orderDetails.tax.toFixed(2)}</span>
-                        </div>
-                    )}
-                    <div className="receipt-summary-row receipt-total-row">
-                        <span>Total Amount:</span>
-                        <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
-                    </div>
-                </div>
-
-                {/* Payment Details */}
-                <div className="receipt-divider"></div>
-                <div className="receipt-payment-info">
-                    <p><strong>Payment Method:</strong> {orderDetails.paymentMethod}</p>
-                </div>
-
-                {/* Footer */}
-                <div className="receipt-footer">
-                    <p className="thank-you">Thank You for Your Business!</p>
-                    {/* <p className="footer-note">This is a computer generated receipt</p> */}
-                </div>
-
-                {/* Action Buttons */}
-                {/* <div className="receipt-actions">
-                    <button className="btn btn-primary btn-print" onClick={onPrint}>
-                        <i className="bi bi-printer"></i> Print Receipt
-                    </button>
-
-                        <button
-                            className="btn btn-close btn-danger "
-                            style={{ padding: '0 2px',  color: 'white', width: '20%' }}
-                            onClick={onClose}
-                        >
-                            Close
-                        </button>
-                </div> */}
-                <div className="d-flex justify-content-center gap-3 mt-4">
-                    <button className="btn btn-warning" onClick={onPrint}>Print Receipt</button>
-                    <button className="btn btn-danger" onClick={onClose}>Close</button>
-                </div>
-            </div>
+  return (
+    <div className="receipt-popup-overlay">
+      <div className="receipt-popup">
+        {/* Company Header */}
+        <div className="receipt-company-header">
+          <div className="company-logo-name">
+            <img
+              src={assets.logo}
+              alt="Company Logo"
+              className="company-logo"
+            />
+            <h1 className="company-name">
+              {AppConstants.SHOP_NAME.toUpperCase()}
+            </h1>
+          </div>
+          <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE1}</p>
+          <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE2}</p>
+          <p className="company-contact">{AppConstants.SHOP_CONTACT}</p>
+          <p className="company-gstin">
+            <strong>GSTIN:</strong> {AppConstants.SHOP_GSTIN || "N/A"}
+          </p>
+          {orderDetails.gstin && (
+            <p className="customer-gstin">
+              <strong>CUSTOMER GSTIN:</strong> {orderDetails.gstin}
+            </p>
+          )}
         </div>
-    )
-}
+
+        {/* Transaction Details */}
+        <div className="receipt-transaction-details">
+          <div className="transaction-row-two-columns">
+            <span className="transaction-left">
+              <strong>BILL NO:</strong> {billNumber}
+            </span>
+            <span className="transaction-right">
+              <strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}
+            </span>
+          </div>
+
+          {/* Divider */}
+          <div className="receipt-divider"></div>
+
+          <div className="transaction-row-two-columns">
+            <span className="transaction-left">
+              <strong>ATTENDED BY:</strong> {orderDetails.username || "STAFF"}
+            </span>
+            <span className="transaction-right">
+              <strong>CUSTOMER:</strong> {orderDetails.customerName}
+            </span>
+          </div>
+        </div>
+
+        {/* Divider after transaction details */}
+        <div className="receipt-divider"></div>
+
+        {/* Items Table */}
+        <div className="receipt-table-container">
+          <table className="receipt-table">
+            <thead>
+              <tr>
+                <th>ITEM</th>
+                <th className="text-center">QTY</th>
+                <th className="text-right">RATE</th>
+                <th className="text-right">GST</th>
+                <th className="text-right">AMT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderDetails.items &&
+                orderDetails.items.map((item, index) => {
+                  const itemAmount = item.price * item.quantity;
+                  return (
+                    <tr key={index}>
+                      <td>{item.name}</td>
+                      <td className="text-center">{item.quantity}</td>
+                      <td className="text-right">₹{item.price.toFixed(2)}</td>
+                      <td className="text-right">
+                        {showGST ? `${taxPercent.toFixed(0)}%` : "0%"}
+                      </td>
+                      <td className="text-right">₹{itemAmount.toFixed(2)}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Summary */}
+        <div className="receipt-summary">
+          <div className="receipt-summary-row">
+            <span>
+              <strong>GST (SGST + CGST):</strong>
+            </span>
+            <span>
+              ₹{orderDetails.tax ? orderDetails.tax.toFixed(2) : "0.00"}
+            </span>
+          </div>
+          <div className="receipt-summary-row receipt-total-amount-row">
+            <span>
+              <strong>TOTAL AMOUNT:</strong>
+            </span>
+            <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
+          </div>
+          <div className="receipt-divider"></div>
+          {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
+            <div className="receipt-summary-row">
+              <span>
+                <strong>CREDIT:</strong>
+              </span>
+              <span>₹{creditAmount.toFixed(2)}</span>
+            </div>
+          )}
+          {orderDetails.creditType === "CREDIT" && (
+            <>
+              <div className="receipt-summary-row">
+                <span>
+                  <strong>NET AMOUNT:</strong>
+                </span>
+                <span>₹{netAmount.toFixed(2)}</span>
+              </div>
+              <div className="receipt-divider"></div>
+            </>
+          )}
+          <div className="receipt-summary-row">
+            <span>
+              <strong>TOTAL PAID:</strong>
+            </span>
+            <span>₹{totalPaid.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="receipt-footer">
+          <p className="footer-message">
+            THANKS FOR CHOOSING US..WELCOME AGAIN
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="d-flex justify-content-center gap-3 mt-4">
+          <button className="btn btn-warning" onClick={onPrint}>
+            Print Receipt
+          </button>
+          <button className="btn btn-danger" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ReceiptPopup;
