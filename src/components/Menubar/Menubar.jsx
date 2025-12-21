@@ -19,6 +19,11 @@ const Menubar = () => {
     return location.pathname === path;
   };
 
+  const isManageActive = () => {
+    const managePaths = ["/items", "/category", "/users", "/customers"];
+    return managePaths.some(path => location.pathname === path);
+  };
+
   const isAdmin = auth.role === "ROLE_ADMIN";
 
   return (
@@ -72,43 +77,51 @@ const Menubar = () => {
               Analytics
             </Link>
           </li>
-              <li className="nav-item">
-                <Link
-                  id={`${isActive ? "active" : ""}`}
-                  className={`nav-link ${isActive("/items") ? "fw-bold " : ""}`}
-                  to="/items"
+              <li className="nav-item dropdown">
+                <a
+                  className={`nav-link dropdown-toggle ${isManageActive() ? "fw-bold" : ""}`}
+                  href="#"
+                  id="manageDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
                 >
-                  Manage Items
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  id={`${isActive ? "active" : ""}`}
-                  className={`nav-link ${
-                    isActive("/category") ? "fw-bold " : ""
-                  }`}
-                  to="/category"
-                >
-                  Manage Categories
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  id={`${isActive ? "active" : ""}`}
-                  className={`nav-link ${isActive("/users") ? "fw-bold " : ""}`}
-                  to="/users"
-                >
-                  Manage Users
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  id={`${isActive ? "active" : ""}`}
-                  className={`nav-link ${isActive("/customers") ? "fw-bold " : ""}`}
-                  to="/customers"
-                >
-                  Manage Customers
-                </Link>
+                  Manage
+                </a>
+                <ul className="dropdown-menu" aria-labelledby="manageDropdown">
+                  <li>
+                    <Link
+                      className={`dropdown-item ${isActive("/items") ? "active fw-bold" : ""}`}
+                      to="/items"
+                    >
+                      <i className="bi bi-box-seam me-2"></i> Manage Items
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`dropdown-item ${isActive("/category") ? "active fw-bold" : ""}`}
+                      to="/category"
+                    >
+                      <i className="bi bi-tags me-2"></i> Manage Categories
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`dropdown-item ${isActive("/users") ? "active fw-bold" : ""}`}
+                      to="/users"
+                    >
+                      <i className="bi bi-people me-2"></i> Manage Users
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`dropdown-item ${isActive("/customers") ? "active fw-bold" : ""}`}
+                      to="/customers"
+                    >
+                      <i className="bi bi-person-badge me-2"></i> Manage Customers
+                    </Link>
+                  </li>
+                </ul>
               </li>
             </>
           )}

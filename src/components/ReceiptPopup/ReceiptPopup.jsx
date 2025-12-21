@@ -123,12 +123,6 @@ const ReceiptPopup = ({orderDetails, onClose, onPrint}) => {
                 <div className="receipt-divider"></div>
                 <div className="receipt-payment-info">
                     <p><strong>Payment Method:</strong> {orderDetails.paymentMethod}</p>
-                    {orderDetails.paymentMethod === "UPI" && (
-                        <>
-                            <p><strong>Razorpay Order ID:</strong> {orderDetails.razorpayOrderId}</p>
-                            <p><strong>Razorpay Payment ID:</strong> {orderDetails.razorpayPaymentId}</p>
-                        </>
-                    )}
                 </div>
 
                 {/* Footer */}

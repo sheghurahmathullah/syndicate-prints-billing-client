@@ -6,20 +6,27 @@ import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
 
 const CreditManagement = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showInvoice, setShowInvoice] = useState(false);
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
   const loadPendingCreditOrders = async () => {
     try {
       setLoading(true);
       const response = await getPendingCreditOrders();
-      setOrders(response.data || []);
+      const ordersData = response.data || [];
+      setOrders(ordersData);
+      setFilteredOrders(ordersData);
     } catch (error) {
       console.error("Error loading pending credit orders:", error);
       toast.error("Failed to load pending credit orders");
       setOrders([]);
+      setFilteredOrders([]);
     } finally {
       setLoading(false);
     }
@@ -38,8 +45,17 @@ const CreditManagement = () => {
       setUpdatingOrderId(orderId);
       const response = await completeCreditOrder(orderId);
       toast.success("Order marked as completed");
-      // Remove the order from the list
-      setOrders(orders.filter(order => order.orderId !== orderId));
+      // Remove the order from both lists
+      const updatedOrders = orders.filter(order => order.orderId !== orderId);
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders.filter(order => {
+        // Keep the order in filtered list if it matches current search
+        if (!searchTerm) return true;
+        const searchLower = searchTerm.toLowerCase();
+        const customerName = (order.customerName || "").toLowerCase();
+        const phoneNumber = (order.phoneNumber || "").toLowerCase();
+        return customerName.includes(searchLower) || phoneNumber.includes(searchLower);
+      }));
     } catch (error) {
       console.error("Error completing order:", error);
       toast.error("Failed to complete order");
@@ -62,15 +78,92 @@ const CreditManagement = () => {
     window.print();
   };
 
-  const totalPendingAmount = orders.reduce((sum, order) => {
+  // Generate unique customer suggestions from orders
+  const getCustomerSuggestions = () => {
+    const customerMap = new Map();
+    orders.forEach(order => {
+      const key = `${order.customerName}_${order.phoneNumber}`;
+      if (!customerMap.has(key)) {
+        customerMap.set(key, {
+          name: order.customerName,
+          phoneNumber: order.phoneNumber,
+          displayText: `${order.customerName} (${order.phoneNumber})`
+        });
+      }
+    });
+    return Array.from(customerMap.values());
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    if (value.trim() === "") {
+      setFilteredOrders(orders);
+      setShowSuggestions(false);
+      setSuggestions([]);
+      return;
+    }
+
+    const searchLower = value.toLowerCase();
+    
+    // Filter orders by customer name or phone number
+    const filtered = orders.filter(order => {
+      const customerName = (order.customerName || "").toLowerCase();
+      const phoneNumber = (order.phoneNumber || "").toLowerCase();
+      return customerName.includes(searchLower) || phoneNumber.includes(searchLower);
+    });
+    
+    setFilteredOrders(filtered);
+
+    // Generate suggestions for autocomplete
+    const allSuggestions = getCustomerSuggestions();
+    const filteredSuggestions = allSuggestions.filter(customer => {
+      const nameMatch = customer.name.toLowerCase().includes(searchLower);
+      const phoneMatch = customer.phoneNumber.includes(searchLower);
+      return nameMatch || phoneMatch;
+    });
+    
+    setSuggestions(filteredSuggestions);
+    setShowSuggestions(filteredSuggestions.length > 0 && value.length > 0);
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (customer) => {
+    setSearchTerm(customer.displayText);
+    setShowSuggestions(false);
+    
+    // Filter orders for selected customer
+    const filtered = orders.filter(order => {
+      const orderName = (order.customerName || "").toLowerCase().trim();
+      const orderPhone = (order.phoneNumber || "").replace(/\D/g, '');
+      const customerName = customer.name.toLowerCase().trim();
+      const customerPhone = customer.phoneNumber.replace(/\D/g, '');
+      
+      return (orderName === customerName && orderPhone === customerPhone);
+    });
+    
+    setFilteredOrders(filtered);
+  };
+
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setFilteredOrders(orders);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
+
+  const totalPendingAmount = filteredOrders.reduce((sum, order) => {
     return sum + (order.pendingAmount || 0);
   }, 0);
 
-  const totalPaidAmount = orders.reduce((sum, order) => {
+  const totalPaidAmount = filteredOrders.reduce((sum, order) => {
     return sum + (order.paidAmount || 0);
   }, 0);
 
-  const totalGrandTotal = orders.reduce((sum, order) => {
+  const totalGrandTotal = filteredOrders.reduce((sum, order) => {
     return sum + (order.grandTotal || 0);
   }, 0);
 
@@ -109,7 +202,7 @@ const CreditManagement = () => {
             </div>
             <div className="summary-content">
               <h3>Pending Orders</h3>
-              <p className="summary-value">{orders.length}</p>
+              <p className="summary-value">{filteredOrders.length}</p>
             </div>
           </div>
 
@@ -146,14 +239,67 @@ const CreditManagement = () => {
 
         {/* Orders Table */}
         <div className="credit-orders-section">
-          <h3 className="section-title">
-            <i className="bi bi-list-ul"></i> Pending Credit Orders
-          </h3>
+          <div className="section-header-with-search">
+            <h3 className="section-title">
+              <i className="bi bi-list-ul"></i> Pending Credit Orders
+            </h3>
+            
+            {/* Search/Filter Input */}
+            <div className="credit-search-container">
+              <div className="credit-search-wrapper">
+                <i className="bi bi-search credit-search-icon"></i>
+                <input
+                  type="text"
+                  className="credit-search-input"
+                  placeholder="Search by customer name or phone number..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onFocus={() => {
+                    if (suggestions.length > 0 && searchTerm.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay hiding suggestions to allow click events
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
+                />
+                {searchTerm && (
+                  <button
+                    className="credit-search-clear"
+                    onClick={handleClearSearch}
+                    title="Clear search"
+                  >
+                    <i className="bi bi-x-circle"></i>
+                  </button>
+                )}
+              </div>
+              
+              {/* Autocomplete Suggestions */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="credit-suggestions-dropdown">
+                  {suggestions.map((customer, index) => (
+                    <div
+                      key={index}
+                      className="credit-suggestion-item"
+                      onClick={() => handleSuggestionClick(customer)}
+                    >
+                      <i className="bi bi-person"></i>
+                      <div className="suggestion-content">
+                        <span className="suggestion-name">{customer.name}</span>
+                        <span className="suggestion-phone">{customer.phoneNumber}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
-          {orders.length === 0 ? (
+          {filteredOrders.length === 0 ? (
             <div className="no-orders-message">
               <i className="bi bi-inbox"></i>
-              <p>No pending credit orders</p>
+              <p>{searchTerm ? "No orders found matching your search" : "No pending credit orders"}</p>
             </div>
           ) : (
             <div className="orders-table-container">
@@ -171,7 +317,7 @@ const CreditManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => (
+                  {filteredOrders.map((order) => (
                     <tr key={order.orderId}>
                       <td>
                         <span className="order-id">{order.orderId.substring(0, 12)}...</span>

@@ -1,0 +1,230 @@
+.pending-credit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 33, 66, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+  padding: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pending-credit-modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 33, 66, 0.3);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pending-credit-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 20px;
+  border-bottom: 2px solid #e2e8f0;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.pending-credit-modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.pending-credit-modal-header h3 {
+  margin: 0;
+  color: #92400e;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.pending-credit-modal-body {
+  padding: 24px;
+}
+
+.pending-credit-warning-text {
+  font-size: 1.1rem;
+  color: #92400e;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  background: #fef3c7;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
+}
+
+.pending-credit-details {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.pending-credit-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pending-credit-detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.detail-value {
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.detail-value.highlight {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.detail-value.amount {
+  font-size: 1.3rem;
+}
+
+.pending-credit-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #dbeafe;
+  border-left: 4px solid #3b82f6;
+  padding: 16px;
+  border-radius: 8px;
+  color: #1e40af;
+}
+
+.pending-credit-notice i {
+  font-size: 1.2rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pending-credit-notice span {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.pending-credit-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 2px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 0 0 16px 16px;
+}
+
+.pending-credit-btn-cancel,
+.pending-credit-btn-proceed {
+  flex: 1;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.pending-credit-btn-cancel {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: white;
+}
+
+.pending-credit-btn-cancel:hover {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+}
+
+.pending-credit-btn-proceed {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.pending-credit-btn-proceed:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+@media (max-width: 768px) {
+  .pending-credit-modal-content {
+    max-width: 95%;
+    margin: 1rem;
+  }
+  
+  .pending-credit-modal-header {
+    padding: 20px;
+  }
+  
+  .pending-credit-modal-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .pending-credit-modal-body {
+    padding: 20px;
+  }
+  
+  .pending-credit-modal-footer {
+    flex-direction: column;
+  }
+  
+  .pending-credit-btn-cancel,
+  .pending-credit-btn-proceed {
+    width: 100%;
+  }
+}
+

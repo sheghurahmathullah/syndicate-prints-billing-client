@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { AppContext } from "../../context/AppContext.jsx";
 import { createOrder } from "../../Service/OrderService.js";
 import toast from "react-hot-toast";
+import PendingCreditAlertModal from "../PendingCreditAlertModal/PendingCreditAlertModal.jsx";
 
 const CartSummary = ({
   customerName,
@@ -29,6 +30,9 @@ const CartSummary = ({
   const [confirmPaymentType, setConfirmPaymentType] = useState(null);
   const [enableCredit, setEnableCredit] = useState(false);
   const [paidAmount, setPaidAmount] = useState("");
+  const [showPendingCreditModal, setShowPendingCreditModal] = useState(false);
+  const [pendingCreditData, setPendingCreditData] = useState(null);
+  const [pendingOrderData, setPendingOrderData] = useState(null);
 
   const validateCustomerAndCart = () => {
     if (!customerName || !mobileNumber) {
@@ -233,7 +237,52 @@ const CartSummary = ({
   const displayTax = totalAmount * (taxPercent / 100);
   const displayGrandTotal = totalAmount + displayTax;
 
-  const processPayment = async (paymentMode) => {
+  // Helper function to parse error message and extract pending credit info
+  const parsePendingCreditError = (errorMessage) => {
+    try {
+      // Parse the error message format:
+      // "Customer 'Name' (Phone: 1234567890) already has X pending credit order(s) with total pending amount of ₹Y. Oldest pending order date: Z. Please complete..."
+      const customerMatch = errorMessage.match(/Customer '([^']+)' \(Phone: ([^)]+)\)/);
+      const countMatch = errorMessage.match(/already has (\d+) pending credit order/);
+      const amountMatch = errorMessage.match(/total pending amount of ₹([\d.]+)/);
+      const dateMatch = errorMessage.match(/Oldest pending order date: ([^.]+)/);
+
+      if (customerMatch && countMatch && amountMatch && dateMatch) {
+        return {
+          customerName: customerMatch[1],
+          phoneNumber: customerMatch[2],
+          pendingOrdersCount: parseInt(countMatch[1]),
+          totalPendingAmount: parseFloat(amountMatch[1]),
+          oldestOrderDate: dateMatch[1].trim()
+        };
+      }
+    } catch (e) {
+      console.error("Error parsing pending credit error:", e);
+    }
+    return null;
+  };
+
+  // Function to actually create the order (called after user confirms or if no pending orders)
+  const createOrderWithData = async (orderData, forceProceed = false) => {
+    if (forceProceed) {
+      orderData.forceProceed = true;
+    }
+
+    setIsProcessing(true);
+    try {
+      console.log(username);
+      console.log("order created", orderData);
+      const response = await createOrder(orderData);
+      const savedData = response.data;
+      return { response, savedData };
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const processPayment = async (paymentMode, forceProceed = false) => {
     if (!validateCustomerAndCart()) {
       return;
     }
@@ -260,13 +309,11 @@ const CartSummary = ({
       orderData.paidAmount = 0;
     }
 
-    setIsProcessing(true);
+    // Check if this is a credit order
+    const isCreditOrder = orderData.creditType === "CREDIT";
+
     try {
-      console.log(username);
-      
-      console.log("order created", orderData  );
-      const response = await createOrder(orderData);
-      const savedData = response.data;
+      const { response, savedData } = await createOrderWithData(orderData, forceProceed);
 
       if (response.status === 201 && paymentMode === "cash") {
         console.log("Cash")
@@ -296,57 +343,74 @@ const CartSummary = ({
         console.log("Credit")
         toast.success("Credit order created");
         await printAndClear(savedData);
-
-        // const razorpayLoaded = await loadRazorpayScript();
-        // if (!razorpayLoaded) {
-        //   toast.error("Unable to load razorpay");
-        //   await deleteOrderOnFailure(savedData.orderId);
-        //   return;
-        // }
-
-        // // create razorpay order
-        // const razorpayResponse = await createRazorpayOrder({
-        //   amount: displayGrandTotal,
-        //   currency: "INR",
-        // });
-        // const options = {
-        //   key: AppConstants.RAZORPAY_KEY_ID,
-        //   amount: razorpayResponse.data.amount,
-        //   currency: razorpayResponse.data.currency,
-        //   order_id: razorpayResponse.data.id,
-        //   name: "My Retail Shop",
-        //   description: "Order payment",
-        //   handler: async function (response) {
-        //     await verifyPaymentHandler(response, savedData);
-        //   },
-        //   prefill: {
-        //     name: customerName,
-        //     contact: mobileNumber,
-        //   },
-        //   theme: {
-        //     color: "#3399cc",
-        //   },
-        //   modal: {
-        //     ondismiss: async () => {
-        //       await deleteOrderOnFailure(savedData.orderId);
-        //       toast.error("Payment cancelled");
-        //     },
-        //   },
-        // };
-        // const rzp = new window.Razorpay(options);
-        // rzp.on("payment.failed", async (response) => {
-        //   await deleteOrderOnFailure(savedData.orderId);
-        //   toast.error("Payment failed");
-        //   console.error(response.error.description);
-        // });
-        // rzp.open();
       }
     } catch (error) {
       console.error(error);
-      toast.error("Payment processing failed");
-    } finally {
+      
+      // Check if this is a pending credit order error
+      if (isCreditOrder && error.response && error.response.status === 400) {
+        const errorData = error.response.data;
+        const errorMessage = errorData?.message || "";
+        
+        // Check if error message contains pending credit order information
+        if (errorMessage.includes("already has") && errorMessage.includes("pending credit order")) {
+          const pendingData = parsePendingCreditError(errorMessage);
+          
+          if (pendingData) {
+            // Store order data and show modal
+            setPendingOrderData({ orderData, paymentMode });
+            setPendingCreditData(pendingData);
+            setShowPendingCreditModal(true);
+            setIsProcessing(false);
+            return; // Don't show toast, modal will handle it
+          }
+        }
+      }
+      
+      // Extract error message from API response for other errors
+      let errorMessage = "Payment processing failed";
+      
+      if (error.response) {
+        const errorData = error.response.data;
+        if (errorData && errorData.message) {
+          errorMessage = errorData.message;
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (error.response.status === 400) {
+          errorMessage = errorData?.message || "Invalid request. Please check your input.";
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Show error toast with the specific message
+      toast.error(errorMessage, {
+        duration: 6000,
+        style: {
+          maxWidth: '500px',
+          whiteSpace: 'pre-wrap',
+        }
+      });
       setIsProcessing(false);
     }
+  };
+
+  // Handle proceed from pending credit modal
+  const handleProceedWithPendingCredit = async () => {
+    setShowPendingCreditModal(false);
+    if (pendingOrderData) {
+      await processPayment(pendingOrderData.paymentMode, true);
+    }
+    setPendingOrderData(null);
+    setPendingCreditData(null);
+  };
+
+  // Handle cancel from pending credit modal
+  const handleCancelPendingCredit = () => {
+    setShowPendingCreditModal(false);
+    setPendingOrderData(null);
+    setPendingCreditData(null);
+    setIsProcessing(false);
   };
 
   return (
@@ -584,6 +648,18 @@ const CartSummary = ({
           </div>,
           document.body
         )}
+
+      {/* Pending Credit Alert Modal */}
+      <PendingCreditAlertModal
+        isOpen={showPendingCreditModal}
+        onClose={handleCancelPendingCredit}
+        onProceed={handleProceedWithPendingCredit}
+        customerName={pendingCreditData?.customerName || ""}
+        phoneNumber={pendingCreditData?.phoneNumber || ""}
+        pendingOrdersCount={pendingCreditData?.pendingOrdersCount || 0}
+        totalPendingAmount={pendingCreditData?.totalPendingAmount || 0}
+        oldestOrderDate={pendingCreditData?.oldestOrderDate || ""}
+      />
     </div>
   );
 };
