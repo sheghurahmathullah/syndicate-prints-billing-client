@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getPendingCreditOrders, completeCreditOrder } from "../../Service/OrderService.js";
 import toast from "react-hot-toast";
 import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal.jsx";
 
 const CreditManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -14,6 +15,8 @@ const CreditManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [orderToComplete, setOrderToComplete] = useState(null);
 
   const loadPendingCreditOrders = async () => {
     try {
@@ -36,10 +39,17 @@ const CreditManagement = () => {
     loadPendingCreditOrders();
   }, []);
 
-  const handleCompleteOrder = async (orderId) => {
-    if (!window.confirm("Mark this order as completed? This action cannot be undone.")) {
-      return;
-    }
+  const handleCompleteOrderClick = (orderId) => {
+    const order = orders.find(o => o.orderId === orderId);
+    setOrderToComplete({ orderId, order });
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmComplete = async () => {
+    if (!orderToComplete) return;
+
+    const { orderId } = orderToComplete;
+    setShowConfirmModal(false);
 
     try {
       setUpdatingOrderId(orderId);
@@ -61,7 +71,13 @@ const CreditManagement = () => {
       toast.error("Failed to complete order");
     } finally {
       setUpdatingOrderId(null);
+      setOrderToComplete(null);
     }
+  };
+
+  const handleCancelComplete = () => {
+    setShowConfirmModal(false);
+    setOrderToComplete(null);
   };
 
   const handlePrintInvoice = (order) => {
@@ -349,7 +365,7 @@ const CreditManagement = () => {
                           </button>
                           <button
                             className="btn btn-sm btn-success complete-btn"
-                            onClick={() => handleCompleteOrder(order.orderId)}
+                            onClick={() => handleCompleteOrderClick(order.orderId)}
                             disabled={updatingOrderId === order.orderId}
                             title="Mark as Completed"
                           >
@@ -378,6 +394,20 @@ const CreditManagement = () => {
           onPrint={handlePrint}
         />
       )}
+
+      {/* Confirm Complete Order Modal */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={handleCancelComplete}
+        onConfirm={handleConfirmComplete}
+        title="Mark Order as Completed"
+        message={orderToComplete?.order ? 
+          `Are you sure you want to mark order ${orderToComplete.order.orderId.substring(0, 12)}... for customer "${orderToComplete.order.customerName}" as completed? This action cannot be undone.` :
+          "Mark this order as completed? This action cannot be undone."}
+        confirmText="Mark as Completed"
+        cancelText="Cancel"
+        confirmButtonClass="btn-success"
+      />
     </div>
   );
 };

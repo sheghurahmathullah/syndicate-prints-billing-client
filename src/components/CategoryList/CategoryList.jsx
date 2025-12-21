@@ -13,6 +13,27 @@ const CategoryList = () => {
   );
 
   const deleteByCategoryId = async (categoryId) => {
+    // Find category to show name in confirmation
+    const category = categories.find(cat => cat.categoryId === categoryId);
+    const categoryName = category ? category.name : "this category";
+    
+    // Check if category has items
+    if (category && category.items > 0) {
+      toast.error(`Cannot delete category "${categoryName}". It has ${category.items} item(s) associated with it. Please delete or move the items first.`, {
+        duration: 6000,
+        style: {
+          maxWidth: '500px',
+          whiteSpace: 'pre-wrap',
+        }
+      });
+      return;
+    }
+
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete category "${categoryName}"?`)) {
+      return;
+    }
+
     try {
       const response = await deleteCategory(categoryId);
       if (response.status === 204) {
@@ -20,13 +41,40 @@ const CategoryList = () => {
           (category) => category.categoryId !== categoryId
         );
         setCategories(updatedCategories);
-        toast.success("Category deleted");
+        toast.success(`Category "${categoryName}" deleted successfully`);
       } else {
         toast.error("Unable to delete category");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Unable to delete category");
+      
+      // Extract error message from API response
+      let errorMessage = "Unable to delete category";
+      
+      if (error.response) {
+        const errorData = error.response.data;
+        if (errorData) {
+          if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (error.response.status === 400) {
+            errorMessage = errorData.message || "Cannot delete category. It may have items associated with it.";
+          } else if (error.response.status === 404) {
+            errorMessage = "Category not found";
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage, {
+        duration: 6000,
+        style: {
+          maxWidth: '500px',
+          whiteSpace: 'pre-wrap',
+        }
+      });
     }
   };
 

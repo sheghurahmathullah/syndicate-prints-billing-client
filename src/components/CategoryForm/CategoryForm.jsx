@@ -7,12 +7,13 @@ import {AppContext} from "../../context/AppContext.jsx";
 const CategoryForm = () => {
     const {setCategories, categories} = useContext(AppContext);
     const [loading, setLoading] = useState(false);
-    const [image, setImage] = useState(false);
+    const [imageUrl, setImageUrl] = useState("");
 
     const [data, setData] = useState({
         name: "",
         description: "",
         bgColor: "#ffff",
+        imageUrl: "",
     });
 
     const onChangeHandler = (e) => {
@@ -24,16 +25,27 @@ const CategoryForm = () => {
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
-        if (!image) {
-            toast.error("Select image for category");
+        if (!imageUrl || imageUrl.trim() === "") {
+            toast.error("Please enter image URL for category");
             return;
         }
-        setLoading(true);
-        const formData = new FormData();
-        formData.append("category", JSON.stringify(data));
-        formData.append("file", image);
+
+        // Validate URL format
         try {
-            const response = await addCategory(formData);
+            new URL(imageUrl);
+        } catch (err) {
+            toast.error("Please enter a valid image URL");
+            return;
+        }
+
+        setLoading(true);
+        const categoryData = {
+            ...data,
+            imageUrl: imageUrl.trim()
+        };
+        
+        try {
+            const response = await addCategory(categoryData);
             if (response.status === 201) {
                 setCategories([...categories, response.data]);
                 toast.success("Category added");
@@ -41,30 +53,63 @@ const CategoryForm = () => {
                     name: "",
                     description: "",
                     bgColor: "#ffff",
+                    imageUrl: "",
                 });
-                setImage(false);
+                setImageUrl("");
             }
         }catch(err) {
             console.error(err);
-            toast.error("Error adding category");
+            toast.error(err.response?.data?.message || "Error adding category");
         }finally {
             setLoading(false);
         }
     }
 
     return (
-        <div className="mx-2 mt-2">
+        <div className="mx-2 mt-2 category-form-wrapper">
             <div className="row">
                 <div className="card col-md-12 form-container">
                     <div className="card-body">
                         <form onSubmit={onSubmitHandler}>
                             <div className="mb-3">
-
-                                <p  className="fw-bold">Image</p>
-                                <label htmlFor="image" className="form-label"> 
-                                    <img src={image ? URL.createObjectURL(image) : assets.upload} alt="" width={48}/>
-                                </label>
-                                <input type="file" name="image" id="image" className='form-control' hidden onChange={(e) => setImage(e.target.files[0])} />
+                                <label htmlFor="imageUrl" className="form-label fw-bold">Image URL</label>
+                                <input 
+                                    type="url" 
+                                    name="imageUrl" 
+                                    id="imageUrl" 
+                                    className="form-control" 
+                                    placeholder="https://example.com/image.jpg"
+                                    value={imageUrl}
+                                    onChange={(e) => {
+                                        setImageUrl(e.target.value);
+                                        setData((data) => ({...data, imageUrl: e.target.value}));
+                                    }}
+                                    required
+                                />
+                                {imageUrl && (
+                                    <div className="mt-2">
+                                        <p className="small text-muted mb-1">Preview:</p>
+                                        <img 
+                                            src={imageUrl} 
+                                            alt="Category preview" 
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "200px",
+                                                objectFit: "contain",
+                                                border: "1px solid #ddd",
+                                                borderRadius: "4px",
+                                                padding: "4px"
+                                            }}
+                                            onError={(e) => {
+                                                e.target.style.display = "none";
+                                                const errorMsg = document.createElement("p");
+                                                errorMsg.className = "text-danger small";
+                                                errorMsg.textContent = "Failed to load image. Please check the URL.";
+                                                e.target.parentNode.appendChild(errorMsg);
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="name" className="form-label">Name</label>

@@ -34,7 +34,8 @@
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: all 0.3s ease;
 }
 
@@ -85,21 +86,25 @@
   border-color: #002142;
 }
 
-/* Custom Scrollbar for Right Column */
+/* Custom Scrollbar for Both Columns */
+.left-column::-webkit-scrollbar,
 .right-column::-webkit-scrollbar {
   width: 8px;
 }
 
+.left-column::-webkit-scrollbar-track,
 .right-column::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 10px;
 }
 
+.left-column::-webkit-scrollbar-thumb,
 .right-column::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #e64051 0%, #002142 100%);
   border-radius: 10px;
 }
 
+.left-column::-webkit-scrollbar-thumb:hover,
 .right-column::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
 }
@@ -120,6 +125,43 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Category Form Container - Ensure it can scroll */
+.category-form-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.category-form-wrapper .row {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-form-wrapper .form-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.category-form-wrapper .card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
 }
 
 .category-container .left-column > h3 i,
