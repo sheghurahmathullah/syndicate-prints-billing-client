@@ -309,9 +309,6 @@ const CartSummary = ({
       orderData.paidAmount = 0;
     }
 
-    // Check if this is a credit order
-    const isCreditOrder = orderData.creditType === "CREDIT";
-
     try {
       const { response, savedData } = await createOrderWithData(orderData, forceProceed);
 
@@ -347,8 +344,8 @@ const CartSummary = ({
     } catch (error) {
       console.error(error);
       
-      // Check if this is a pending credit order error
-      if (isCreditOrder && error.response && error.response.status === 400) {
+      // Check if this is a pending credit order error (for both credit and non-credit orders)
+      if (error.response && error.response.status === 400) {
         const errorData = error.response.data;
         const errorMessage = errorData?.message || "";
         
@@ -357,6 +354,11 @@ const CartSummary = ({
           const pendingData = parsePendingCreditError(errorMessage);
           
           if (pendingData) {
+            // Extract pending orders list from error response if available
+            if (errorData?.pendingOrders && Array.isArray(errorData.pendingOrders)) {
+              pendingData.pendingOrders = errorData.pendingOrders;
+            }
+            
             // Store order data and show modal
             setPendingOrderData({ orderData, paymentMode });
             setPendingCreditData(pendingData);
@@ -659,6 +661,7 @@ const CartSummary = ({
         pendingOrdersCount={pendingCreditData?.pendingOrdersCount || 0}
         totalPendingAmount={pendingCreditData?.totalPendingAmount || 0}
         oldestOrderDate={pendingCreditData?.oldestOrderDate || ""}
+        pendingOrders={pendingCreditData?.pendingOrders || []}
       />
     </div>
   );

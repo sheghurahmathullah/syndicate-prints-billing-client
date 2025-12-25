@@ -9,7 +9,8 @@ const PendingCreditAlertModal = ({
   phoneNumber, 
   pendingOrdersCount, 
   totalPendingAmount, 
-  oldestOrderDate 
+  oldestOrderDate,
+  pendingOrders = []
 }) => {
   if (!isOpen) return null;
 
@@ -60,15 +61,39 @@ const PendingCreditAlertModal = ({
               <span className="detail-label">Total Pending Amount:</span>
               <span className="detail-value highlight amount">₹{totalPendingAmount.toFixed(2)}</span>
             </div>
-            <div className="pending-credit-detail-row">
-              <span className="detail-label">Oldest Pending Order Date:</span>
-              <span className="detail-value">{formatDate(oldestOrderDate)}</span>
-            </div>
           </div>
+          
+          {pendingOrders && pendingOrders.length > 0 && (
+            <div className="pending-orders-list-container">
+              <h4 className="pending-orders-list-title">Pending Orders Details:</h4>
+              <div className="pending-orders-table-wrapper">
+                <table className="pending-orders-table">
+                  <thead>
+                    <tr>
+                      <th>Invoice No.</th>
+                      <th>Order Date</th>
+                      <th>Grand Total</th>
+                      <th>Pending Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingOrders.map((order, index) => (
+                      <tr key={order.orderId || index}>
+                        <td>{order.invoiceNumber || "N/A"}</td>
+                        <td>{formatDate(order.createdAt)}</td>
+                        <td>₹{order.grandTotal ? parseFloat(order.grandTotal).toFixed(2) : "0.00"}</td>
+                        <td className="pending-amount-cell">₹{order.pendingAmount ? parseFloat(order.pendingAmount).toFixed(2) : "0.00"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
           
           <div className="pending-credit-notice">
             <i className="bi bi-info-circle"></i>
-            <span>Please complete the existing pending payment(s) before creating a new credit order.</span>
+            <span>Please complete the existing pending payment(s) before creating a new order.</span>
           </div>
         </div>
         
