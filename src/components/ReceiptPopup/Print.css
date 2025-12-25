@@ -1,69 +1,152 @@
 @media print {
+    @page {
+        margin: 0;
+        size: 80mm auto;
+    }
+
+    /* Hide everything by default, but keep structure */
+    body > *:not(.receipt-popup-overlay) {
+        display: none !important;
+    }
+
+    /* Ensure body and html are visible */
+    html,
+    body {
+        visibility: visible !important;
+        display: block !important;
+    }
+
+    /* Show only the receipt popup and its contents */
     .receipt-popup-overlay {
-        background-color: white;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 5px;
+        visibility: visible !important;
+        display: flex !important;
+    }
+
+    .receipt-popup-overlay * {
+        visibility: visible !important;
+    }
+
+    /* Reset body and html for print */
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        visibility: visible !important;
+        overflow: visible !important;
+    }
+
+    /* Ensure React root and other containers are visible */
+    #root,
+    [id^="root"],
+    [class*="app"],
+    [class*="App"] {
+        visibility: visible !important;
+        display: block !important;
+        position: relative !important;
+    }
+
+    /* Position overlay for print */
+    .receipt-popup-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        min-height: 100% !important;
+        background-color: white !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        margin: 0 !important;
+        z-index: 999999 !important;
+        overflow: visible !important;
     }
 
     .receipt-popup {
-        width: 80mm;
-        max-width: 100%;
-        box-shadow: none;
-        border: 1px solid #000;
-        padding: 8px;
-        margin: 0;
+        width: 80mm !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        background-color: white !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        page-break-inside: avoid !important;
     }
 
-    .d-flex.justify-content-center {
+    /* Hide action buttons */
+    .d-flex.justify-content-center,
+    .btn,
+    .btn-warning,
+    .btn-danger {
         display: none !important;
+        visibility: hidden !important;
     }
 
     /* Company Header */
     .receipt-company-header {
         margin-bottom: 10px;
         padding-bottom: 10px;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .company-logo-name {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         gap: 10px;
         margin-bottom: 8px;
+        visibility: visible !important;
     }
 
     .company-logo {
         width: 40px;
         height: 40px;
         object-fit: contain;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .company-name {
         font-size: 1.2rem;
         margin: 0;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .company-address {
         font-size: 0.75rem;
         margin-bottom: 4px;
         line-height: 1.3;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .company-contact {
         font-size: 0.75rem;
         margin-bottom: 4px;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .company-gstin {
         font-size: 0.75rem;
         margin-bottom: 4px;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .customer-gstin {
         font-size: 0.75rem;
         margin-bottom: 0;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     /* Divider */
@@ -72,62 +155,117 @@
         background-color: #000 !important;
         margin: 8px 0;
         width: 100%;
+        display: block !important;
+        visibility: visible !important;
     }
 
     /* Transaction Details */
     .receipt-transaction-details {
         margin: 10px 0;
         padding-bottom: 0;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .transaction-row-two-columns {
-        display: flex;
+        display: flex !important;
         justify-content: space-between;
         align-items: center;
         margin: 4px 0;
         font-size: 0.8rem;
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    .transaction-left,
+    .transaction-right {
+        flex: 1;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .transaction-left {
-        flex: 1;
         text-align: left;
     }
 
     .transaction-right {
-        flex: 1;
         text-align: right;
     }
 
     /* Table */
     .receipt-table-container {
         margin: 10px 0;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .receipt-table {
         font-size: 0.75rem;
+        width: 100%;
+        border-collapse: collapse;
+        display: table !important;
+        visibility: visible !important;
+    }
+
+    .receipt-table thead {
+        background-color: #000 !important;
+        color: white !important;
+        display: table-header-group !important;
+        visibility: visible !important;
+    }
+
+    .receipt-table tbody {
+        display: table-row-group !important;
+        visibility: visible !important;
+    }
+
+    .receipt-table tr {
+        display: table-row !important;
+        visibility: visible !important;
     }
 
     .receipt-table th {
         padding: 5px 4px;
         font-size: 0.7rem;
         font-weight: 600;
+        border: 1px solid #000;
+        display: table-cell !important;
+        visibility: visible !important;
     }
 
     .receipt-table td {
         padding: 4px;
         font-size: 0.7rem;
+        border: 1px solid #000;
+        color: #000 !important;
+        display: table-cell !important;
+        visibility: visible !important;
+    }
+
+    .receipt-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
+    }
+
+    .receipt-table tbody tr:nth-child(even) td {
+        background-color: #f9f9f9 !important;
     }
 
     /* Summary */
     .receipt-summary {
         margin: 10px 0;
         padding: 10px 0;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .receipt-summary-row {
+        display: flex !important;
+        justify-content: space-between;
         padding: 4px 0;
         font-size: 0.8rem;
         line-height: 1.3;
+        color: #000 !important;
+        visibility: visible !important;
     }
 
     .receipt-total-amount-row {
@@ -135,45 +273,189 @@
         font-weight: 700;
     }
 
-    .receipt-divider {
-        height: 1px;
-        background-color: #000 !important;
-        margin: 6px 0;
-        width: 100%;
-    }
-
     /* Footer */
     .receipt-footer {
         margin: 15px 0 10px;
         padding-top: 10px;
+        display: block !important;
+        visibility: visible !important;
     }
 
     .footer-message {
         font-size: 0.85rem;
-    }
-
-    @page {
-        margin: 0;
-        size: 80mm auto;
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Ensure black and white only */
-    * {
         color: #000 !important;
-        background-color: white !important;
+        visibility: visible !important;
     }
 
-    .receipt-table thead {
+    /* Non-GST Receipt Print Styles */
+    .non-gst-receipt {
+        padding: 8px;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-header {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .bill-estimate-title {
+        font-size: 1.5rem;
+        margin: 0;
+        color: #000 !important;
+        visibility: visible !important;
+        font-weight: 700 !important;
+    }
+
+    .non-gst-transaction-details {
+        margin: 10px 0;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-transaction-row {
+        display: flex !important;
+        justify-content: space-between;
+        margin: 4px 0;
+        font-size: 0.8rem;
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-left,
+    .non-gst-right {
+        flex: 1;
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-left {
+        text-align: left;
+    }
+
+    .non-gst-right {
+        text-align: right;
+    }
+
+    .non-gst-table-container {
+        margin: 10px 0;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table {
+        font-size: 0.75rem;
+        width: 100%;
+        border-collapse: collapse;
+        display: table !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table thead {
         background-color: #000 !important;
         color: white !important;
+        display: table-header-group !important;
+        visibility: visible !important;
     }
 
-    .receipt-table tbody tr:nth-child(even) {
+    .non-gst-table tbody {
+        display: table-row-group !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table tr {
+        display: table-row !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table th {
+        padding: 5px 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border: 1px solid #000;
+        display: table-cell !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table td {
+        padding: 4px;
+        font-size: 0.7rem;
+        border: 1px solid #000;
+        color: #000 !important;
+        display: table-cell !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-table tbody tr:nth-child(even) {
         background-color: #f9f9f9 !important;
+    }
+
+    .non-gst-table tbody tr:nth-child(even) td {
+        background-color: #f9f9f9 !important;
+    }
+
+    .non-gst-summary {
+        margin: 10px 0;
+        padding: 10px 0;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-summary-row {
+        display: flex !important;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 0.8rem;
+        line-height: 1.3;
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-total-amount-row {
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 8px 0;
+    }
+
+    .non-gst-divider {
+        height: 1px;
+        background-color: #000 !important;
+        margin: 6px 0;
+        width: 100%;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-footer {
+        margin: 15px 0 10px;
+        padding-top: 10px;
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    .non-gst-footer-message {
+        font-size: 0.8rem;
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    /* Ensure all text elements are visible and black */
+    .receipt-popup *,
+    .non-gst-receipt * {
+        color: #000 !important;
+    }
+
+    .receipt-popup strong,
+    .non-gst-receipt strong {
+        font-weight: 700 !important;
+        color: #000 !important;
+    }
+
+    /* Ensure images are visible */
+    .company-logo {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 }

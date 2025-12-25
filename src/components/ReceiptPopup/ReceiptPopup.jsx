@@ -42,7 +42,7 @@ const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
   };
 
   const taxPercent = calculateTaxPercent();
-  const showGST = taxPercent >= 1;
+  const isNonGst = taxPercent < 1 && (!orderDetails.tax || orderDetails.tax < 0.01);
 
   // Calculate net amount and credit
   // For credit orders: NET AMOUNT = GRAND TOTAL - CREDIT (pending amount)
@@ -63,6 +63,136 @@ const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
   const billNumber =
     orderDetails.invoiceNumber || orderDetails.orderId || "N/A";
 
+  // Extract EST NO from invoice number (format: XX-XX)
+  const extractEstNo = (invoiceNumber) => {
+    if (!invoiceNumber) return "N/A";
+    // Try to extract pattern like "14-24" from invoice number
+    const match = invoiceNumber.match(/(\d+)-(\d+)/);
+    if (match) {
+      return match[0];
+    }
+    // If no pattern found, use last part or return as is
+    return invoiceNumber.split("-").slice(-2).join("-") || invoiceNumber;
+  };
+
+  const estNo = extractEstNo(billNumber);
+
+  // Render Non-GST Bill (BILL ESTIMATE format)
+  if (isNonGst) {
+    return (
+      <div className="receipt-popup-overlay">
+        <div className="receipt-popup non-gst-receipt">
+          {/* BILL ESTIMATE Header */}
+          <div className="non-gst-header">
+            <h1 className="bill-estimate-title">BILL ESTIMATE</h1>
+          </div>
+
+          {/* Transaction Details */}
+          <div className="non-gst-transaction-details">
+            <div className="non-gst-transaction-row">
+              <span className="non-gst-left">
+                <strong>EST NO :</strong> {estNo}
+              </span>
+              <span className="non-gst-right">
+                <strong>DATE :</strong> {formatDateTime(orderDetails.createdAt)}
+              </span>
+            </div>
+            <div className="non-gst-transaction-row">
+              <span className="non-gst-left">
+                <strong>ATTENDED BY :</strong> {orderDetails.username || "1"}
+              </span>
+              <span className="non-gst-right">
+                <strong>CUSTOMER :</strong> {orderDetails.customerName}
+              </span>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <div className="non-gst-table-container">
+            <table className="non-gst-table">
+              <thead>
+                <tr>
+                  <th>ITEM</th>
+                  <th className="text-center">QTY</th>
+                  <th className="text-right">RATE</th>
+                  <th className="text-right">AMT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderDetails.items &&
+                  orderDetails.items.map((item, index) => {
+                    const itemAmount = item.price * item.quantity;
+                    return (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td className="text-center">{item.quantity}</td>
+                        <td className="text-right">₹{item.price.toFixed(2)}</td>
+                        <td className="text-right">₹{itemAmount.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Summary */}
+          <div className="non-gst-summary">
+            <div className="non-gst-summary-row non-gst-total-amount-row">
+              <span>
+                <strong>TOTAL AMOUNT</strong>
+              </span>
+              <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
+            </div>
+            <div className="non-gst-divider"></div>
+            {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
+              <div className="non-gst-summary-row">
+                <span>
+                  <strong>CREDIT</strong>
+                </span>
+                <span>₹{creditAmount.toFixed(2)}</span>
+              </div>
+            )}
+            {orderDetails.creditType === "CREDIT" && (
+              <>
+                <div className="non-gst-summary-row">
+                  <span>
+                    <strong>NET AMOUNT</strong>
+                  </span>
+                  <span>₹{netAmount.toFixed(0)}</span>
+                </div>
+                <div className="non-gst-divider"></div>
+              </>
+            )}
+            <div className="non-gst-summary-row">
+              <span>
+                <strong>TOTAL PAID</strong>
+              </span>
+              <span>₹{totalPaid.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="non-gst-footer">
+            <p className="non-gst-footer-message">
+              * GST EXTRA AS APPLICABLE
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="d-flex justify-content-center gap-3 mt-4">
+            <button className="btn btn-warning" onClick={onPrint}>
+              Print Receipt
+            </button>
+            <button className="btn btn-danger" onClick={onClose}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render GST Bill (Current design)
   return (
     <div className="receipt-popup-overlay">
       <div className="receipt-popup">
@@ -140,7 +270,7 @@ const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
                       <td className="text-center">{item.quantity}</td>
                       <td className="text-right">₹{item.price.toFixed(2)}</td>
                       <td className="text-right">
-                        {showGST ? `${taxPercent.toFixed(0)}%` : "0%"}
+                        {taxPercent >= 1 ? `${taxPercent.toFixed(0)}%` : "0%"}
                       </td>
                       <td className="text-right">₹{itemAmount.toFixed(2)}</td>
                     </tr>
