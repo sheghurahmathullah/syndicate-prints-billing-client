@@ -7,7 +7,7 @@ const ManageItems = () => {
     <div className="items-container text-light">
       <div className="left-column">
         <h3>
-          <i className="bi bi-box-seam"></i> Add New Item
+          <i className="bi bi-box-seam"></i> Add New Product
         </h3>
         <ItemForm />
       </div>

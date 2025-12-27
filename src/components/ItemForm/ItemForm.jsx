@@ -1,90 +1,100 @@
-import {useContext, useState} from "react";
-import {AppContext} from "../../context/AppContext.jsx";
+import { useContext, useState } from "react";
+import { AppContext } from "../../context/AppContext.jsx";
 import toast from "react-hot-toast";
-import {addItem} from "../../Service/ItemService.js";
+import { addItem } from "../../Service/ItemService.js";
 
 const ItemForm = () => {
-    const {categories, setItemsData, itemsData, setCategories} = useContext(AppContext);
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState({
-        name: "",
-        itemId: "",
-        categoryId: "",
-        price: "",
-        priceBack: "",
-        description: "",
-    });
+  // const {categories, setItemsData, itemsData, setCategories} = useContext(AppContext);
+  const { setItemsData, itemsData } = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({
+    name: "",
+    itemId: "",
+    // categoryId: "",
+    price: "",
+    priceBack: "",
+    description: "",
+  });
 
-    const onChangeHandler = (e) => {
-        const value = e.target.value;
-        const name = e.target.name;
-        setData((data) => ({...data, [name]: value}));
+  const onChangeHandler = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    setData((data) => ({ ...data, [name]: value }));
+  };
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Send plain JSON object; backend expects application/json
+      const response = await addItem(data);
+      if (response.status === 201) {
+        setItemsData([...itemsData, response.data]);
+        // setCategories((prevCategories) =>
+        // prevCategories.map((category) => category.categoryId === data.categoryId ? {...category, items: category.items + 1} : category));
+        toast.success("Item added");
+        setData({
+          name: "",
+          itemId: "",
+          description: "",
+          price: "",
+          priceBack: "",
+          // categoryId: "",
+        });
+      } else {
+        toast.error("Unable to add item");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to add item");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const onSubmitHandler = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            // Send plain JSON object; backend expects application/json
-            const response = await addItem(data);
-            if (response.status === 201) {
-                setItemsData([...itemsData, response.data]);
-                setCategories((prevCategories) =>
-                prevCategories.map((category) => category.categoryId === data.categoryId ? {...category, items: category.items + 1} : category));
-                toast.success("Item added");
-                setData({
-                    name: "",
-                    itemId: "",
-                    description: "",
-                    price: "",
-                    priceBack:"",
-                    categoryId: "",
-                })
-            } else {
-                toast.error("Unable to add item");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Unable to add item");
-        } finally {
-            setLoading(false);
-        }
-    }
+  return (
+    <div
+      className="item-form-container"
+      style={{ height: "100vh", overflowY: "auto", overflowX: "hidden" }}
+    >
+      <div className="mx-2 ">
+        <div className="row">
+          <div className="card col-md-12 form-container">
+            <div className="card-body">
+              <form onSubmit={onSubmitHandler}>
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    className="form-control"
+                    placeholder="Item Name"
+                    onChange={onChangeHandler}
+                    value={data.name}
+                    required
+                  />
+                </div>
 
-    return (
-        <div className="item-form-container" style={{height:'100vh', overflowY: 'auto', overflowX: 'hidden'}}>
-            <div className="mx-2 ">
-                <div className="row">
-                    <div className="card col-md-12 form-container">
-                        <div className="card-body">
-                            <form onSubmit={onSubmitHandler}>
-                                <div className="mb-3">
-                                    <label htmlFor="name" className="form-label">Name</label>
-                                    <input type="text"
-                                           name="name"
-                                           id="name"
-                                           className="form-control"
-                                           placeholder="Item Name"
-                                           onChange={onChangeHandler}
-                                           value={data.name}
-                                           required
-                                    />
-                                </div>
+                <div className="mb-3">
+                  <label htmlFor="itemId" className="form-label">
+                    Item Id
+                  </label>
+                  <input
+                    type="text"
+                    name="itemId"
+                    id="item"
+                    className="form-control"
+                    placeholder="Item Id"
+                    onChange={onChangeHandler}
+                    value={data.itemId}
+                    required
+                  />
+                </div>
 
-                                <div className="mb-3">
-                                    <label htmlFor="itemId" className="form-label">Item Id</label>
-                                    <input type="text"
-                                           name="itemId"
-                                           id="item"
-                                           className="form-control"
-                                           placeholder="Item Id"
-                                           onChange={onChangeHandler}
-                                           value={data.itemId}
-                                           required
-                                    />
-                                </div>
-                                
-                                <div className="mb-3">
+                {/* <div className="mb-3">
                                     <label className="form-label" htmlFor="category">
                                         Category
                                     </label>
@@ -94,38 +104,72 @@ const ItemForm = () => {
                                             <option key={index} value={category.categoryId}>{category.name}</option>
                                         ))}
                                     </select>
-                                </div>
-                                <div className="mb-3 d-flex" style={{justifyContent: 'space-between', gap: '0.5rem'}}>
-                                    <div style={{flex: '1 1 48%'}}>
-                                        <label htmlFor="price" className="form-label">Price</label>
-                                        <input type="number" name="price" id="price" className="form-control" placeholder="&#8377;100.00" onChange={onChangeHandler} value={data.price} required/>
-                                    </div>
-                                    
-                                    <div style={{flex: '1 1 48%'}}>
-                                        <label htmlFor="priceBack" className="form-label">Price Back</label>
-                                        <input type="number" name="priceBack" id="priceBack" className="form-control" placeholder="&#8377;50.00" onChange={onChangeHandler} value={data.priceBack} required/> 
-                                    </div>
-                                </div>
-                                
-                                <div className="mb-3">
-                                    <label htmlFor="description" className="form-label">Description</label>
-                                    <textarea
-                                        rows="3"
-                                        name="description"
-                                        id="description"
-                                        className="form-control"
-                                        placeholder="Write content here.."
-                                        onChange={onChangeHandler}
-                                        value={data.description}></textarea>
-                                </div>
-                                <button type="submit" className="btn btn-warning w-100" disabled={loading}>{loading ? "Loading..." : "Save"}</button>
-                            </form>
-                        </div>
-                    </div>
+                                </div> */}
+                <div
+                  className="mb-3 d-flex"
+                  style={{ justifyContent: "space-between", gap: "0.5rem" }}
+                >
+                  <div style={{ flex: "1 1 48%" }}>
+                    <label htmlFor="price" className="form-label">
+                      Price
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      id="price"
+                      className="form-control"
+                      placeholder="&#8377;100.00"
+                      onChange={onChangeHandler}
+                      value={data.price}
+                      required
+                    />
+                  </div>
+
+                  <div style={{ flex: "1 1 48%" }}>
+                    <label htmlFor="priceBack" className="form-label">
+                      Price Back
+                    </label>
+                    <input
+                      type="number"
+                      name="priceBack"
+                      id="priceBack"
+                      className="form-control"
+                      placeholder="&#8377;50.00"
+                      onChange={onChangeHandler}
+                      value={data.priceBack}
+                      required
+                    />
+                  </div>
                 </div>
+
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">
+                    Description
+                  </label>
+                  <textarea
+                    rows="3"
+                    name="description"
+                    id="description"
+                    className="form-control"
+                    placeholder="Write content here.."
+                    onChange={onChangeHandler}
+                    value={data.description}
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-warning w-100"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Save"}
+                </button>
+              </form>
             </div>
+          </div>
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
 
 export default ItemForm;

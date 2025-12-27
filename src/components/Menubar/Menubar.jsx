@@ -94,17 +94,17 @@ const Menubar = () => {
                       className={`dropdown-item ${isActive("/items") ? "active fw-bold" : ""}`}
                       to="/items"
                     >
-                      <i className="bi bi-box-seam me-2"></i> Manage Items
+                      <i className="bi bi-box-seam me-2"></i> Manage Products
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link
                       className={`dropdown-item ${isActive("/category") ? "active fw-bold" : ""}`}
                       to="/category"
                     >
                       <i className="bi bi-tags me-2"></i> Manage Categories
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Link
                       className={`dropdown-item ${isActive("/users") ? "active fw-bold" : ""}`}
