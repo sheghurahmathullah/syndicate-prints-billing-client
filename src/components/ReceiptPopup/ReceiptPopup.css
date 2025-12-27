@@ -291,6 +291,7 @@
 
   #receipt-print-area * {
     box-sizing: border-box;
+    font-weight: 600 !important;
   }
 
   .receipt-popup-overlay {
@@ -333,6 +334,7 @@
   .company-name {
     font-size: 13px;
     letter-spacing: 0.3px;
+    font-weight: 700 !important;
   }
 
   .company-address,
@@ -342,6 +344,7 @@
     font-size: 8px;
     margin-bottom: 2px;
     line-height: 1.1;
+    font-weight: 600 !important;
   }
 
   .receipt-divider {
@@ -355,11 +358,16 @@
   .transaction-row-two-columns {
     font-size: 8px;
     margin: 3px 0;
+    font-weight: 600 !important;
   }
 
-  .receipt-table-container,
-  .non-gst-table-container {
+  .receipt-table-container {
     margin: 6px 0;
+    overflow: visible !important;
+  }
+
+  .non-gst-table-container {
+    margin: 2px 0;
     overflow: visible !important;
   }
 
@@ -378,12 +386,18 @@
   }
 
   .receipt-table th,
+  .non-gst-table th {
+    font-weight: 700 !important;
+  }
+
+  .receipt-table th,
   .receipt-table td,
   .non-gst-table th,
   .non-gst-table td {
     padding: 2px 3px;
     overflow-wrap: anywhere;
     word-break: break-word;
+    font-weight: 600 !important;
   }
 
   .receipt-summary {
@@ -395,11 +409,13 @@
   .non-gst-summary-row {
     font-size: 9px;
     padding: 2px 0;
+    font-weight: 600 !important;
   }
 
   .receipt-total-amount-row,
   .non-gst-total-amount-row {
     font-size: 11px;
+    font-weight: 700 !important;
   }
 
   .receipt-footer {
@@ -410,6 +426,7 @@
   .footer-message {
     font-size: 9px;
     letter-spacing: 0.3px;
+    font-weight: 600 !important;
   }
 
   .non-gst-receipt {
@@ -417,13 +434,15 @@
   }
 
   .non-gst-header {
-    margin-bottom: 6px;
-    padding-bottom: 4px;
+    margin-bottom: 2px;
+    padding-bottom: 2px;
   }
 
   .bill-estimate-title {
-    font-size: 7px;
-    letter-spacing: 0.8px;
+    font-size: 5px;
+    letter-spacing: 0.4px;
+    font-weight: 700 !important;
+    margin: 0;
   }
 
   /* Force EST NO and DATE on same line in print */
@@ -431,8 +450,9 @@
     display: flex;
     justify-content: space-between;
     white-space: nowrap;
-    font-size: 8px;
-    margin: 3px 0;
+    font-size: 6px;
+    margin: 1px 0;
+    font-weight: 600 !important;
   }
 
   .non-gst-transaction-details .non-gst-transaction-row .non-gst-left,
@@ -441,55 +461,57 @@
   }
 
   .non-gst-transaction-details {
-    margin: 6px 0;
+    margin: 2px 0;
   }
 
   .non-gst-transaction-row {
-    font-size: 8px;
-    margin: 3px 0;
+    font-size: 6px;
+    margin: 1px 0;
+    font-weight: 600 !important;
   }
 
   .non-gst-summary {
-    margin: 6px 0;
-    padding: 4px 0;
+    margin: 2px 0;
+    padding: 2px 0;
   }
 
   .non-gst-total-amount-row {
-    padding: 3px 0;
+    padding: 1px 0;
   }
 
   .non-gst-divider {
-    margin: 4px 0;
+    margin: 2px 0;
   }
 
   .non-gst-footer {
-    margin: 6px 0;
-    padding-top: 4px;
+    margin: 2px 0;
+    padding-top: 2px;
   }
 
   .non-gst-footer-message {
-    font-size: 8px;
+    font-size: 6px;
+    font-weight: 600 !important;
   }
 
   /* Ensure Non-GST table cells are smaller to match GST */
   .non-gst-table th,
   .non-gst-table td {
-    font-size: 8px !important;
-    padding: 2px 3px !important;
+    font-size: 6px !important;
+    padding: 1px 2px !important;
   }
 
   .non-gst-table th {
     color: #000 !important;
-    font-weight: bold !important;
+    font-weight: 700 !important;
   }
 
   .non-gst-summary-row {
-    font-size: 9px !important;
-    padding: 2px 0 !important;
+    font-size: 7px !important;
+    padding: 1px 0 !important;
   }
 
   .non-gst-total-amount-row {
-    font-size: 11px !important;
+    font-size: 8px !important;
     padding: 2px 0 !important;
   }
 }

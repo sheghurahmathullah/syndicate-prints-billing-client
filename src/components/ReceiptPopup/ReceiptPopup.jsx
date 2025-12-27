@@ -92,10 +92,32 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
     return (
       <div className="receipt-popup-overlay">
         <div className="receipt-popup non-gst-receipt">
+          <style>{`
+            @media print {
+              .non-gst-summary {
+                margin: 2px 0 !important;
+                padding: 1px 0 !important;
+              }
+              .non-gst-summary-row {
+                padding: 1px 0 !important;
+                margin: 0 !important;
+              }
+              .non-gst-total-amount-row {
+                padding: 1px 0 !important;
+                margin: 0 !important;
+              }
+           
+            }
+          `}</style>
           <div id="receipt-print-area" className="receipt-print-area">
             {/* BILL ESTIMATE Header */}
             <div className="non-gst-header">
-              <h1 className="bill-estimate-title">BILL ESTIMATE</h1>
+              <h1
+                className="bill-estimate-title"
+                style={{ fontSize: "15px", fontWeight: "bold" }}
+              >
+                BILL ESTIMATE
+              </h1>
             </div>
 
             {/* Transaction Details */}
@@ -152,16 +174,24 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
             </div>
 
             {/* Summary */}
-            <div className="non-gst-summary">
-              <div className="non-gst-summary-row non-gst-total-amount-row">
+            <div
+              className="non-gst-summary"
+              style={{ margin: "3px 0", padding: "2px 0" }}
+            >
+              <div
+                className="non-gst-summary-row non-gst-total-amount-row"
+                style={{ padding: "2px 0", margin: "0" }}
+              >
                 <span>
                   <strong>TOTAL AMOUNT</strong>
                 </span>
                 <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
               </div>
-              <div className="non-gst-divider"></div>
               {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
-                <div className="non-gst-summary-row">
+                <div
+                  className="non-gst-summary-row"
+                  style={{ padding: "2px 0", margin: "0" }}
+                >
                   <span>
                     <strong>CREDIT</strong>
                   </span>
@@ -170,16 +200,21 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
               )}
               {orderDetails.creditType === "CREDIT" && (
                 <>
-                  <div className="non-gst-summary-row">
+                  <div
+                    className="non-gst-summary-row"
+                    style={{ padding: "2px 0", margin: "0" }}
+                  >
                     <span>
                       <strong>NET AMOUNT</strong>
                     </span>
                     <span>₹{netAmount.toFixed(0)}</span>
                   </div>
-                  <div className="non-gst-divider"></div>
                 </>
               )}
-              <div className="non-gst-summary-row">
+              <div
+                className="non-gst-summary-row"
+                style={{ padding: "3px 0", margin: "0" }}
+              >
                 <span>
                   <strong>TOTAL PAID</strong>
                 </span>
@@ -188,8 +223,14 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
             </div>
 
             {/* Footer */}
-            <div className="non-gst-footer">
-              <p className="non-gst-footer-message">
+            <div
+              className="non-gst-footer"
+              style={{ margin: "4px 0", paddingTop: "4px" }}
+            >
+              <p
+                className="non-gst-footer-message"
+                style={{ marginTop: "3px", paddingTop: "3px" }}
+              >
                 * GST EXTRA AS APPLICABLE
               </p>
             </div>
