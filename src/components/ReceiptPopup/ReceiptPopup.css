@@ -492,6 +492,27 @@
         font-size: 11px !important;
         padding: 3px 0 !important;
     }
+
+    /* Explicit GST print overrides (prevent Non-GST overrides from affecting GST) */
+    .receipt-table th,
+    .receipt-table td {
+        font-size: 10px !important;
+        padding: 3px 4px !important;
+        color: #000 !important;
+    }
+
+    .receipt-table th {
+        font-weight: bold !important;
+    }
+
+    .receipt-summary-row {
+        font-size: 11px !important;
+        padding: 3px 0 !important;
+    }
+
+    .receipt-total-amount-row {
+        font-size: 13px !important;
+    }
 }
 
 /* Non-GST Receipt Styles */
