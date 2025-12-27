@@ -33,6 +33,11 @@ const Explore = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const customerNameInputRef = useRef(null);
   
+  // Item autocomplete state
+  const [itemSuggestions, setItemSuggestions] = useState([]);
+  const [showItemSuggestions, setShowItemSuggestions] = useState(false);
+  const [activeItemSuggestionsRow, setActiveItemSuggestionsRow] = useState(null);
+  
   // Get table rows - always show at least 5 rows
   const getTableRows = () => {
     const minRows = 5;
@@ -169,22 +174,49 @@ const Explore = () => {
     };
   }, []);
 
-  // Function to add item to row
-  const addItemToRow = (itemId, rowIndex = null) => {
-    // Convert itemId to string for comparison (itemId is stored as string in backend)
-    const itemIdStr = String(itemId).trim();
-    
+  // Function to add item to row - now accepts both itemId (string/number) or item object
+  const addItemToRow = (itemIdentifier, rowIndex = null) => {
     // Check if itemsData is loaded
     if (!itemsData || itemsData.length === 0) {
       toast.error("Items not loaded yet. Please wait...");
       return;
     }
     
-    const item = itemsData.find(i => String(i.itemId) === itemIdStr);
+    let item;
+    
+    // If itemIdentifier is an object (from autocomplete selection), use it directly
+    if (typeof itemIdentifier === 'object' && itemIdentifier !== null) {
+      item = itemIdentifier;
+    } else {
+      // Otherwise, treat it as itemId or name and search for it
+      const searchTerm = String(itemIdentifier).trim();
+      
+      // Try to find by itemId first (if it's numeric)
+      if (/^\d+$/.test(searchTerm)) {
+        item = itemsData.find(i => String(i.itemId) === searchTerm);
+      }
+      
+      // If not found by ID, try to find by name (exact match first, then partial)
+      if (!item) {
+        item = itemsData.find(i => 
+          i.name.toLowerCase() === searchTerm.toLowerCase()
+        );
+      }
+      
+      // If still not found, try partial name match
+      if (!item) {
+        const matchingItems = itemsData.filter(i => 
+          i.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        if (matchingItems.length === 1) {
+          item = matchingItems[0];
+        }
+      }
+    }
     
     if (!item) {
-      toast.error(`Item with ID "${itemIdStr}" not found`);
-      console.log("Item not found with ID:", itemIdStr);
+      toast.error(`Item "${itemIdentifier}" not found`);
+      console.log("Item not found:", itemIdentifier);
       console.log("Available items:", itemsData.map(i => ({ id: i.itemId, name: i.name })));
       return;
     }
@@ -206,34 +238,49 @@ const Explore = () => {
     // Clear editing state
     setEditingRowIndex(null);
     setEditingInputValue("");
+    setShowItemSuggestions(false);
+    setActiveItemSuggestionsRow(null);
   };
 
-  // Handle item ID input in particulars column
+  // Handle item input in particulars column - now supports both ID and name
   const handleParticularsInput = (rowIndex, value) => {
-    // Only allow numbers
-    if (!/^\d*$/.test(value)) return;
-    
     setEditingInputValue(value);
+    setActiveItemSuggestionsRow(rowIndex);
     
     if (value.length > 0) {
-      // Set timeout to process after user stops typing (reduced to 300ms for faster response)
+      // Filter items for autocomplete suggestions
+      const searchTerm = value.toLowerCase().trim();
+      const filtered = itemsData.filter(item => {
+        const itemIdMatch = String(item.itemId).toLowerCase().includes(searchTerm);
+        const nameMatch = item.name.toLowerCase().includes(searchTerm);
+        return itemIdMatch || nameMatch;
+      }).slice(0, 10); // Limit to 10 suggestions
+      
+      setItemSuggestions(filtered);
+      setShowItemSuggestions(filtered.length > 0);
+      
+      // Set timeout to process after user stops typing (only for numeric IDs)
       if (bufferTimeoutRef.current) {
         clearTimeout(bufferTimeoutRef.current);
       }
       
-      bufferTimeoutRef.current = setTimeout(() => {
-        // Keep as string to match itemId format from backend
-        const itemId = value.trim();
-        if (itemId.length > 0) {
-          console.log("Searching for item with ID:", itemId);
-          addItemToRow(itemId, rowIndex);
-        }
-      }, 300);
+      // Only auto-add if it's a pure numeric ID (existing behavior)
+      if (/^\d+$/.test(value.trim())) {
+        bufferTimeoutRef.current = setTimeout(() => {
+          const itemId = value.trim();
+          if (itemId.length > 0) {
+            console.log("Searching for item with ID:", itemId);
+            addItemToRow(itemId, rowIndex);
+          }
+        }, 300);
+      }
     } else {
-      // Clear timeout if input is empty
+      // Clear timeout and suggestions if input is empty
       if (bufferTimeoutRef.current) {
         clearTimeout(bufferTimeoutRef.current);
       }
+      setItemSuggestions([]);
+      setShowItemSuggestions(false);
     }
   };
 
@@ -245,12 +292,17 @@ const Explore = () => {
       if (bufferTimeoutRef.current) {
         clearTimeout(bufferTimeoutRef.current);
       }
-      // Immediately process the item ID
-      const itemId = e.target.value.trim();
-      if (itemId.length > 0) {
-        addItemToRow(itemId, rowIndex);
+      // Immediately process the input (ID or name)
+      const searchTerm = e.target.value.trim();
+      if (searchTerm.length > 0) {
+        addItemToRow(searchTerm, rowIndex);
       }
     }
+  };
+  
+  // Handle item suggestion click
+  const handleItemSuggestionClick = (item, rowIndex) => {
+    addItemToRow(item, rowIndex);
   };
 
   // Keyboard listener for auto-fill items by itemId (when not in input)
@@ -492,22 +544,54 @@ const Explore = () => {
                       {row ? (
                         <span>{row.name}</span>
                       ) : (
-                        <input
-                          type="text"
-                          className="form-control form-control-sm particular-input"
-                          placeholder="Enter Item ID"
-                          onFocus={() => setEditingRowIndex(index)}
-                          onBlur={() => {
-                            setTimeout(() => {
-                              setEditingRowIndex(null);
-                              setEditingInputValue("");
-                            }, 200);
-                          }}
-                          onChange={(e) => handleParticularsInput(index, e.target.value)}
-                          onKeyPress={(e) => handleParticularsKeyPress(index, e)}
-                          value={editingRowIndex === index ? editingInputValue : ""}
-                          autoComplete="off"
-                        />
+                        <div className="position-relative" style={{ width: "100%" }}>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm particular-input"
+                            placeholder="Enter Item ID or Name"
+                            onFocus={() => {
+                              setEditingRowIndex(index);
+                              if (editingInputValue.length > 0) {
+                                setActiveItemSuggestionsRow(index);
+                                setShowItemSuggestions(true);
+                              }
+                            }}
+                            onBlur={() => {
+                              setTimeout(() => {
+                                setEditingRowIndex(null);
+                                setEditingInputValue("");
+                                setShowItemSuggestions(false);
+                                setActiveItemSuggestionsRow(null);
+                              }, 200);
+                            }}
+                            onChange={(e) => handleParticularsInput(index, e.target.value)}
+                            onKeyPress={(e) => handleParticularsKeyPress(index, e)}
+                            value={editingRowIndex === index ? editingInputValue : ""}
+                            autoComplete="off"
+                          />
+                          {showItemSuggestions && activeItemSuggestionsRow === index && itemSuggestions.length > 0 && (
+                            <div className="customer-suggestions" style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 1000 }}>
+                              {itemSuggestions.map((item, idx) => (
+                                <div
+                                  key={`${item.itemId}_${idx}`}
+                                  className="suggestion-item"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault(); // Prevent input blur
+                                    e.stopPropagation();
+                                  }}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleItemSuggestionClick(item, index);
+                                  }}
+                                >
+                                  <div className="suggestion-name">{item.name}</div>
+                                  <div className="suggestion-phone">ID: {item.itemId} | ₹{item.price}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </td>
                     <td>
