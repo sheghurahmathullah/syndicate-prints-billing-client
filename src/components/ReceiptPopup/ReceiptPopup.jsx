@@ -1,8 +1,14 @@
 import "./ReceiptPopup.css";
-import { AppConstants } from "../../util/constants.js";
 import { assets } from "../../assets/assets.js";
 
 const ReceiptPopup = ({ orderDetails, onClose }) => {
+  // Shop constants
+  const SHOP_NAME = "SYNDICATE PRINTERS";
+  const SHOP_ADDRESS_LINE1 = "BHARATHY SALAI, OPP JAMBAZAR POLICE STATION,";
+  const SHOP_ADDRESS_LINE2 = "ROYAPETTAH, CHENNAI - 14";
+  const SHOP_CONTACT =
+    "PH: +91 9840031990 | EMAIL: printsyndicate2023@gmail.com";
+  const SHOP_GSTIN = "33ALSPS7215E1ZW";
   const handlePrintReceipt = () => {
     window.print();
   };
@@ -45,7 +51,8 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
   };
 
   const taxPercent = calculateTaxPercent();
-  const isNonGst = taxPercent < 1 && (!orderDetails.tax || orderDetails.tax < 0.01);
+  const isNonGst =
+    taxPercent < 1 && (!orderDetails.tax || orderDetails.tax < 0.01);
 
   // Calculate net amount and credit
   // For credit orders: NET AMOUNT = GRAND TOTAL - CREDIT (pending amount)
@@ -98,7 +105,8 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
                   <strong>EST NO :</strong> {estNo}
                 </span>
                 <span className="non-gst-right">
-                  <strong>DATE :</strong> {formatDateTime(orderDetails.createdAt)}
+                  <strong>DATE :</strong>{" "}
+                  {formatDateTime(orderDetails.createdAt)}
                 </span>
               </div>
               <div className="non-gst-transaction-row">
@@ -130,8 +138,12 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
                         <tr key={index}>
                           <td>{item.name}</td>
                           <td className="text-center">{item.quantity}</td>
-                          <td className="text-right">₹{item.price.toFixed(2)}</td>
-                          <td className="text-right">₹{itemAmount.toFixed(2)}</td>
+                          <td className="text-right">
+                            ₹{item.price.toFixed(2)}
+                          </td>
+                          <td className="text-right">
+                            ₹{itemAmount.toFixed(2)}
+                          </td>
                         </tr>
                       );
                     })}
@@ -205,20 +217,13 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
           {/* Company Header */}
           <div className="receipt-company-header">
             <div className="company-logo-name">
-              <img
-                src={assets.logo}
-                alt="Company Logo"
-                className="company-logo"
-              />
-              <h1 className="company-name">
-                {AppConstants.SHOP_NAME.toUpperCase()}
-              </h1>
+              <h1 className="company-name">{SHOP_NAME.toUpperCase()}</h1>
             </div>
-            <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE1}</p>
-            <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE2}</p>
-            <p className="company-contact">{AppConstants.SHOP_CONTACT}</p>
+            <p className="company-address">{SHOP_ADDRESS_LINE1}</p>
+            <p className="company-address">{SHOP_ADDRESS_LINE2}</p>
+            <p className="company-contact">{SHOP_CONTACT}</p>
             <p className="company-gstin">
-              <strong>GSTIN:</strong> {AppConstants.SHOP_GSTIN || "N/A"}
+              <strong>GSTIN:</strong> {SHOP_GSTIN || "N/A"}
             </p>
             {orderDetails.gstin && (
               <p className="customer-gstin">
