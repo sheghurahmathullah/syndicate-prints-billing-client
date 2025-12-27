@@ -265,27 +265,19 @@
     overflow: visible !important;
   }
 
-  /* Hide everything by default except receipt popup */
-  body > *:not(.receipt-popup-overlay) {
-    visibility: hidden !important;
-    display: none !important;
+  body * {
+    visibility: hidden;
   }
 
-  /* Show only the receipt popup overlay and everything inside it */
-  .receipt-popup-overlay {
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-popup-overlay *,
-  .receipt-popup-overlay *::before,
-  .receipt-popup-overlay *::after {
+  #receipt-print-area,
+  #receipt-print-area *,
+  #receipt-print-area *::before,
+  #receipt-print-area *::after {
     visibility: visible !important;
   }
 
-  /* Ensure print area is visible and properly positioned */
   #receipt-print-area {
-    position: relative;
+    position: fixed;
     left: 0;
     top: 0;
     width: 80mm;
@@ -298,61 +290,19 @@
     box-sizing: border-box;
     overflow: visible;
     font-weight: bold;
-    visibility: visible !important;
-    page-break-inside: auto;
-    break-inside: auto;
   }
 
   #receipt-print-area * {
     box-sizing: border-box;
     font-weight: bold;
-    visibility: visible !important;
-  }
-
-  /* Ensure images print correctly */
-  #receipt-print-area img {
-    visibility: visible !important;
-    display: inline-block !important;
-    max-width: 100%;
-    height: auto;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  /* Ensure all text elements are visible */
-  #receipt-print-area p,
-  #receipt-print-area span,
-  #receipt-print-area div,
-  #receipt-print-area h1,
-  #receipt-print-area h2,
-  #receipt-print-area h3,
-  #receipt-print-area strong {
-    visibility: visible !important;
-  }
-
-  /* Explicitly ensure GST bill structure is visible */
-  .receipt-popup #receipt-print-area {
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-popup #receipt-print-area .receipt-company-header,
-  .receipt-popup #receipt-print-area .receipt-transaction-details,
-  .receipt-popup #receipt-print-area .receipt-table-container,
-  .receipt-popup #receipt-print-area .receipt-summary,
-  .receipt-popup #receipt-print-area .receipt-footer {
-    visibility: visible !important;
-    display: block !important;
   }
 
   .receipt-popup-overlay {
     background-color: transparent;
-    position: relative;
-    width: 80mm;
+    position: static;
+    width: auto;
     height: auto;
     display: block;
-    margin: 0;
-    padding: 0;
     visibility: visible !important;
   }
 
@@ -364,9 +314,7 @@
     max-width: 80mm;
     padding: 0;
     border: 0;
-    margin: 0;
     visibility: visible !important;
-    position: relative;
   }
 
   .receipt-popup * {
@@ -381,39 +329,25 @@
     margin-bottom: 8px;
     padding-bottom: 6px;
     visibility: visible !important;
-    display: block !important;
-    page-break-inside: avoid;
   }
 
   .receipt-company-header * {
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .company-logo-name {
-    display: flex !important;
-    visibility: visible !important;
-    page-break-inside: avoid;
-  }
-
-  .company-logo-name * {
     visibility: visible !important;
   }
 
   .company-logo {
     width: 28px;
     height: 28px;
-    visibility: visible !important;
-    display: inline-block !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  }
+
+  .company-logo-name {
+    gap: 8px;
+    margin-bottom: 6px;
   }
 
   .company-name {
     font-size: 16px;
     letter-spacing: 0.5px;
-    visibility: visible !important;
-    display: block !important;
   }
 
   .company-address,
@@ -423,8 +357,6 @@
     font-size: 10px;
     margin-bottom: 3px;
     line-height: 1.2;
-    visibility: visible !important;
-    display: block !important;
   }
 
   .receipt-divider {
@@ -433,37 +365,17 @@
 
   .receipt-transaction-details {
     margin: 8px 0;
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-transaction-details * {
-    visibility: visible !important;
   }
 
   .transaction-row-two-columns {
     font-size: 10px;
     margin: 4px 0;
-    visibility: visible !important;
-    display: flex !important;
-  }
-
-  .transaction-left,
-  .transaction-right {
-    visibility: visible !important;
   }
 
   .receipt-table-container,
   .non-gst-table-container {
     margin: 8px 0;
     overflow: visible !important;
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-table-container *,
-  .non-gst-table-container * {
-    visibility: visible !important;
   }
 
   .receipt-table,
@@ -472,22 +384,12 @@
     width: 100% !important;
     max-width: 100% !important;
     table-layout: fixed;
-    visibility: visible !important;
-    display: table !important;
   }
 
   .receipt-table thead,
   .non-gst-table thead {
     background-color: transparent;
     color: #000;
-    visibility: visible !important;
-    display: table-header-group !important;
-  }
-
-  .receipt-table tbody,
-  .non-gst-table tbody {
-    visibility: visible !important;
-    display: table-row-group !important;
   }
 
   .receipt-table th,
@@ -497,56 +399,32 @@
     padding: 3px 4px;
     overflow-wrap: anywhere;
     word-break: break-word;
-    visibility: visible !important;
-    display: table-cell !important;
   }
 
   .receipt-summary {
     margin: 8px 0;
     padding: 6px 0;
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-summary * {
-    visibility: visible !important;
   }
 
   .receipt-summary-row,
   .non-gst-summary-row {
     font-size: 11px;
     padding: 3px 0;
-    visibility: visible !important;
-    display: flex !important;
   }
 
   .receipt-total-amount-row,
   .non-gst-total-amount-row {
     font-size: 13px;
-    visibility: visible !important;
-  }
-
-  .receipt-divider {
-    visibility: visible !important;
-    display: block !important;
   }
 
   .receipt-footer {
     margin: 8px 0;
     padding-top: 6px;
-    visibility: visible !important;
-    display: block !important;
-  }
-
-  .receipt-footer * {
-    visibility: visible !important;
   }
 
   .footer-message {
     font-size: 11px;
     letter-spacing: 0.5px;
-    visibility: visible !important;
-    display: block !important;
   }
 
   .non-gst-receipt {
