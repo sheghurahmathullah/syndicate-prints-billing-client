@@ -1,645 +1,660 @@
 .receipt-popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .receipt-popup {
-    background-color: white;
-    padding: 30px;
-    border-radius: 0;
-    width: 600px;
-    max-width: 90%;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-height: 90vh;
-    overflow-y: auto;
-    border: 1px solid #000;
+  background-color: white;
+  padding: 30px;
+  border-radius: 0;
+  width: 600px;
+  max-width: 90%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #000;
 }
 
 /* Company Header */
 .receipt-company-header {
-    text-align: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #000;
-    padding-bottom: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 15px;
 }
 
 .company-logo-name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
 }
 
 .company-logo {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
 .company-name {
-    color: #000;
-    font-weight: 700;
-    font-size: 1.5rem;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  color: #000;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .company-address {
-    color: #000;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-    line-height: 1.4;
+  color: #000;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  line-height: 1.4;
 }
 
 .company-contact {
-    color: #000;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+  color: #000;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
 }
 
 .company-gstin {
-    color: #000;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+  color: #000;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
 }
 
 .customer-gstin {
-    color: #000;
-    font-size: 0.9rem;
-    margin-bottom: 0;
+  color: #000;
+  font-size: 0.9rem;
+  margin-bottom: 0;
 }
 
 /* Divider */
 .receipt-divider {
-    height: 1px;
-    background-color: #000;
-    margin: 15px 0;
-    width: 100%;
+  height: 1px;
+  background-color: #000;
+  margin: 15px 0;
+  width: 100%;
 }
 
 /* Transaction Details */
 .receipt-transaction-details {
-    margin: 20px 0;
-    padding-bottom: 0;
+  margin: 20px 0;
+  padding-bottom: 0;
 }
 
 .transaction-row-two-columns {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px 0;
-    font-size: 0.95rem;
-    color: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #000;
 }
 
 .transaction-left {
-    flex: 1;
-    text-align: left;
+  flex: 1;
+  text-align: left;
 }
 
 .transaction-right {
-    flex: 1;
-    text-align: right;
+  flex: 1;
+  text-align: right;
 }
 
 /* Table Container */
 .receipt-table-container {
-    margin: 20px 0;
-    overflow-x: auto;
+  margin: 20px 0;
+  overflow-x: auto;
 }
 
 .receipt-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    border: 1px solid #000;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  border: 1px solid #000;
 }
 
 .receipt-table thead {
-    background-color: #000;
-    color: white;
+  background-color: #000;
+  color: white;
 }
 
 .receipt-table th {
-    padding: 10px 8px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.85rem;
-    border: 1px solid #000;
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #000;
 }
 
 .receipt-table td {
-    padding: 8px;
-    border: 1px solid #000;
-    color: #000;
+  padding: 8px;
+  border: 1px solid #000;
+  color: #000;
 }
 
 .receipt-table tbody tr {
-    background-color: white;
+  background-color: white;
 }
 
 .receipt-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 /* Summary */
 .receipt-summary {
-    margin: 20px 0;
-    border-top: 1px solid #000;
-    padding: 15px 0;
+  margin: 20px 0;
+  border-top: 1px solid #000;
+  padding: 15px 0;
 }
 
 .receipt-summary-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 0.95rem;
-    color: #000;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: #000;
 }
 
 .receipt-summary-row strong {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .receipt-total-amount-row {
-    font-size: 1.15rem;
-    font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 /* Footer */
 .receipt-footer {
-    text-align: center;
-    margin: 20px 0;
-    padding-top: 15px;
-    border-top: 1px solid #000;
+  text-align: center;
+  margin: 20px 0;
+  padding-top: 15px;
+  border-top: 1px solid #000;
 }
 
 .footer-message {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #000;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Action Buttons */
 .d-flex {
-    display: flex;
+  display: flex;
 }
 
 .justify-content-center {
-    justify-content: center;
+  justify-content: center;
 }
 
 .gap-3 {
-    gap: 15px;
+  gap: 15px;
 }
 
 .mt-4 {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .btn {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .btn-warning {
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #000;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
 }
 
 .btn-warning:hover {
-    background-color: #333;
+  background-color: #333;
 }
 
 .btn-danger {
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #000;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
 }
 
 .btn-danger:hover {
-    background-color: #333;
+  background-color: #333;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .text-right {
-    text-align: right;
+  text-align: right;
 }
 
 .no-print {
-    display: flex;
+  display: flex;
 }
 
 @media print {
-    @page {
-        size: 80mm auto;
-        margin: 0;
-    }
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
 
-    html,
-    body {
-        width: 80mm;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-    }
+  html,
+  body {
+    width: 80mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
 
-    body * {
-        visibility: hidden;
-    }
+  body * {
+    visibility: hidden;
+  }
 
-    #receipt-print-area,
-    #receipt-print-area * {
-        visibility: visible;
-    }
+  #receipt-print-area,
+  #receipt-print-area *,
+  #receipt-print-area *::before,
+  #receipt-print-area *::after {
+    visibility: visible !important;
+  }
 
-    #receipt-print-area {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 80mm;
-        max-width: 80mm;
-        padding: 2mm;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        font-size: 12px;
-        line-height: 1.2;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
+  #receipt-print-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    max-width: 80mm;
+    padding: 2mm;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    overflow: visible;
+    font-weight: bold;
+  }
 
-    #receipt-print-area * {
-        box-sizing: border-box;
-    }
+  #receipt-print-area * {
+    box-sizing: border-box;
+    font-weight: bold;
+  }
 
-    .receipt-popup-overlay {
-        background-color: transparent;
-        position: static;
-        width: auto;
-        height: auto;
-        display: block;
-    }
+  .receipt-popup-overlay {
+    background-color: transparent;
+    position: static;
+    width: auto;
+    height: auto;
+    display: block;
+    visibility: visible !important;
+  }
 
-    .receipt-popup {
-        box-shadow: none;
-        max-height: none;
-        overflow: visible;
-        width: 80mm;
-        max-width: 80mm;
-        padding: 0;
-        border: 0;
-    }
+  .receipt-popup {
+    box-shadow: none;
+    max-height: none;
+    overflow: visible;
+    width: 80mm;
+    max-width: 80mm;
+    padding: 0;
+    border: 0;
+    visibility: visible !important;
+  }
 
-    .no-print {
-        display: none !important;
-    }
+  .receipt-popup * {
+    visibility: visible !important;
+  }
 
-    .receipt-company-header {
-        margin-bottom: 8px;
-        padding-bottom: 6px;
-    }
+  .no-print {
+    display: none !important;
+  }
 
-    .company-logo {
-        width: 28px;
-        height: 28px;
-    }
+  .receipt-company-header {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    visibility: visible !important;
+  }
 
-    .company-logo-name {
-        gap: 8px;
-        margin-bottom: 6px;
-    }
+  .receipt-company-header * {
+    visibility: visible !important;
+  }
 
-    .company-name {
-        font-size: 16px;
-        letter-spacing: 0.5px;
-    }
+  .company-logo {
+    width: 28px;
+    height: 28px;
+  }
 
-    .company-address,
-    .company-contact,
-    .company-gstin,
-    .customer-gstin {
-        font-size: 10px;
-        margin-bottom: 3px;
-        line-height: 1.2;
-    }
+  .company-logo-name {
+    gap: 8px;
+    margin-bottom: 6px;
+  }
 
-    .receipt-divider {
-        margin: 6px 0;
-    }
+  .company-name {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
 
-    .receipt-transaction-details {
-        margin: 8px 0;
-    }
+  .company-address,
+  .company-contact,
+  .company-gstin,
+  .customer-gstin {
+    font-size: 10px;
+    margin-bottom: 3px;
+    line-height: 1.2;
+  }
 
-    .transaction-row-two-columns {
-        font-size: 10px;
-        margin: 4px 0;
-    }
+  .receipt-divider {
+    margin: 6px 0;
+  }
 
-    .receipt-table-container,
-    .non-gst-table-container {
-        margin: 8px 0;
-        overflow: visible !important;
-    }
+  .receipt-transaction-details {
+    margin: 8px 0;
+  }
 
-    .receipt-table,
-    .non-gst-table {
-        font-size: 10px;
-        width: 100% !important;
-        max-width: 100% !important;
-        table-layout: fixed;
-    }
+  .transaction-row-two-columns {
+    font-size: 10px;
+    margin: 4px 0;
+  }
 
-    .receipt-table thead,
-    .non-gst-table thead {
-        background-color: transparent;
-        color: #000;
-    }
+  .receipt-table-container,
+  .non-gst-table-container {
+    margin: 8px 0;
+    overflow: visible !important;
+  }
 
-    .receipt-table th,
-    .receipt-table td,
-    .non-gst-table th,
-    .non-gst-table td {
-        padding: 3px 4px;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-    }
+  .receipt-table,
+  .non-gst-table {
+    font-size: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+  }
 
-    .receipt-summary {
-        margin: 8px 0;
-        padding: 6px 0;
-    }
+  .receipt-table thead,
+  .non-gst-table thead {
+    background-color: transparent;
+    color: #000;
+  }
 
-    .receipt-summary-row,
-    .non-gst-summary-row {
-        font-size: 11px;
-        padding: 3px 0;
-    }
+  .receipt-table th,
+  .receipt-table td,
+  .non-gst-table th,
+  .non-gst-table td {
+    padding: 3px 4px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 
-    .receipt-total-amount-row,
-    .non-gst-total-amount-row {
-        font-size: 13px;
-    }
+  .receipt-summary {
+    margin: 8px 0;
+    padding: 6px 0;
+  }
 
-    .receipt-footer {
-        margin: 8px 0;
-        padding-top: 6px;
-    }
+  .receipt-summary-row,
+  .non-gst-summary-row {
+    font-size: 11px;
+    padding: 3px 0;
+  }
 
-    .footer-message {
-        font-size: 11px;
-        letter-spacing: 0.5px;
-    }
+  .receipt-total-amount-row,
+  .non-gst-total-amount-row {
+    font-size: 13px;
+  }
 
-    .non-gst-receipt {
-        padding: 0;
-    }
+  .receipt-footer {
+    margin: 8px 0;
+    padding-top: 6px;
+  }
 
-    .non-gst-header {
-        margin-bottom: 8px;
-        padding-bottom: 6px;
-    }
+  .footer-message {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
 
-    .bill-estimate-title {
-        font-size: 8px;
-        letter-spacing: 1px;
-    }
+  .non-gst-receipt {
+    padding: 0;
+  }
 
-    /* Force EST NO and DATE on same line in print */
-    .non-gst-transaction-details .non-gst-transaction-row {
-        display: flex;
-        justify-content: space-between;
-        white-space: nowrap;
-        font-size: 9px;
-        margin: 4px 0;
-    }
+  .non-gst-header {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
 
-    .non-gst-transaction-details .non-gst-transaction-row .non-gst-left,
-    .non-gst-transaction-details .non-gst-transaction-row .non-gst-right {
-        white-space: nowrap;
-    }
+  .bill-estimate-title {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
 
-    .non-gst-transaction-details {
-        margin: 8px 0;
-    }
+  /* Force EST NO and DATE on same line in print */
+  .non-gst-transaction-details .non-gst-transaction-row {
+    display: flex;
+    justify-content: space-between;
+    white-space: nowrap;
+    font-size: 9px;
+    margin: 4px 0;
+  }
 
-    .non-gst-transaction-row {
-        font-size: 9px;
-        margin: 4px 0;
-    }
+  .non-gst-transaction-details .non-gst-transaction-row .non-gst-left,
+  .non-gst-transaction-details .non-gst-transaction-row .non-gst-right {
+    white-space: nowrap;
+  }
 
-    .non-gst-summary {
-        margin: 8px 0;
-        padding: 6px 0;
-    }
+  .non-gst-transaction-details {
+    margin: 8px 0;
+  }
 
-    .non-gst-total-amount-row {
-        padding: 4px 0;
-    }
+  .non-gst-transaction-row {
+    font-size: 9px;
+    margin: 4px 0;
+  }
 
-    .non-gst-divider {
-        margin: 6px 0;
-    }
+  .non-gst-summary {
+    margin: 8px 0;
+    padding: 6px 0;
+  }
 
-    .non-gst-footer {
-        margin: 8px 0;
-        padding-top: 6px;
-    }
+  .non-gst-total-amount-row {
+    padding: 4px 0;
+  }
 
-    .non-gst-footer-message {
-        font-size: 9px;
-    }
+  .non-gst-divider {
+    margin: 6px 0;
+  }
 
-    /* Ensure Non-GST table cells are smaller to match GST */
-    .non-gst-table th,
-    .non-gst-table td {
-        font-size: 9px !important;
-        padding: 2px 3px !important;
-    }
+  .non-gst-footer {
+    margin: 8px 0;
+    padding-top: 6px;
+  }
 
-    .non-gst-table th {
-        color: #000 !important;
-        font-weight: bold !important;
-    }
+  .non-gst-footer-message {
+    font-size: 9px;
+  }
 
-    .non-gst-summary-row {
-        font-size: 10px !important;
-        padding: 2px 0 !important;
-    }
+  /* Ensure Non-GST table cells are smaller to match GST */
+  .non-gst-table th,
+  .non-gst-table td {
+    font-size: 9px !important;
+    padding: 2px 3px !important;
+  }
 
-    .non-gst-total-amount-row {
-        font-size: 11px !important;
-        padding: 3px 0 !important;
-    }
+  .non-gst-table th {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
 
-    /* Explicit GST print overrides (prevent Non-GST overrides from affecting GST) */
-    .receipt-table th,
-    .receipt-table td {
-        font-size: 10px !important;
-        padding: 3px 4px !important;
-        color: #000 !important;
-    }
+  .non-gst-summary-row {
+    font-size: 10px !important;
+    padding: 2px 0 !important;
+  }
 
-    .receipt-table th {
-        font-weight: bold !important;
-    }
+  .non-gst-total-amount-row {
+    font-size: 11px !important;
+    padding: 3px 0 !important;
+  }
 
-    .receipt-summary-row {
-        font-size: 11px !important;
-        padding: 3px 0 !important;
-    }
+  /* Explicit GST print overrides (prevent Non-GST overrides from affecting GST) */
+  .receipt-table th,
+  .receipt-table td {
+    font-size: 10px !important;
+    padding: 3px 4px !important;
+    color: #000 !important;
+  }
 
-    .receipt-total-amount-row {
-        font-size: 13px !important;
-    }
+  .receipt-table th {
+    font-weight: bold !important;
+  }
+
+  .receipt-summary-row {
+    font-size: 11px !important;
+    padding: 3px 0 !important;
+  }
+
+  .receipt-total-amount-row {
+    font-size: 13px !important;
+  }
 }
 
 /* Non-GST Receipt Styles */
 .non-gst-receipt {
-    padding: 20px;
+  padding: 20px;
 }
 
 .non-gst-header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #000;
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #000;
 }
 
 .bill-estimate-title {
-    color: #000;
-    font-weight: 700;
-    font-size: 2rem;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+  color: #000;
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .non-gst-transaction-details {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 
 .non-gst-transaction-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0;
-    font-size: 0.95rem;
-    color: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 0.95rem;
+  color: #000;
 }
 
 .non-gst-left {
-    flex: 1;
-    text-align: left;
+  flex: 1;
+  text-align: left;
 }
 
 .non-gst-right {
-    flex: 1;
-    text-align: right;
+  flex: 1;
+  text-align: right;
 }
 
 .non-gst-table-container {
-    margin: 20px 0;
-    overflow-x: auto;
+  margin: 20px 0;
+  overflow-x: auto;
 }
 
 .non-gst-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    border: 1px solid #000;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  border: 1px solid #000;
 }
 
 .non-gst-table thead {
-    background-color: #000;
-    color: white;
+  background-color: #000;
+  color: white;
 }
 
 .non-gst-table th {
-    padding: 10px 8px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.85rem;
-    border: 1px solid #000;
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #000;
 }
 
 .non-gst-table td {
-    padding: 8px;
-    border: 1px solid #000;
-    color: #000;
+  padding: 8px;
+  border: 1px solid #000;
+  color: #000;
 }
 
 .non-gst-table tbody tr {
-    background-color: white;
+  background-color: white;
 }
 
 .non-gst-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .non-gst-summary {
-    margin: 20px 0;
-    border-top: 1px solid #000;
-    padding: 15px 0;
+  margin: 20px 0;
+  border-top: 1px solid #000;
+  padding: 15px 0;
 }
 
 .non-gst-summary-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    font-size: 0.95rem;
-    color: #000;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  color: #000;
 }
 
 .non-gst-summary-row strong {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .non-gst-total-amount-row {
-    font-size: 1.3rem;
-    font-weight: 700;
-    padding: 12px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 12px 0;
 }
 
 .non-gst-divider {
-    height: 1px;
-    background-color: #000;
-    margin: 10px 0;
-    width: 100%;
+  height: 1px;
+  background-color: #000;
+  margin: 10px 0;
+  width: 100%;
 }
 
 .non-gst-footer {
-    text-align: center;
-    margin: 20px 0;
-    padding-top: 15px;
-    border-top: 1px solid #000;
+  text-align: center;
+  margin: 20px 0;
+  padding-top: 15px;
+  border-top: 1px solid #000;
 }
 
 .non-gst-footer-message {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #000;
-    margin: 0;
-    font-style: italic;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #000;
+  margin: 0;
+  font-style: italic;
 }
