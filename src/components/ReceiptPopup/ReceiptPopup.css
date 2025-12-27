@@ -439,8 +439,8 @@
   }
 
   .bill-estimate-title {
-    font-size: 5px;
-    letter-spacing: 0.4px;
+    font-size: 9px;
+    letter-spacing: 0.6px;
     font-weight: 700 !important;
     margin: 0;
   }
@@ -450,7 +450,7 @@
     display: flex;
     justify-content: space-between;
     white-space: nowrap;
-    font-size: 6px;
+    font-size: 9px;
     margin: 1px 0;
     font-weight: 600 !important;
   }
@@ -465,7 +465,7 @@
   }
 
   .non-gst-transaction-row {
-    font-size: 6px;
+    font-size: 9px;
     margin: 1px 0;
     font-weight: 600 !important;
   }
@@ -489,14 +489,14 @@
   }
 
   .non-gst-footer-message {
-    font-size: 6px;
+    font-size: 9px;
     font-weight: 600 !important;
   }
 
   /* Ensure Non-GST table cells are smaller to match GST */
   .non-gst-table th,
   .non-gst-table td {
-    font-size: 6px !important;
+    font-size: 9px !important;
     padding: 1px 2px !important;
   }
 
@@ -506,12 +506,12 @@
   }
 
   .non-gst-summary-row {
-    font-size: 7px !important;
+    font-size: 10px !important;
     padding: 1px 0 !important;
   }
 
   .non-gst-total-amount-row {
-    font-size: 8px !important;
+    font-size: 11px !important;
     padding: 2px 0 !important;
   }
 }

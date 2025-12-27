@@ -94,6 +94,17 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
         <div className="receipt-popup non-gst-receipt">
           <style>{`
             @media print {
+              .bill-estimate-title {
+                font-size: 9px !important;
+                letter-spacing: 0.6px !important;
+              }
+              .non-gst-transaction-row {
+                font-size: 9px !important;
+              }
+              .non-gst-table th,
+              .non-gst-table td {
+                font-size: 9px !important;
+              }
               .non-gst-summary {
                 margin: 2px 0 !important;
                 padding: 1px 0 !important;
@@ -101,12 +112,16 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
               .non-gst-summary-row {
                 padding: 1px 0 !important;
                 margin: 0 !important;
+                font-size: 10px !important;
               }
               .non-gst-total-amount-row {
                 padding: 1px 0 !important;
                 margin: 0 !important;
+                font-size: 11px !important;
               }
-           
+              .non-gst-footer-message {
+                font-size: 9px !important;
+              }
             }
           `}</style>
           <div id="receipt-print-area" className="receipt-print-area">
