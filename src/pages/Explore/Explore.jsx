@@ -811,7 +811,6 @@ const Explore = () => {
           <ReceiptPopup
             orderDetails={receiptOrderDetails}
             onClose={handleCloseReceipt}
-            onPrint={handlePrintReceipt}
           />
         </div>
       )}

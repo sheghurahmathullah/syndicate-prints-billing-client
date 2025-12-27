@@ -391,7 +391,6 @@ const CreditManagement = () => {
         <ReceiptPopup
           orderDetails={selectedOrder}
           onClose={handleCloseInvoice}
-          onPrint={handlePrint}
         />
       )}
 

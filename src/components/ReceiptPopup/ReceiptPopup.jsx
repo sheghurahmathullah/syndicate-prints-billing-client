@@ -1,9 +1,12 @@
 import "./ReceiptPopup.css";
-import "./Print.css";
 import { AppConstants } from "../../util/constants.js";
 import { assets } from "../../assets/assets.js";
 
-const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
+const ReceiptPopup = ({ orderDetails, onClose }) => {
+  const handlePrintReceipt = () => {
+    window.print();
+  };
+
   // Format date and time to match receipt format: YYYY-MM-DD HH:MM:S
   const formatDateTime = (dateString) => {
     if (!dateString) return new Date().toLocaleString();
@@ -82,105 +85,107 @@ const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
     return (
       <div className="receipt-popup-overlay">
         <div className="receipt-popup non-gst-receipt">
-          {/* BILL ESTIMATE Header */}
-          <div className="non-gst-header">
-            <h1 className="bill-estimate-title">BILL ESTIMATE</h1>
-          </div>
-
-          {/* Transaction Details */}
-          <div className="non-gst-transaction-details">
-            <div className="non-gst-transaction-row">
-              <span className="non-gst-left">
-                <strong>EST NO :</strong> {estNo}
-              </span>
-              <span className="non-gst-right">
-                <strong>DATE :</strong> {formatDateTime(orderDetails.createdAt)}
-              </span>
+          <div id="receipt-print-area" className="receipt-print-area">
+            {/* BILL ESTIMATE Header */}
+            <div className="non-gst-header">
+              <h1 className="bill-estimate-title">BILL ESTIMATE</h1>
             </div>
-            <div className="non-gst-transaction-row">
-              <span className="non-gst-left">
-                <strong>ATTENDED BY :</strong> {orderDetails.username || "1"}
-              </span>
-              <span className="non-gst-right">
-                <strong>CUSTOMER :</strong> {orderDetails.customerName}
-              </span>
-            </div>
-          </div>
 
-          {/* Items Table */}
-          <div className="non-gst-table-container">
-            <table className="non-gst-table">
-              <thead>
-                <tr>
-                  <th>ITEM</th>
-                  <th className="text-center">QTY</th>
-                  <th className="text-right">RATE</th>
-                  <th className="text-right">AMT</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderDetails.items &&
-                  orderDetails.items.map((item, index) => {
-                    const itemAmount = item.price * item.quantity;
-                    return (
-                      <tr key={index}>
-                        <td>{item.name}</td>
-                        <td className="text-center">{item.quantity}</td>
-                        <td className="text-right">₹{item.price.toFixed(2)}</td>
-                        <td className="text-right">₹{itemAmount.toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Summary */}
-          <div className="non-gst-summary">
-            <div className="non-gst-summary-row non-gst-total-amount-row">
-              <span>
-                <strong>TOTAL AMOUNT</strong>
-              </span>
-              <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
-            </div>
-            <div className="non-gst-divider"></div>
-            {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
-              <div className="non-gst-summary-row">
-                <span>
-                  <strong>CREDIT</strong>
+            {/* Transaction Details */}
+            <div className="non-gst-transaction-details">
+              <div className="non-gst-transaction-row">
+                <span className="non-gst-left">
+                  <strong>EST NO :</strong> {estNo}
                 </span>
-                <span>₹{creditAmount.toFixed(2)}</span>
+                <span className="non-gst-right">
+                  <strong>DATE :</strong> {formatDateTime(orderDetails.createdAt)}
+                </span>
               </div>
-            )}
-            {orderDetails.creditType === "CREDIT" && (
-              <>
+              <div className="non-gst-transaction-row">
+                <span className="non-gst-left">
+                  <strong>ATTENDED BY :</strong> {orderDetails.username || "1"}
+                </span>
+                <span className="non-gst-right">
+                  <strong>CUSTOMER :</strong> {orderDetails.customerName}
+                </span>
+              </div>
+            </div>
+
+            {/* Items Table */}
+            <div className="non-gst-table-container">
+              <table className="non-gst-table">
+                <thead>
+                  <tr>
+                    <th>ITEM</th>
+                    <th className="text-center">QTY</th>
+                    <th className="text-right">RATE</th>
+                    <th className="text-right">AMT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderDetails.items &&
+                    orderDetails.items.map((item, index) => {
+                      const itemAmount = item.price * item.quantity;
+                      return (
+                        <tr key={index}>
+                          <td>{item.name}</td>
+                          <td className="text-center">{item.quantity}</td>
+                          <td className="text-right">₹{item.price.toFixed(2)}</td>
+                          <td className="text-right">₹{itemAmount.toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Summary */}
+            <div className="non-gst-summary">
+              <div className="non-gst-summary-row non-gst-total-amount-row">
+                <span>
+                  <strong>TOTAL AMOUNT</strong>
+                </span>
+                <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
+              </div>
+              <div className="non-gst-divider"></div>
+              {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
                 <div className="non-gst-summary-row">
                   <span>
-                    <strong>NET AMOUNT</strong>
+                    <strong>CREDIT</strong>
                   </span>
-                  <span>₹{netAmount.toFixed(0)}</span>
+                  <span>₹{creditAmount.toFixed(2)}</span>
                 </div>
-                <div className="non-gst-divider"></div>
-              </>
-            )}
-            <div className="non-gst-summary-row">
-              <span>
-                <strong>TOTAL PAID</strong>
-              </span>
-              <span>₹{totalPaid.toFixed(2)}</span>
+              )}
+              {orderDetails.creditType === "CREDIT" && (
+                <>
+                  <div className="non-gst-summary-row">
+                    <span>
+                      <strong>NET AMOUNT</strong>
+                    </span>
+                    <span>₹{netAmount.toFixed(0)}</span>
+                  </div>
+                  <div className="non-gst-divider"></div>
+                </>
+              )}
+              <div className="non-gst-summary-row">
+                <span>
+                  <strong>TOTAL PAID</strong>
+                </span>
+                <span>₹{totalPaid.toFixed(2)}</span>
+              </div>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="non-gst-footer">
-            <p className="non-gst-footer-message">
-              * GST EXTRA AS APPLICABLE
-            </p>
+            {/* Footer */}
+            <div className="non-gst-footer">
+              <p className="non-gst-footer-message">
+                * GST EXTRA AS APPLICABLE
+              </p>
+            </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="d-flex justify-content-center gap-3 mt-4">
-            <button className="btn btn-warning" onClick={onPrint}>
+          <div className="d-flex justify-content-center gap-3 mt-4 no-print">
+            <button className="btn btn-warning" onClick={handlePrintReceipt}>
               Print Receipt
             </button>
             <button className="btn btn-danger" onClick={onClose}>
@@ -196,144 +201,146 @@ const ReceiptPopup = ({ orderDetails, onClose, onPrint }) => {
   return (
     <div className="receipt-popup-overlay">
       <div className="receipt-popup">
-        {/* Company Header */}
-        <div className="receipt-company-header">
-          <div className="company-logo-name">
-            <img
-              src={assets.logo}
-              alt="Company Logo"
-              className="company-logo"
-            />
-            <h1 className="company-name">
-              {AppConstants.SHOP_NAME.toUpperCase()}
-            </h1>
-          </div>
-          <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE1}</p>
-          <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE2}</p>
-          <p className="company-contact">{AppConstants.SHOP_CONTACT}</p>
-          <p className="company-gstin">
-            <strong>GSTIN:</strong> {AppConstants.SHOP_GSTIN || "N/A"}
-          </p>
-          {orderDetails.gstin && (
-            <p className="customer-gstin">
-              <strong>CUSTOMER GSTIN:</strong> {orderDetails.gstin}
+        <div id="receipt-print-area" className="receipt-print-area">
+          {/* Company Header */}
+          <div className="receipt-company-header">
+            <div className="company-logo-name">
+              <img
+                src={assets.logo}
+                alt="Company Logo"
+                className="company-logo"
+              />
+              <h1 className="company-name">
+                {AppConstants.SHOP_NAME.toUpperCase()}
+              </h1>
+            </div>
+            <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE1}</p>
+            <p className="company-address">{AppConstants.SHOP_ADDRESS_LINE2}</p>
+            <p className="company-contact">{AppConstants.SHOP_CONTACT}</p>
+            <p className="company-gstin">
+              <strong>GSTIN:</strong> {AppConstants.SHOP_GSTIN || "N/A"}
             </p>
-          )}
-        </div>
-
-        {/* Transaction Details */}
-        <div className="receipt-transaction-details">
-          <div className="transaction-row-two-columns">
-            <span className="transaction-left">
-              <strong>BILL NO:</strong> {billNumber}
-            </span>
-            <span className="transaction-right">
-              <strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}
-            </span>
+            {orderDetails.gstin && (
+              <p className="customer-gstin">
+                <strong>CUSTOMER GSTIN:</strong> {orderDetails.gstin}
+              </p>
+            )}
           </div>
 
-          {/* Divider */}
+          {/* Transaction Details */}
+          <div className="receipt-transaction-details">
+            <div className="transaction-row-two-columns">
+              <span className="transaction-left">
+                <strong>BILL NO:</strong> {billNumber}
+              </span>
+              <span className="transaction-right">
+                <strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}
+              </span>
+            </div>
+
+            {/* Divider */}
+            <div className="receipt-divider"></div>
+
+            <div className="transaction-row-two-columns">
+              <span className="transaction-left">
+                <strong>ATTENDED BY:</strong> {orderDetails.username || "STAFF"}
+              </span>
+              <span className="transaction-right">
+                <strong>CUSTOMER:</strong> {orderDetails.customerName}
+              </span>
+            </div>
+          </div>
+
+          {/* Divider after transaction details */}
           <div className="receipt-divider"></div>
 
-          <div className="transaction-row-two-columns">
-            <span className="transaction-left">
-              <strong>ATTENDED BY:</strong> {orderDetails.username || "STAFF"}
-            </span>
-            <span className="transaction-right">
-              <strong>CUSTOMER:</strong> {orderDetails.customerName}
-            </span>
+          {/* Items Table */}
+          <div className="receipt-table-container">
+            <table className="receipt-table">
+              <thead>
+                <tr>
+                  <th>ITEM</th>
+                  <th className="text-center">QTY</th>
+                  <th className="text-right">RATE</th>
+                  <th className="text-right">GST</th>
+                  <th className="text-right">AMT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderDetails.items &&
+                  orderDetails.items.map((item, index) => {
+                    const itemAmount = item.price * item.quantity;
+                    return (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td className="text-center">{item.quantity}</td>
+                        <td className="text-right">₹{item.price.toFixed(2)}</td>
+                        <td className="text-right">
+                          {taxPercent >= 1 ? `${taxPercent.toFixed(0)}%` : "0%"}
+                        </td>
+                        <td className="text-right">₹{itemAmount.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
           </div>
-        </div>
 
-        {/* Divider after transaction details */}
-        <div className="receipt-divider"></div>
-
-        {/* Items Table */}
-        <div className="receipt-table-container">
-          <table className="receipt-table">
-            <thead>
-              <tr>
-                <th>ITEM</th>
-                <th className="text-center">QTY</th>
-                <th className="text-right">RATE</th>
-                <th className="text-right">GST</th>
-                <th className="text-right">AMT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderDetails.items &&
-                orderDetails.items.map((item, index) => {
-                  const itemAmount = item.price * item.quantity;
-                  return (
-                    <tr key={index}>
-                      <td>{item.name}</td>
-                      <td className="text-center">{item.quantity}</td>
-                      <td className="text-right">₹{item.price.toFixed(2)}</td>
-                      <td className="text-right">
-                        {taxPercent >= 1 ? `${taxPercent.toFixed(0)}%` : "0%"}
-                      </td>
-                      <td className="text-right">₹{itemAmount.toFixed(2)}</td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Summary */}
-        <div className="receipt-summary">
-          <div className="receipt-summary-row">
-            <span>
-              <strong>GST (SGST + CGST):</strong>
-            </span>
-            <span>
-              ₹{orderDetails.tax ? orderDetails.tax.toFixed(2) : "0.00"}
-            </span>
-          </div>
-          <div className="receipt-summary-row receipt-total-amount-row">
-            <span>
-              <strong>TOTAL AMOUNT:</strong>
-            </span>
-            <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
-          </div>
-          <div className="receipt-divider"></div>
-          {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
+          {/* Summary */}
+          <div className="receipt-summary">
             <div className="receipt-summary-row">
               <span>
-                <strong>CREDIT:</strong>
+                <strong>GST (SGST + CGST):</strong>
               </span>
-              <span>₹{creditAmount.toFixed(2)}</span>
+              <span>
+                ₹{orderDetails.tax ? orderDetails.tax.toFixed(2) : "0.00"}
+              </span>
             </div>
-          )}
-          {orderDetails.creditType === "CREDIT" && (
-            <>
+            <div className="receipt-summary-row receipt-total-amount-row">
+              <span>
+                <strong>TOTAL AMOUNT:</strong>
+              </span>
+              <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
+            </div>
+            <div className="receipt-divider"></div>
+            {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
               <div className="receipt-summary-row">
                 <span>
-                  <strong>NET AMOUNT:</strong>
+                  <strong>CREDIT:</strong>
                 </span>
-                <span>₹{netAmount.toFixed(2)}</span>
+                <span>₹{creditAmount.toFixed(2)}</span>
               </div>
-              <div className="receipt-divider"></div>
-            </>
-          )}
-          <div className="receipt-summary-row">
-            <span>
-              <strong>TOTAL PAID:</strong>
-            </span>
-            <span>₹{totalPaid.toFixed(2)}</span>
+            )}
+            {orderDetails.creditType === "CREDIT" && (
+              <>
+                <div className="receipt-summary-row">
+                  <span>
+                    <strong>NET AMOUNT:</strong>
+                  </span>
+                  <span>₹{netAmount.toFixed(2)}</span>
+                </div>
+                <div className="receipt-divider"></div>
+              </>
+            )}
+            <div className="receipt-summary-row">
+              <span>
+                <strong>TOTAL PAID:</strong>
+              </span>
+              <span>₹{totalPaid.toFixed(2)}</span>
+            </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="receipt-footer">
-          <p className="footer-message">
-            THANKS FOR CHOOSING US..WELCOME AGAIN
-          </p>
+          {/* Footer */}
+          <div className="receipt-footer">
+            <p className="footer-message">
+              THANKS FOR CHOOSING US..WELCOME AGAIN
+            </p>
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="d-flex justify-content-center gap-3 mt-4">
-          <button className="btn btn-warning" onClick={onPrint}>
+        <div className="d-flex justify-content-center gap-3 mt-4 no-print">
+          <button className="btn btn-warning" onClick={handlePrintReceipt}>
             Print Receipt
           </button>
           <button className="btn btn-danger" onClick={onClose}>

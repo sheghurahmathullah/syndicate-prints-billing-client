@@ -239,7 +239,6 @@ const DemoCart = ({customerName, mobileNumber, setMobileNumber, setCustomerName}
                             razorpayPaymentId: orderDetails.paymentDetails?.razorpayPaymentId
                         }}
                         onClose={() => setShowPopup(false)}
-                        onPrint={handlePrintReceipt}
                     />
                 )}
             </div>

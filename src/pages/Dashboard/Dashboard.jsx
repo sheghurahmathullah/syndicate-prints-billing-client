@@ -1530,7 +1530,6 @@ const Dashboard = () => {
         <ReceiptPopup
           orderDetails={selectedOrder}
           onClose={handleCloseInvoice}
-          onPrint={handlePrint}
         />
       )}
     </div>
