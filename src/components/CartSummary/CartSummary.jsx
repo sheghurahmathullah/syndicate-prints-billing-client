@@ -20,7 +20,12 @@ const CartSummary = ({
   setShowQRModal,
   qrCodeImage,
   taxPercent,
-  setTaxPercent
+  setTaxPercent,
+  hideSummary = false,
+  enableCredit: enableCreditProp,
+  setEnableCredit: setEnableCreditProp,
+  paidAmount: paidAmountProp,
+  setPaidAmount: setPaidAmountProp
 }) => {
   const { cartItems, clearCart } = useContext(AppContext);
 
@@ -28,8 +33,15 @@ const CartSummary = ({
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmPaymentType, setConfirmPaymentType] = useState(null);
-  const [enableCredit, setEnableCredit] = useState(false);
-  const [paidAmount, setPaidAmount] = useState("");
+  
+  // Use props if provided, otherwise use local state
+  const [enableCreditLocal, setEnableCreditLocal] = useState(false);
+  const [paidAmountLocal, setPaidAmountLocal] = useState("");
+  
+  const enableCredit = enableCreditProp !== undefined ? enableCreditProp : enableCreditLocal;
+  const setEnableCredit = setEnableCreditProp || setEnableCreditLocal;
+  const paidAmount = paidAmountProp !== undefined ? paidAmountProp : paidAmountLocal;
+  const setPaidAmount = setPaidAmountProp || setPaidAmountLocal;
   const [showPendingCreditModal, setShowPendingCreditModal] = useState(false);
   const [pendingCreditData, setPendingCreditData] = useState(null);
   const [pendingOrderData, setPendingOrderData] = useState(null);
@@ -473,133 +485,127 @@ const CartSummary = ({
                 }
             `}</style>
 
-      <div className="cart-summary-details">
-        <div className="d-flex justify-content-between mb-2 align-items-center">
-          <span className="text-dark">Item:</span>
-          <span className="text-dark">₹{totalAmount.toFixed(2)}</span>
-        </div>
-
-        <div className="d-flex justify-content-between mb-2 align-items-center">
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <span className="text-dark">Tax:</span>
-            <input
-              type="number"
-              className="form-control form-control-sm tax-input"
-              value={taxPercent}
-              min="0"
-              step="0.1"
-              onChange={(e) => {
-                const v = parseFloat(e.target.value);
-                setTaxPercent(Number.isFinite(v) ? Math.max(0, v) : 0);
-              }}
-              aria-label="Tax percentage"
-              title="Set tax percentage"
-            />
-            <span style={{ color: "#666", fontSize: 13 }}>%</span>
+      {!hideSummary && (
+        <div className="cart-summary-details">
+          <div className="d-flex justify-content-between mb-2 align-items-center">
+            <span className="text-dark">Item:</span>
+            <span className="text-dark">₹{totalAmount.toFixed(2)}</span>
           </div>
-          <span className="text-dark">₹{displayTax.toFixed(2)}</span>
-        </div>
 
-        <div className="d-flex justify-content-between mb-2">
-          <span className="text-dark">Total:</span>
-          <span className="text-dark">₹{displayGrandTotal.toFixed(2)}</span>
-        </div>
-      </div>
-
-      {/* Payment Options - Simple Design */}
-      <div className="simple-payment-container">
-        <div className="payment-dropdown-wrapper">
-          <label className="payment-label">Payment:</label>
-          <div className="dropdown-wrapper">
-            <select
-              className="form-select payment-dropdown"
-              value={selectedPayment === "credit" ? "" : selectedPayment || ""}
-              onChange={(e) => {
-                if (e.target.value) {
-                  setSelectedPayment(e.target.value);
-                }
-              }}
-              disabled={isProcessing || selectedPayment === "credit"}
-            >
-              <option value="">Select Payment Method</option>
-              <option value="cash">Cash</option>
-              <option value="upi">UPI</option>
-              <option value="card">Card</option>
-            </select>
-            <i className="bi bi-chevron-down dropdown-arrow"></i>
-          </div>
-        </div>
-
-        <div className="credit-option-wrapper">
-          <label className="credit-checkbox-label">
-            <input
-              type="checkbox"
-              className="credit-checkbox"
-              checked={enableCredit}
-              onChange={(e) => {
-                setEnableCredit(e.target.checked);
-                if (!e.target.checked) {
-                  setPaidAmount("");
-                }
-              }}
-              disabled={isProcessing || !selectedPayment || selectedPayment === "credit"}
-            />
-            <span className="credit-label-text">Enable Credit</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Credit Payment Details Box */}
-      {enableCredit && selectedPayment && selectedPayment !== "credit" && (
-        <div className="credit-payment-box">
-          <div className="credit-box-header">
-            <span className="credit-box-title">
-              <i className="bi bi-credit-card"></i> Credit Payment Details
-            </span>
-          </div>
-          <div className="credit-box-content">
-            <div className="credit-amount-row">
-              <label>Total Amount:</label>
-              <span className="credit-amount-value">₹{displayGrandTotal.toFixed(2)}</span>
-            </div>
-            <div className="credit-input-row">
-              <label htmlFor="paidAmount">Paid Amount:</label>
+          <div className="d-flex justify-content-between mb-2 align-items-center">
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span className="text-dark">Tax:</span>
               <input
-                id="paidAmount"
                 type="number"
-                className="form-control credit-amount-input"
-                value={paidAmount}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "" || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)) {
-                    setPaidAmount(value);
-                  }
-                }}
-                placeholder="0.00"
+                className="form-control form-control-sm tax-input"
+                value={taxPercent}
                 min="0"
-                max={displayGrandTotal}
-                step="0.01"
-                disabled={isProcessing}
+                step="0.1"
+                onChange={(e) => {
+                  const v = parseFloat(e.target.value);
+                  setTaxPercent(Number.isFinite(v) ? Math.max(0, v) : 0);
+                }}
+                aria-label="Tax percentage"
+                title="Set tax percentage"
               />
+              <span style={{ color: "#666", fontSize: 13 }}>%</span>
             </div>
-            <div className="credit-amount-row">
-              <label>Balance Amount:</label>
-              <span className="credit-balance-value">
-                ₹{Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}
-              </span>
-            </div>
+            <span className="text-dark">₹{displayTax.toFixed(2)}</span>
+          </div>
+
+          <div className="d-flex justify-content-between mb-2">
+            <span className="text-dark">Total:</span>
+            <span className="text-dark">₹{displayGrandTotal.toFixed(2)}</span>
           </div>
         </div>
       )}
 
-      <div className="d-flex gap-3 mt-3 py-1">
-        <button
-          className="btn btn-warning flex-grow-1 modern-btn"
-          onClick={handlePlaceOrder}
-          disabled={isProcessing || !selectedPayment}
-        >
-          {isProcessing ? "Processing..." : "Place Order"}
-        </button>
+      {/* Compact Payment Controls - Single Row Layout */}
+      <div className="compact-payment-container">
+        <div className="payment-controls-row">
+          <div className="payment-method-compact">
+            <label className="payment-label-compact">Payment:</label>
+            <div className="dropdown-wrapper-compact">
+              <select
+                className="form-select payment-dropdown-compact"
+                value={selectedPayment === "credit" ? "" : selectedPayment || ""}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedPayment(e.target.value);
+                  }
+                }}
+                disabled={isProcessing || selectedPayment === "credit"}
+              >
+                <option value="">Select</option>
+                <option value="cash">Cash</option>
+                <option value="upi">UPI</option>
+                <option value="card">Card</option>
+              </select>
+              <i className="bi bi-chevron-down dropdown-arrow-compact"></i>
+            </div>
+          </div>
+
+          <div className="credit-checkbox-compact">
+            <label className="credit-checkbox-label-compact">
+              <input
+                type="checkbox"
+                className="credit-checkbox-compact-input"
+                checked={enableCredit}
+                onChange={(e) => {
+                  setEnableCredit(e.target.checked);
+                  if (!e.target.checked) {
+                    setPaidAmount("");
+                  }
+                }}
+                disabled={isProcessing || !selectedPayment || selectedPayment === "credit"}
+              />
+              <span className="credit-label-text-compact">Enable Credit</span>
+            </label>
+          </div>
+
+          {/* Credit Details (only when enabled) - Inline with other controls */}
+          {enableCredit && selectedPayment && selectedPayment !== "credit" && (
+            <>
+              <div className="credit-detail-item">
+                <span className="credit-label-compact">Total:</span>
+                <span className="credit-value-compact">₹{displayGrandTotal.toFixed(2)}</span>
+              </div>
+              <div className="credit-detail-item">
+                <span className="credit-label-compact">Paid:</span>
+                <input
+                  type="number"
+                  className="credit-input-compact"
+                  value={paidAmount}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)) {
+                      setPaidAmount(value);
+                    }
+                  }}
+                  placeholder="0.00"
+                  min="0"
+                  max={displayGrandTotal}
+                  step="0.01"
+                  disabled={isProcessing}
+                />
+              </div>
+              <div className="credit-detail-item">
+                <span className="credit-label-compact">Balance:</span>
+                <span className="credit-balance-compact">
+                  ₹{Math.max(0, (displayGrandTotal - (parseFloat(paidAmount) || 0))).toFixed(2)}
+                </span>
+              </div>
+            </>
+          )}
+
+          <button
+            className="btn btn-warning place-order-btn-compact"
+            onClick={handlePlaceOrder}
+            disabled={isProcessing || !selectedPayment}
+          >
+            {isProcessing ? "Processing..." : "Place Order"}
+          </button>
+        </div>
       </div>
 
       {showConfirm &&

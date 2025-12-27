@@ -1,21 +1,56 @@
 import "./Explore.css";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "../../context/AppContext.jsx";
-import DisplayCategory from "../../components/DisplayCategory/DisplayCategory.jsx";
-import DisplayItems from "../../components/DisplayItems/DisplayItems.jsx";
-import CustomerForm from "../../components/CustomerForm/CustomerForm.jsx";
-import CartItems from "../../components/CartItems/CartItems.jsx";
+import PaymentSummary from "../../components/PaymentSummary/PaymentSummary.jsx";
 import CartSummary from "../../components/CartSummary/CartSummary.jsx";
 import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
+import toast from "react-hot-toast";
+import { fetchCustomers } from "../../Service/CustomerService.js";
+import { fetchDashboardData } from "../../Service/Dashboard.js";
 
 const Explore = () => {
-  const { categories, cartItems } = useContext(AppContext);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { itemsData, cartItems, addToCart, removeFromCart, updateQuantity, updateCustomPrice, users } = useContext(AppContext);
   const [customerName, setCustomerName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [customerGstin, setCustomerGstin] = useState("");
-  const [taxPercent, setTaxPercent] = useState(1);
+  const [taxPercent, setTaxPercent] = useState(18); // Default 18% for GST
+  const [gstType, setGstType] = useState("withGst"); // "withGst" or "withoutGst"
   const [username, setUsername] = useState("");
+  const [billNumber, setBillNumber] = useState(""); // Placeholder, will be generated on backend
+  const inputBufferRef = useRef("");
+  const bufferTimeoutRef = useRef(null);
+  
+  // Credit state - lifted to Explore to share between CartSummary and PaymentSummary
+  const [enableCredit, setEnableCredit] = useState(false);
+  const [paidAmount, setPaidAmount] = useState("");
+  
+  // Track which row input is currently being edited
+  const [editingRowIndex, setEditingRowIndex] = useState(null);
+  const [editingInputValue, setEditingInputValue] = useState("");
+
+  // Customer autocomplete state
+  const [customerSuggestions, setCustomerSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const customerNameInputRef = useRef(null);
+  
+  // Get table rows - always show at least 5 rows
+  const getTableRows = () => {
+    const minRows = 5;
+    const maxRows = Math.max(cartItems.length, minRows);
+    const rows = [];
+    
+    // Add cart items as rows
+    for (let i = 0; i < maxRows; i++) {
+      if (i < cartItems.length) {
+        rows.push(cartItems[i]);
+      } else {
+        rows.push(null); // Empty row
+      }
+    }
+    return rows;
+  };
+  
+  const tableRows = getTableRows();
 
   // QR Modal states - managed at Explore page level
   const [showUpiOptions, setShowUpiOptions] = useState(false);
@@ -34,7 +69,9 @@ const Explore = () => {
     },
     0
   );
-  const displayTax = totalAmount * (taxPercent / 100);
+  // Calculate tax based on GST type
+  const effectiveTaxPercent = gstType === "withGst" ? taxPercent : 0;
+  const displayTax = totalAmount * (effectiveTaxPercent / 100);
   const displayGrandTotal = totalAmount + displayTax;
 
   // Load QR code from Settings on component mount
@@ -44,6 +81,78 @@ const Explore = () => {
       const config = JSON.parse(savedPaymentConfig);
       setQRCodeImage(config.qrCode);
     }
+  }, []);
+
+  // Function to load customer data for auto-complete
+  const loadCustomerData = async () => {
+    try {
+      const customerMap = new Map();
+      
+      // 1. Fetch customers from the customers API
+      try {
+        const customersResponse = await fetchCustomers();
+        const customers = Array.isArray(customersResponse?.data) ? customersResponse.data : [];
+        
+        customers.forEach(customer => {
+          if (customer.name && customer.phoneNumber) {
+            const key = `${customer.name.toLowerCase()}_${customer.phoneNumber}`;
+            if (!customerMap.has(key)) {
+              customerMap.set(key, {
+                name: customer.name,
+                phoneNumber: customer.phoneNumber
+              });
+            }
+          }
+        });
+      } catch (customerError) {
+        console.error("Error loading customers from API:", customerError);
+        // Continue to load from orders even if API fails
+      }
+      
+      // 2. Also fetch from recent orders to include customers who haven't been added to the customers table
+      try {
+        const response = await fetchDashboardData("last_30_days", null, null, null);
+        const orders = response.data?.recentOrders || [];
+        
+        orders.forEach(order => {
+          if (order.customerName && order.phoneNumber) {
+            const key = `${order.customerName.toLowerCase()}_${order.phoneNumber}`;
+            if (!customerMap.has(key)) {
+              customerMap.set(key, {
+                name: order.customerName,
+                phoneNumber: order.phoneNumber
+              });
+            }
+          }
+        });
+      } catch (orderError) {
+        console.error("Error loading customer data from orders:", orderError);
+      }
+      
+      setCustomerSuggestions(Array.from(customerMap.values()));
+    } catch (error) {
+      console.error("Error loading customer data:", error);
+    }
+  };
+
+  // Fetch customers from API and orders for auto-complete
+  useEffect(() => {
+    loadCustomerData();
+    
+    // Listen for customer updates to refresh suggestions
+    const handleCustomerUpdate = () => {
+      loadCustomerData();
+    };
+    
+    window.addEventListener('customerAdded', handleCustomerUpdate);
+    window.addEventListener('customerUpdated', handleCustomerUpdate);
+    window.addEventListener('customerDeleted', handleCustomerUpdate);
+    
+    return () => {
+      window.removeEventListener('customerAdded', handleCustomerUpdate);
+      window.removeEventListener('customerUpdated', handleCustomerUpdate);
+      window.removeEventListener('customerDeleted', handleCustomerUpdate);
+    };
   }, []);
 
   // Listen for receipt show event
@@ -60,6 +169,134 @@ const Explore = () => {
     };
   }, []);
 
+  // Function to add item to row
+  const addItemToRow = (itemId, rowIndex = null) => {
+    // Convert itemId to string for comparison (itemId is stored as string in backend)
+    const itemIdStr = String(itemId).trim();
+    
+    // Check if itemsData is loaded
+    if (!itemsData || itemsData.length === 0) {
+      toast.error("Items not loaded yet. Please wait...");
+      return;
+    }
+    
+    const item = itemsData.find(i => String(i.itemId) === itemIdStr);
+    
+    if (!item) {
+      toast.error(`Item with ID "${itemIdStr}" not found`);
+      console.log("Item not found with ID:", itemIdStr);
+      console.log("Available items:", itemsData.map(i => ({ id: i.itemId, name: i.name })));
+      return;
+    }
+    
+    // Convert price to number (handle BigDecimal from backend)
+    const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+    
+    console.log("Found item:", item);
+    toast.success(`Added ${item.name} to cart`);
+
+    // Add to cart with proper price conversion
+    addToCart({
+      name: item.name,
+      price: itemPrice,
+      quantity: 1,
+      itemId: item.itemId,
+    });
+    
+    // Clear editing state
+    setEditingRowIndex(null);
+    setEditingInputValue("");
+  };
+
+  // Handle item ID input in particulars column
+  const handleParticularsInput = (rowIndex, value) => {
+    // Only allow numbers
+    if (!/^\d*$/.test(value)) return;
+    
+    setEditingInputValue(value);
+    
+    if (value.length > 0) {
+      // Set timeout to process after user stops typing (reduced to 300ms for faster response)
+      if (bufferTimeoutRef.current) {
+        clearTimeout(bufferTimeoutRef.current);
+      }
+      
+      bufferTimeoutRef.current = setTimeout(() => {
+        // Keep as string to match itemId format from backend
+        const itemId = value.trim();
+        if (itemId.length > 0) {
+          console.log("Searching for item with ID:", itemId);
+          addItemToRow(itemId, rowIndex);
+        }
+      }, 300);
+    } else {
+      // Clear timeout if input is empty
+      if (bufferTimeoutRef.current) {
+        clearTimeout(bufferTimeoutRef.current);
+      }
+    }
+  };
+
+  // Handle Enter key press in particulars input
+  const handleParticularsKeyPress = (rowIndex, e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Clear any pending timeout
+      if (bufferTimeoutRef.current) {
+        clearTimeout(bufferTimeoutRef.current);
+      }
+      // Immediately process the item ID
+      const itemId = e.target.value.trim();
+      if (itemId.length > 0) {
+        addItemToRow(itemId, rowIndex);
+      }
+    }
+  };
+
+  // Keyboard listener for auto-fill items by itemId (when not in input)
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Only process if not typing in an input field
+      const target = e.target;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+
+      // Check if it's a number key
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        
+        // Add to buffer
+        inputBufferRef.current += e.key;
+        
+        // Clear existing timeout
+        if (bufferTimeoutRef.current) {
+          clearTimeout(bufferTimeoutRef.current);
+        }
+        
+        // Set timeout to process after 500ms of no input
+        bufferTimeoutRef.current = setTimeout(() => {
+          const itemId = inputBufferRef.current.trim();
+          if (itemId.length > 0) {
+            console.log("Keyboard input - searching for item with ID:", itemId);
+            addItemToRow(itemId);
+          }
+          // Clear buffer
+          inputBufferRef.current = "";
+        }, 500);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+      if (bufferTimeoutRef.current) {
+        clearTimeout(bufferTimeoutRef.current);
+      }
+    };
+  }, [itemsData, tableRows]);
+
   const handlePrintReceipt = () => {
     window.print();
   };
@@ -69,42 +306,304 @@ const Explore = () => {
     setReceiptOrderDetails(null);
   };
 
+  const getItemPrice = (item) => {
+    const unitPrice = item.customPrice !== null && item.customPrice !== undefined ? item.customPrice : item.price;
+    return unitPrice * item.quantity;
+  };
+
+  // Remove row
+  const removeRow = (itemId) => {
+    removeFromCart(itemId);
+  };
+
+  // Update row quantity
+  const updateRowQuantity = (itemId, newQuantity) => {
+    if (newQuantity >= 1) {
+      updateQuantity(itemId, newQuantity);
+    }
+  };
+
+  // Update row price
+  const updateRowPrice = (itemId, newPrice) => {
+    updateCustomPrice(itemId, newPrice);
+  };
+
   return (
-    <div className="explore-container text-light">
-      <div className="left-column">
-        <p className="text-dark fs-4 fst-italic">Categories</p>
-        <div className="first-row" style={{ overflowY: "auto" }}>
-          <DisplayCategory
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            categories={categories}
+    <div className="explore-container-new">
+      {/* First Container Row - Customer Information */}
+      <div className="explore-row explore-row-top">
+        <div className="customer-info-grid">
+          <div className="customer-field">
+            <label className="customer-label">Select user:</label>
+            <select
+              name="username"
+              id="username"
+              className="form-control form-control-sm"
+              onChange={(e) => setUsername(e.target.value)}
+              value={username || ""}
+              required
+            >
+              <option value="">--SELECT USER--</option>
+              {Array.isArray(users) &&
+                users.map((user, index) => (
+                  <option key={index} value={user.name}>
+                    {user.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          
+          <div className="customer-field">
+            <label className="customer-label">Customer name:</label>
+            <div className="position-relative">
+              <input
+                ref={customerNameInputRef}
+                type="text"
+                className="form-control form-control-sm"
+                value={customerName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCustomerName(value);
+                  setShowSuggestions(value.length > 0);
+                  
+                  // Auto-fill phone number if exact match found
+                  const matchedCustomer = customerSuggestions.find(
+                    c => c.name.toLowerCase() === value.toLowerCase()
+                  );
+                  if (matchedCustomer) {
+                    setMobileNumber(matchedCustomer.phoneNumber);
+                    setShowSuggestions(false);
+                  }
+                }}
+                onBlur={(e) => {
+                  // Don't close if clicking inside suggestions
+                  if (!e.relatedTarget || !e.relatedTarget.closest('.customer-suggestions')) {
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }
+                }}
+                onFocus={() => customerName && setShowSuggestions(true)}
+                required
+                autoComplete="off"
+              />
+              {showSuggestions && customerSuggestions.filter(customer =>
+                customer.name.toLowerCase().includes((customerName || '').toLowerCase())
+              ).length > 0 && (
+                <div className="customer-suggestions">
+                  {customerSuggestions
+                    .filter(customer =>
+                      customer.name.toLowerCase().includes((customerName || '').toLowerCase())
+                    )
+                    .map((customer, index) => (
+                      <div
+                        key={`${customer.name}_${customer.phoneNumber}_${index}`}
+                        className="suggestion-item"
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevent input blur
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setCustomerName(customer.name);
+                          setMobileNumber(customer.phoneNumber);
+                          setShowSuggestions(false);
+                          // Focus back on input after selection
+                          if (customerNameInputRef.current) {
+                            customerNameInputRef.current.focus();
+                          }
+                        }}
+                      >
+                        <div className="suggestion-name">{customer.name}</div>
+                        <div className="suggestion-phone">{customer.phoneNumber}</div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="customer-field">
+            <label className="customer-label">Mobile number:</label>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              value={mobileNumber}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d{0,10}$/.test(value)) {
+                  setMobileNumber(value);
+                }
+              }}
+              maxLength={10}
+              required
+            />
+          </div>
+
+          <div className="customer-field">
+            <label className="customer-label">GSTIN:</label>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              value={customerGstin}
+              onChange={(e) => {
+                const value = e.target.value.toUpperCase();
+                if (/^[A-Z0-9]{0,15}$/.test(value)) {
+                  setCustomerGstin(value);
+                }
+              }}
+              maxLength={15}
+              placeholder="Optional"
+            />
+          </div>
+
+          <div className="customer-field">
+            <label className="customer-label">Bill number:</label>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              value={billNumber}
+              onChange={(e) => setBillNumber(e.target.value)}
+              placeholder="Auto-generated"
+              readOnly
           />
         </div>
-        <hr className="horizontal-line" />
-        <div className="second-row" style={{ overflowY: "auto" }}>
-          <DisplayItems selectedCategory={selectedCategory} />
         </div>
       </div>
-      <div className="right-column">
-        <div className="customer-form-section">
-          <CustomerForm
-            customerName={customerName}
-            mobileNumber={mobileNumber}
-            customerGstin={customerGstin}
-            username={username}
-            setUsername={setUsername}
-            setMobileNumber={setMobileNumber}
-            setCustomerName={setCustomerName}
-            setCustomerGstin={setCustomerGstin}
-            taxPercent={taxPercent}
-            setTaxPercent={setTaxPercent}
-          />
+
+      {/* Second Container Row - Table and Payment Summary */}
+      <div className="explore-row explore-row-middle">
+        <div className="table-summary-container">
+          {/* Left Side - Table */}
+          <div className="table-container">
+            <table className="cart-items-table">
+              <thead>
+                <tr>
+                  <th>Particulars</th>
+                  <th>Qty</th>
+                  <th>Individual Price</th>
+                  <th>Total Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row, index) => (
+                  <tr key={index}>
+                    <td className="particular-name">
+                      {row ? (
+                        <span>{row.name}</span>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm particular-input"
+                          placeholder="Enter Item ID"
+                          onFocus={() => setEditingRowIndex(index)}
+                          onBlur={() => {
+                            setTimeout(() => {
+                              setEditingRowIndex(null);
+                              setEditingInputValue("");
+                            }, 200);
+                          }}
+                          onChange={(e) => handleParticularsInput(index, e.target.value)}
+                          onKeyPress={(e) => handleParticularsKeyPress(index, e)}
+                          value={editingRowIndex === index ? editingInputValue : ""}
+                          autoComplete="off"
+                        />
+                      )}
+                    </td>
+                    <td>
+                      {row ? (
+                        <div className="quantity-controls">
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => updateRowQuantity(row.itemId, row.quantity - 1)}
+                            disabled={row.quantity === 1}
+                          >
+                            <i className="bi bi-dash"></i>
+                          </button>
+                          <span className="quantity-value">{row.quantity}</span>
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => updateRowQuantity(row.itemId, row.quantity + 1)}
+                          >
+                            <i className="bi bi-plus"></i>
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td>
+                      {row ? (
+                        <input
+                          type="number"
+                          className="form-control form-control-sm price-input"
+                          placeholder={row.price.toFixed(2)}
+                          value={row.customPrice !== null && row.customPrice !== undefined ? row.customPrice : ""}
+                          onChange={(e) => updateRowPrice(row.itemId, e.target.value)}
+                          onBlur={(e) => {
+                            if (e.target.value === "") {
+                              updateRowPrice(row.itemId, row.price);
+                            }
+                          }}
+                          min="0"
+                          step="0.01"
+                        />
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td className="total-price">
+                      {row ? (
+                        `₹${getItemPrice(row).toFixed(2)}`
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td>
+                      {row ? (
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => removeRow(row.itemId)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {cartItems.length >= 5 && (
+                  <tr>
+                    <td colSpan="5" className="add-row-cell">
+                      <div className="add-row-message">
+                        <i className="bi bi-info-circle"></i> All rows filled. Press item ID to add more products.
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
         </div>
-        <hr className="my-3 text-dark" />
-        <div className="cart-items-section">
-          <CartItems />
+
+          {/* Right Side - Payment Summary */}
+          <div className="summary-container">
+            <PaymentSummary 
+              cartItems={cartItems} 
+              taxPercent={taxPercent} 
+              setTaxPercent={setTaxPercent}
+              enableCredit={enableCredit}
+              paidAmount={paidAmount}
+              displayGrandTotal={displayGrandTotal}
+              gstType={gstType}
+              setGstType={setGstType}
+            />
+          </div>
         </div>
-        <div className="cart-summary-section">
+      </div>
+
+      {/* Third Container Row - Payment Controls */}
+      <div className="explore-row explore-row-bottom">
           <CartSummary
             customerName={customerName}
             mobileNumber={mobileNumber}
@@ -120,85 +619,15 @@ const Explore = () => {
             showQRModal={showQRModal}
             setShowQRModal={setShowQRModal}
             qrCodeImage={qrCodeImage}
+            hideSummary={true}
+            enableCredit={enableCredit}
+            setEnableCredit={setEnableCredit}
+            paidAmount={paidAmount}
+            setPaidAmount={setPaidAmount}
           />
-        </div>
       </div>
 
-      {/* QR Modals - Rendered at page level, not in cart container */}
-      {/* Commented out UPI options modal - now showing QR code directly */}
-      {/* {showUpiOptions && (
-        <div
-          className="explore-qr-modal-overlay"
-          onClick={() => setShowUpiOptions(false)}
-        >
-          <div
-            className="explore-qr-modal-content upi-options-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="explore-qr-modal-header">
-              <h3>
-                <i className="bi bi-phone"></i>
-                Select UPI Payment Method
-              </h3>
-              <button
-                className="explore-qr-close-btn"
-                onClick={() => setShowUpiOptions(false)}
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-            </div>
-            <div className="explore-qr-modal-body">
-              <p className="upi-options-subtitle">
-                Choose how you want to receive payment
-              </p>
-              <div className="upi-options-grid">
-                <button
-                  className="upi-option-card"
-                  onClick={() => {
-                    setShowUpiOptions(false);
-                    // Trigger online UPI in CartSummary
-                    const event = new CustomEvent("upiOptionSelected", {
-                      detail: "online",
-                    });
-                    window.dispatchEvent(event);
-                  }}
-                >
-                  <div className="upi-option-icon">
-                    <i className="bi bi-credit-card-2-front"></i>
-                  </div>
-                  <h4>Online UPI</h4>
-                  <p>Payment via Razorpay</p>
-                </button>
-                <button
-                  className="upi-option-card"
-                  onClick={() => {
-                    setShowUpiOptions(false);
-                    setShowQRModal(true);
-                  }}
-                  disabled={!qrCodeImage}
-                >
-                  <div className="upi-option-icon">
-                    <i className="bi bi-qr-code"></i>
-                  </div>
-                  <h4>Scan QR Code</h4>
-                  <p>
-                    {qrCodeImage ? "Customer scans QR" : "QR not configured"}
-                  </p>
-                </button>
-              </div>
-              {!qrCodeImage && (
-                <div className="qr-warning">
-                  <i className="bi bi-exclamation-triangle"></i>
-                  <span>
-                    Please configure QR code in Settings to use this option
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )} */}
-
+      {/* QR Modal */}
       {showQRModal && qrCodeImage && (
         <div
           className="explore-qr-modal-overlay"
@@ -239,7 +668,6 @@ const Explore = () => {
                   className="btn-qr-proceed"
                   onClick={() => {
                     setShowQRModal(false);
-                    // Trigger proceed to show confirmation dialog in CartSummary
                     const event = new CustomEvent("qrProceedClicked");
                     window.dispatchEvent(event);
                   }}
@@ -260,23 +688,13 @@ const Explore = () => {
                     boxShadow: "0 4px 12px rgba(0, 33, 66, 0.25)",
                     transition: "all 0.3s ease"
                   }}
-                  onMouseOver={(e) => {
-                    e.target.style.transform = "scale(1.02)";
-                    e.target.style.boxShadow = "0 6px 16px rgba(0, 33, 66, 0.35)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.transform = "scale(1)";
-                    e.target.style.boxShadow = "0 4px 12px rgba(0, 33, 66, 0.25)";
-                  }}
                 >
                   <i className="bi bi-check-circle"></i>
                   <span>Proceed</span>
                 </button>
                 <button
                   className="btn-qr-cancel"
-                  onClick={() => {
-                    setShowQRModal(false);
-                  }}
+                  onClick={() => setShowQRModal(false)}
                   style={{
                     background: "transparent",
                     color: "#666",
@@ -303,7 +721,7 @@ const Explore = () => {
         </div>
       )}
 
-      {/* Receipt Popup - Rendered at page level, not in cart container */}
+      {/* Receipt Popup */}
       {showReceipt && receiptOrderDetails && (
         <div className="explore-receipt-overlay">
           <ReceiptPopup

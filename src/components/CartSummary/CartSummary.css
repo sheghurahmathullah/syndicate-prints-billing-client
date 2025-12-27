@@ -70,7 +70,206 @@
   box-shadow: 0 0 0 3px rgba(230, 64, 81, 0.1) !important;
 }
 
-/* Simple Payment Container */
+/* Compact Payment Container */
+.compact-payment-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+}
+
+.payment-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.payment-method-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.payment-label-compact {
+  font-size: 0.85rem;
+  color: #002142;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.dropdown-wrapper-compact {
+  position: relative;
+  min-width: 140px;
+}
+
+.payment-dropdown-compact {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  color: #002142 !important;
+  font-weight: 500 !important;
+  background: white !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  min-height: 38px;
+}
+
+.payment-dropdown-compact:focus {
+  outline: none !important;
+  border-color: #e64051 !important;
+  box-shadow: 0 0 0 2px rgba(230, 64, 81, 0.1) !important;
+}
+
+.payment-dropdown-compact:disabled {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dropdown-arrow-compact {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.credit-checkbox-compact {
+  display: flex;
+  align-items: center;
+}
+
+.credit-checkbox-label-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.credit-checkbox-compact-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #e64051;
+  margin: 0;
+}
+
+.credit-label-text-compact {
+  font-size: 0.85rem;
+  color: #002142;
+  font-weight: 500;
+}
+
+.place-order-btn-compact {
+  padding: 8px 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 6px !important;
+  min-height: 38px;
+  flex: 0 0 auto;
+  min-width: 140px;
+  margin-left: auto;
+  transition: all 0.2s ease !important;
+}
+
+.place-order-btn-compact:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4) !important;
+}
+
+.place-order-btn-compact:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Credit Details Compact - Now inline in single row */
+.credit-details-compact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.credit-detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 6px;
+  white-space: nowrap;
+  width: 150px;
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+.credit-label-compact {
+  font-size: 0.85rem;
+  color: #78350f;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.credit-value-compact {
+  font-size: 0.95rem;
+  color: #002142;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.credit-input-compact {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px !important;
+  border: 2px solid #f59e0b !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: #002142 !important;
+  background: white !important;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  height: 26px;
+}
+
+.credit-input-compact:focus {
+  outline: none !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;
+}
+
+.credit-balance-compact {
+  font-size: 0.95rem;
+  color: #dc2626;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Simple Payment Container (keeping for backward compatibility) */
 .simple-payment-container {
   display: flex;
   flex-direction: row;
@@ -589,6 +788,40 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .payment-controls-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .payment-method-compact {
+    flex: 1 1 auto;
+    min-width: 150px;
+  }
+  
+  .dropdown-wrapper-compact {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .credit-checkbox-compact {
+    flex: 0 0 auto;
+  }
+  
+  .place-order-btn-compact {
+    width: 100%;
+    min-width: unset;
+    margin-left: 0;
+  }
+  
+  .credit-detail-item {
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+  
+  .credit-input-compact {
+    width: 70px;
+  }
+  
   .simple-payment-container {
     flex-direction: column;
     align-items: stretch;

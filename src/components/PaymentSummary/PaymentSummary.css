@@ -1,0 +1,177 @@
+.payment-summary-container {
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 2px solid #e0e7ef;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.payment-summary-header {
+  border-bottom: 2px solid #e0e7ef;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.payment-summary-header h5 {
+  color: #002142;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.payment-summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  min-height: 28px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row-tax {
+  align-items: center;
+}
+
+.tax-control-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.tax-input {
+  width: 60px !important;
+  padding: 4px 6px !important;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-align: center;
+  margin: 0;
+}
+
+.tax-input:focus {
+  outline: none !important;
+  border-color: #e64051 !important;
+  box-shadow: 0 0 0 2px rgba(230, 64, 81, 0.1) !important;
+}
+
+.tax-percent-symbol {
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+.summary-row-total {
+  border-bottom: none;
+  border-top: 2px solid #e0e7ef;
+  padding-top: 10px;
+  margin-top: 4px;
+  padding-bottom: 0;
+}
+
+.summary-label {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.75rem;
+  flex: 1;
+  text-align: left;
+}
+
+.summary-label-total {
+  color: #002142;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex: 1;
+  text-align: left;
+}
+
+.summary-value {
+  color: #002142;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-align: right;
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+.summary-value-total {
+  color: #e64051;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-align: right;
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+/* GST Type Radio Buttons */
+.summary-row-gst-type {
+  align-items: center;
+}
+
+.gst-radio-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.gst-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gst-radio-input {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #e64051;
+  margin: 0;
+}
+
+.gst-radio-text {
+  font-size: 0.7rem;
+  color: #002142;
+  font-weight: 500;
+}
+
+/* Scrollbar for payment summary */
+.payment-summary-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.payment-summary-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.payment-summary-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e64051 0%, #002142 100%);
+  border-radius: 10px;
+}
+
+.payment-summary-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c23544 0%, #001a34 100%);
+}
