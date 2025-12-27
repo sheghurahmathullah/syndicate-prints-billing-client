@@ -1,5 +1,5 @@
 import "./CartSummary.css";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { AppContext } from "../../context/AppContext.jsx";
 import { createOrder } from "../../Service/OrderService.js";
@@ -25,7 +25,9 @@ const CartSummary = ({
   enableCredit: enableCreditProp,
   setEnableCredit: setEnableCreditProp,
   paidAmount: paidAmountProp,
-  setPaidAmount: setPaidAmountProp
+  setPaidAmount: setPaidAmountProp,
+  gstType,
+  setGstType
 }) => {
   const { cartItems, clearCart } = useContext(AppContext);
 
@@ -45,6 +47,7 @@ const CartSummary = ({
   const [showPendingCreditModal, setShowPendingCreditModal] = useState(false);
   const [pendingCreditData, setPendingCreditData] = useState(null);
   const [pendingOrderData, setPendingOrderData] = useState(null);
+  const [showGstKeyboardModal, setShowGstKeyboardModal] = useState(false);
 
   const validateCustomerAndCart = () => {
     if (!customerName || !mobileNumber) {
@@ -157,18 +160,79 @@ const CartSummary = ({
       }
     }
 
+    // Show GST keyboard modal to wait for user input
+    setShowGstKeyboardModal(true);
+  };
+
+  // Proceed with order after GST selection
+  const proceedWithOrder = useCallback((selectedGstType, selectedTaxPercent) => {
+    // Calculate new tax and grand total with selected GST
+    const newTax = totalAmount * (selectedTaxPercent / 100);
+    const newGrandTotal = totalAmount + newTax;
+    
+    // Re-validate paid amount if credit is enabled (grand total may have changed)
+    if (enableCredit && selectedPayment !== "credit") {
+      const paid = parseFloat(paidAmount);
+      if (paidAmount && !isNaN(paid) && paid >= 0) {
+        if (paid > newGrandTotal) {
+          toast.error(`Paid amount (₹${paid.toFixed(2)}) exceeds new total (₹${newGrandTotal.toFixed(2)}). Please adjust.`);
+          setShowGstKeyboardModal(false);
+          return;
+        }
+      }
+    }
+    
+    // Update GST type and tax percent
+    if (setGstType) {
+      setGstType(selectedGstType);
+    }
+    if (setTaxPercent) {
+      setTaxPercent(selectedTaxPercent);
+    }
+    
+    // Close modal
+    setShowGstKeyboardModal(false);
+    
+    // Proceed with order placement
     if (selectedPayment === "cash" || selectedPayment === "card" || selectedPayment === "credit") {
       setConfirmPaymentType(selectedPayment);
       setShowConfirm(true);
     } else if (selectedPayment === "upi") {
-      
       if (!qrCodeImage) {
         toast.error("UPI QR not configured. Please add it in Settings.");
         return;
       }
       setShowQRModal(true);
     }
-  };
+  }, [totalAmount, enableCredit, selectedPayment, paidAmount, setGstType, setTaxPercent, qrCodeImage, setShowQRModal, setConfirmPaymentType, setShowConfirm]);
+
+  // Handle keyboard input for GST selection
+  useEffect(() => {
+    if (!showGstKeyboardModal) return;
+
+    const handleKeyDown = (e) => {
+      // Ctrl + Enter = GST 18%
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        proceedWithOrder("withGst", 18);
+      }
+      // Enter only = Non-GST
+      else if (e.key === "Enter" && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        proceedWithOrder("withoutGst", 0);
+      }
+      // Escape to cancel
+      else if (e.key === "Escape") {
+        e.preventDefault();
+        setShowGstKeyboardModal(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showGstKeyboardModal, proceedWithOrder]);
 
   // Commented out - now using processPayment("upi") with confirmation dialog
   // const processQRPayment = async () => {
@@ -656,6 +720,7 @@ const CartSummary = ({
           </div>,
           document.body
         )}
+
 
       {/* Pending Credit Alert Modal */}
       <PendingCreditAlertModal

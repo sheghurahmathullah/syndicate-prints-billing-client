@@ -702,6 +702,8 @@ const Explore = () => {
             setShowUpiOptions={setShowUpiOptions}
             showQRModal={showQRModal}
             setShowQRModal={setShowQRModal}
+            gstType={gstType}
+            setGstType={setGstType}
             qrCodeImage={qrCodeImage}
             hideSummary={true}
             enableCredit={enableCredit}

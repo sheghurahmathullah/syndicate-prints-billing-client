@@ -29,23 +29,6 @@ const PaymentSummary = ({
   const totalPaidCredits = enableCredit ? paidAmountNum : 0;
   const totalCredits = enableCredit ? balanceAmount : 0;
 
-  // Handle GST type change
-  const handleGstTypeChange = (type) => {
-    if (setGstType) {
-      setGstType(type);
-      if (type === "withGst" && taxPercent === 0) {
-        // Set default to 18% when switching to With GST
-        if (setTaxPercent) {
-          setTaxPercent(18);
-        }
-      } else if (type === "withoutGst") {
-        // Set to 0 when switching to Without GST
-        if (setTaxPercent) {
-          setTaxPercent(0);
-        }
-      }
-    }
-  };
 
   return (
     <div className="payment-summary-container">
@@ -62,35 +45,6 @@ const PaymentSummary = ({
           <span className="summary-value"style={{fontSize: '1.2rem'}}>₹{totalAmount.toFixed(2)}</span>
         </div>
         
-        {/* GST Type Selection */}
-        <div className="summary-row summary-row-gst-type">
-          <span className="summary-label">GST Type:</span>
-          <div className="gst-radio-group">
-            <label className="gst-radio-label">
-              <input
-                type="radio"
-                name="gstType"
-                value="withGst"
-                checked={gstType === "withGst"}
-                onChange={(e) => handleGstTypeChange(e.target.value)}
-                className="gst-radio-input"
-              />
-              <span className="gst-radio-text">With GST</span>
-            </label>
-            <label className="gst-radio-label">
-              <input
-                type="radio"
-                name="gstType"
-                value="withoutGst"
-                checked={gstType === "withoutGst"}
-                onChange={(e) => handleGstTypeChange(e.target.value)}
-                className="gst-radio-input"
-              />
-              <span className="gst-radio-text">Without GST</span>
-            </label>
-          </div>
-        </div>
-
         {/* GST Details - Only show when With GST is selected */}
         {gstType === "withGst" && (
           <div className="summary-row summary-row-tax">
