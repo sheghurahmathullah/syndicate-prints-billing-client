@@ -219,3 +219,33 @@
     font-size: 1rem;
   }
 }
+
+/* Row Layout specific styles */
+.users-list-container .row-layout-card .user-info-name {
+  flex: 0 0 30%;
+}
+.users-list-container .row-layout-card .user-info-email {
+  flex: 0 0 45%;
+}
+.users-list-container .row-layout-card .action-buttons {
+  flex: 0 0 20%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .users-list-container .row-layout-card .d-flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+  .users-list-container .row-layout-card .user-info-name,
+  .users-list-container .row-layout-card .user-info-email,
+  .users-list-container .row-layout-card .action-buttons {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .users-list-container .row-layout-card .action-buttons {
+    justify-content: flex-start;
+  }
+}

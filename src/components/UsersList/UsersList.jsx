@@ -55,22 +55,26 @@ const UsersList = ({ users, setUsers, onEdit }) => {
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <div key={user.userId} className="col-12">
-              <div className="user-card">
-                <div className="d-flex align-items-center">
-                  <div className="flex-grow-1">
-                    <h5>{user.name}</h5>
-                    <p>{user.email}</p>
+              <div className="user-card row-layout-card">
+                <div className="d-flex align-items-center justify-content-between w-100 px-2 py-1">
+                  <div className="user-info-name">
+                    <h5 className="mb-0 fw-bold">{user.name}</h5>
+                  </div>
+                  <div className="user-info-email">
+                    <p className="mb-0 text-muted">{user.email}</p>
                   </div>
                   <div className="action-buttons">
                     <button
                       className="btn btn-sm btn-edit"
                       onClick={() => editUser(user.userId)}
+                      title="Edit User"
                     >
                       <i className="bi bi-pencil-fill"></i>
                     </button>
                     <button
                       className="btn btn-sm btn-delete"
                       onClick={() => deleteByUserId(user.userId)}
+                      title="Delete User"
                     >
                       <i className="bi bi-trash-fill"></i>
                     </button>

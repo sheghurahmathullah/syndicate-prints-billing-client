@@ -65,60 +65,66 @@ const UserForm = ({setUsers, selectedUser, onUpdateUser}) => {
     }
 
     return (
-        <div className="mx-2 mt-2">
-            <div className="row">
-                <h4 className="text-dark">Create New User</h4>
-                <div className="card col-md-12 form-container">
-                    <div className="card-body">
-                        <form onSubmit={onSubmitHandler}>
-                            <div className="mb-3">
-                                <label htmlFor="name" className="form-label">Name</label>
-                                <input type="text"
-                                       name="name"
-                                       id="name"
-                                       className="form-control"
-                                       placeholder="John Doe"
-                                       onChange={onChangeHandler}
-                                       value={data.name}
-                                       required
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email"
-                                       name="email"
-                                       id="email"
-                                       className="form-control"
-                                       placeholder="yourname@example.com"
-                                       onChange={onChangeHandler}
-                                       value={data.email}
-                                       required
-                                />
-                            </div>
-                            <div className="mb-3 position-relative">
-                                <label htmlFor="password" className="form-label">Password</label>
-                                <input type={showPassword ? 'text' : 'password'}
-                                       name="password"
-                                       id="password"
-                                       className="form-control"
-                                       placeholder="******"
-                                       onChange={onChangeHandler}
-                                       value={data.password}
-                                       required
-                                />
-                                <button type="button" className="password-toggle" onClick={() => setShowPassword(s => !s)} aria-label="Toggle password visibility">
-                                    {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                                </button>
-                            </div>
-                            <button type="submit" className="btn  btn-warning w-100" disabled={loading}>
-                                {loading ? "Loading..." : (data.userId ? 'Update User' : 'Save')}
-                            </button>
-                        </form>
+        <div className="custom-user-form-container">
+            <div className="form-header-section">
+                <div className="title-wrapper">
+                    <div className="blue-vertical-line"></div>
+                    <h3 className="form-main-title">
+                        <i className="bi bi-person-plus-fill icon-red"></i> {selectedUser ? "EDIT USER" : "ADD NEW USER"}
+                    </h3>
+                </div>
+                <div className="red-horizontal-line"></div>
+            </div>
+
+            <h4 className="form-subtitle">Create New User</h4>
+
+            <form onSubmit={onSubmitHandler} className="user-form-body">
+                <div className="form-group mb-3">
+                    <label htmlFor="name" className="custom-label">NAME</label>
+                    <input type="text"
+                           name="name"
+                           id="name"
+                           className="custom-input"
+                           placeholder="John Doe"
+                           onChange={onChangeHandler}
+                           value={data.name}
+                           required
+                    />
+                </div>
+                <div className="form-group mb-3">
+                    <label htmlFor="email" className="custom-label">EMAIL</label>
+                    <input type="email"
+                           name="email"
+                           id="email"
+                           className="custom-input"
+                           placeholder="yourname@example.com"
+                           onChange={onChangeHandler}
+                           value={data.email}
+                           required
+                    />
+                </div>
+                <div className="form-group mb-4 position-relative">
+                    <label htmlFor="password" className="custom-label">PASSWORD</label>
+                    <div className="password-input-wrapper">
+                        <input type={showPassword ? 'text' : 'password'}
+                               name="password"
+                               id="password"
+                               className="custom-input password-input"
+                               placeholder="******"
+                               onChange={onChangeHandler}
+                               value={data.password}
+                               required={!data.userId} 
+                        />
+                        <button type="button" className="custom-password-toggle" onClick={() => setShowPassword(s => !s)} aria-label="Toggle password visibility">
+                            {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                        </button>
                     </div>
                 </div>
-            </div>
+                <button type="submit" className="custom-save-btn w-100" disabled={loading}>
+                    {loading ? "SAVING..." : (data.userId ? 'UPDATE USER' : 'SAVE')}
+                </button>
+            </form>
         </div>
-        
     )
 }
 
