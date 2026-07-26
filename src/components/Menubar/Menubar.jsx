@@ -1,13 +1,15 @@
 import "./Menubar.css";
 import { assets } from "../../assets/assets.js";
-import { Link, Links, useLocation, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { AppContext } from "../../context/AppContext.jsx";
 
 const Menubar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuthData, auth } = useContext(AppContext);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -19,176 +21,148 @@ const Menubar = () => {
     return location.pathname === path;
   };
 
-  const isManageActive = () => {
-    const managePaths = ["/items", "/category", "/users", "/customers"];
-    return managePaths.some(path => location.pathname === path);
-  };
-
   const isAdmin = auth.role === "ROLE_ADMIN";
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg px-2">
-      <a className="navbar-brand" href="#">
-        <img src={assets.logo} alt="Logo" height="50" />
-      </a>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-      <div className="collapse navbar-collapse p-2" id="navbarNav">
-        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <Link
-              id={`${isActive ? "active" : ""}`}
-              className={`nav-link ${
-                isActive("/dashboard") ? "fw-bold isActive" : ""
-              }`}
-              to="/dashboard"
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              id={`${isActive ? "active" : ""}`}
-              className={`nav-link ${isActive("/explore") ? "fw-bold " : ""}`}
-              to="/explore"
-            >
-              Explore
-            </Link>
-          </li>
-          
-          
-          {isAdmin && (
-            <>
-            <li className="nav-item">
-            <Link
-              id={`${isActive ? "active" : ""}`}
-              className={`nav-link ${isActive("/analytics") ? "fw-bold " : ""}`}
-              to="/analytics"
-            >
-              Analytics
-            </Link>
-          </li>
-              <li className="nav-item dropdown">
-                <a
-                  className={`nav-link dropdown-toggle ${isManageActive() ? "fw-bold" : ""}`}
-                  href="#"
-                  id="manageDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Manage
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="manageDropdown">
-                  <li>
-                    <Link
-                      className={`dropdown-item ${isActive("/items") ? "active fw-bold" : ""}`}
-                      to="/items"
-                    >
-                      <i className="bi bi-box-seam me-2"></i> Manage Products
-                    </Link>
-                  </li>
-                  {/* <li>
-                    <Link
-                      className={`dropdown-item ${isActive("/category") ? "active fw-bold" : ""}`}
-                      to="/category"
-                    >
-                      <i className="bi bi-tags me-2"></i> Manage Categories
-                    </Link>
-                  </li> */}
-                  <li>
-                    <Link
-                      className={`dropdown-item ${isActive("/users") ? "active fw-bold" : ""}`}
-                      to="/users"
-                    >
-                      <i className="bi bi-people me-2"></i> Manage Users
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className={`dropdown-item ${isActive("/customers") ? "active fw-bold" : ""}`}
-                      to="/customers"
-                    >
-                      <i className="bi bi-person-badge me-2"></i> Manage Customers
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-            </>
-          )}
-
-          <li className="nav-item">
-            <Link
-              id={`${isActive ? "active" : ""}`}
-              className={`nav-link ${isActive("/orders") ? "fw-bold " : ""}`}
-              to="/orders"
-            >
-              Order History
-            </Link>
-          </li>
-          {isAdmin && (
-            <li className="nav-item">
-              <Link
-                id={`${isActive ? "active" : ""}`}
-                className={`nav-link ${isActive("/credits") ? "fw-bold " : ""}`}
-                to="/credits"
-              >
-                Credit Management
-              </Link>
-            </li>
-          )}
-        </ul>
-        {/*Add the dropdown for userprofile*/}
-        <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-          <li className="nav-item dropdown">
-            <a
-              href="#"
-              className="nav-link dropdown-toggle"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <img src={assets.profile} alt="" height={32} width={32} />
-            </a>
-            <ul
-              className="dropdown-menu dropdown-menu-end"
-              aria-labelledby="navbarDropdown"
-            >
-
-              <li>
-                
-                
-                { isAdmin && ( 
-                  <> 
-                <Link to="/settings" className="dropdown-item">
-                  <i className="bi bi-gar"></i> Settings
-                </Link>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                </>
-                )}
-              
-                
-                <a href="#!" className="dropdown-item" onClick={logout}>
-                  <i className="bi bi-box-arrow-right"></i> Logout
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+    <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      <div className="sidebar-header">
+        <div className="logo-container">
+           <img src={assets.logo} alt="Logo" className="sidebar-logo" />
+        </div>
+        <button className="hamburger-btn" onClick={toggleSidebar}>
+          <i className="bi bi-list"></i>
+        </button>
       </div>
-    </nav>
+
+      <div className="sidebar-menu">
+        <Link
+          className={`sidebar-link ${isActive("/dashboard") ? "active" : ""}`}
+          to="/dashboard"
+          title="Dashboard"
+        >
+          <i className="bi bi-grid-1x2"></i>
+          <span className="link-text">Dashboard</span>
+        </Link>
+
+        <Link
+          className={`sidebar-link ${isActive("/explore") ? "active" : ""}`}
+          to="/explore"
+          title="Explore"
+        >
+          <i className="bi bi-compass"></i>
+          <span className="link-text">Explore</span>
+        </Link>
+
+        {isAdmin && (
+          <Link
+            className={`sidebar-link ${isActive("/analytics") ? "active" : ""}`}
+            to="/analytics"
+            title="Analytics"
+          >
+            <i className="bi bi-graph-up"></i>
+            <span className="link-text">Analytics</span>
+          </Link>
+        )}
+
+        {isAdmin && (
+          <>
+            <div className="sidebar-heading">Manage</div>
+            <Link
+              className={`sidebar-link ${isActive("/branches") ? "active" : ""}`}
+              to="/branches"
+              title="Manage Branches"
+            >
+              <i className="bi bi-building"></i>
+              <span className="link-text">Branch</span>
+            </Link>
+            <Link
+              className={`sidebar-link ${isActive("/items") ? "active" : ""}`}
+              to="/items"
+              title="Manage Products"
+            >
+              <i className="bi bi-box-seam"></i>
+              <span className="link-text">Products</span>
+            </Link>
+            <Link
+              className={`sidebar-link ${isActive("/users") ? "active" : ""}`}
+              to="/users"
+              title="Manage Users"
+            >
+              <i className="bi bi-people"></i>
+              <span className="link-text">Users</span>
+            </Link>
+            <Link
+              className={`sidebar-link ${isActive("/customers") ? "active" : ""}`}
+              to="/customers"
+              title="Manage Customers"
+            >
+              <i className="bi bi-person-badge"></i>
+              <span className="link-text">Customers</span>
+            </Link>
+            
+            <div className="sidebar-heading">Machines</div>
+            <Link
+              className={`sidebar-link ${isActive("/machine-category") ? "active" : ""}`}
+              to="/machine-category"
+              title="Machine Category"
+            >
+              <i className="bi bi-diagram-3"></i>
+              <span className="link-text">Categories</span>
+            </Link>
+            <Link
+              className={`sidebar-link ${isActive("/machine") ? "active" : ""}`}
+              to="/machine"
+              title="Manage Machines"
+            >
+              <i className="bi bi-printer"></i>
+              <span className="link-text">Machines</span>
+            </Link>
+          </>
+        )}
+
+        <div className="sidebar-heading">More</div>
+        <Link
+          className={`sidebar-link ${isActive("/orders") ? "active" : ""}`}
+          to="/orders"
+          title="Order History"
+        >
+          <i className="bi bi-clock-history"></i>
+          <span className="link-text">Order History</span>
+        </Link>
+
+        {isAdmin && (
+          <Link
+            className={`sidebar-link ${isActive("/credits") ? "active" : ""}`}
+            to="/credits"
+            title="Credit Management"
+          >
+            <i className="bi bi-credit-card"></i>
+            <span className="link-text">Credit Management</span>
+          </Link>
+        )}
+      </div>
+
+      <div className="sidebar-footer">
+        {isAdmin && (
+          <Link
+            className={`sidebar-link ${isActive("/settings") ? "active" : ""}`}
+            to="/settings"
+            title="Settings"
+          >
+            <i className="bi bi-gear"></i>
+            <span className="link-text">Settings</span>
+          </Link>
+        )}
+        <div className="sidebar-link" onClick={logout} title="Logout" style={{ cursor: "pointer" }}>
+          <i className="bi bi-box-arrow-right"></i>
+          <span className="link-text">Logout</span>
+        </div>
+      </div>
+    </div>
   );
 };
 

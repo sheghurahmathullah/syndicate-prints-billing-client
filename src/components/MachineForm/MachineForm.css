@@ -1,0 +1,38 @@
+.machine-form {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.machine-form .form-label-sm {
+  font-size: 0.8rem;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.machine-form .form-control-sm,
+.machine-form .form-select-sm {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.machine-form .form-control-sm:focus,
+.machine-form .form-select-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.machine-form .submit-btn {
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.section-title {
+  color: #1e293b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}

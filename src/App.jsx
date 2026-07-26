@@ -1,3 +1,4 @@
+import "./App.css";
 import Menubar from "./components/Menubar/Menubar.jsx";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
@@ -15,6 +16,9 @@ import CreditManagement from "./pages/CreditManagement/CreditManagement.jsx";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext.jsx";
 import NotFound from "./pages/NotFound/NotFound.jsx";
+import ManageBranches from "./pages/ManageBranches/ManageBranches.jsx";
+import ManageMachineCategory from "./pages/ManageMachineCategory/ManageMachineCategory.jsx";
+import ManageMachine from "./pages/ManageMachine/ManageMachine.jsx";
 
 
 
@@ -42,86 +46,112 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="app-container">
       {location.pathname !== "/login" && location.pathname !== "/" && (
         <Menubar />
       )}
-      <Toaster />
-      <Routes>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/explore" element={<Explore />} />
-        
-        <Route path="/orders" element={<OrderHistory />} />
+      <div className="main-content">
+        <Toaster />
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/explore" element={<Explore />} />
+          
+          <Route path="/orders" element={<OrderHistory />} />
 
-        <Route
-          path="/credits"
-          element={
-            <ProtectedRoute
-              element={<CreditManagement />}
-              allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
+          <Route
+            path="/credits"
+            element={
+              <ProtectedRoute
+                element={<CreditManagement />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
 
+          {/*Admin only routes*/}
+          <Route
+            path="/category"
+            element={
+              <ProtectedRoute
+                element={<ManageCategory />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute
+                element={<ManageUsers />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/branches"
+            element={
+              <ProtectedRoute
+                element={<ManageBranches />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/customers"
+            element={
+              <ProtectedRoute
+                element={<ManageCustomers />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/items"
+            element={
+              <ProtectedRoute
+                element={<ManageItems />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/machine-category"
+            element={
+              <ProtectedRoute
+                element={<ManageMachineCategory />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/machine"
+            element={
+              <ProtectedRoute
+                element={<ManageMachine />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
 
-        {/*Admin only routes*/}
-        <Route
-          path="/category"
-          element={
-            <ProtectedRoute
-              element={<ManageCategory />}
+          <Route path="/analytics" 
+            element={ 
+            <ProtectedRoute 
+              element={ <Analytics />} 
               allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute
-              element={<ManageUsers />}
-              allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
-        <Route
-          path="/customers"
-          element={
-            <ProtectedRoute
-              element={<ManageCustomers />}
-              allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
-        <Route
-          path="/items"
-          element={
-            <ProtectedRoute
-              element={<ManageItems />}
-              allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
+              />  }  />
 
-        <Route path="/analytics" 
-          element={ 
-          <ProtectedRoute 
-            element={ <Analytics />} 
+          <Route path="/settings" 
+          element={
+            <ProtectedRoute
+            element={ <Settings /> }
             allowedRoles={["ROLE_ADMIN"]}
-            />  }  />
+          /> } />
 
-        <Route path="/settings" 
-        element={
-          <ProtectedRoute
-          element={ <Settings /> }
-          allowedRoles={["ROLE_ADMIN"]}
-        /> } />
-
-
-
-        <Route path="/login" element={<LoginRoute element={<Login />} />} />
-        <Route path="/" element={<Login />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="/login" element={<LoginRoute element={<Login />} />} />
+          <Route path="/" element={<Login />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </div>
   );
 };

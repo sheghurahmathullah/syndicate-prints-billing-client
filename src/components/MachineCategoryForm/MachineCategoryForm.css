@@ -1,0 +1,28 @@
+.machine-category-form {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.machine-category-form .form-label-sm {
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.machine-category-form .form-control-sm {
+  font-size: 0.875rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.machine-category-form .form-control-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.machine-category-form .submit-btn {
+  font-weight: 500;
+  border-radius: 6px;
+}

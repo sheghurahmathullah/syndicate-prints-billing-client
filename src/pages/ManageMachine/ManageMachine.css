@@ -1,0 +1,49 @@
+.machines-page {
+  padding: 1rem;
+  width: 100%;
+}
+
+.machines-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.machines-header h4 {
+  color: #1e293b;
+  font-weight: 700;
+  margin: 0;
+}
+
+.add-machine-btn {
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+.add-machine-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+}
+
+.machine-banner {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,6 +1,15 @@
 
-
-
 /* Colour code */
 /* #002142 - blue */
 /* #e64051 - red */
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  height: 100vh;
+}
