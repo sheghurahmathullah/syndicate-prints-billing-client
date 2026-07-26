@@ -174,3 +174,155 @@
 .sidebar-menu:hover::-webkit-scrollbar-thumb {
   background: #cbd5e1;
 }
+
+/* Collapsible Nav Group */
+.nav-group {
+  margin-top: 0.25rem;
+}
+
+.nav-chevron {
+  transition: transform 0.2s ease;
+}
+
+.submenu-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.submenu-wrapper.open {
+  grid-template-rows: 1fr;
+}
+
+.submenu {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  border-left: 2px solid #e2e8f0;
+  margin-left: 1.5rem;
+  margin-right: 0.5rem;
+  border-radius: 0 0 6px 6px;
+}
+
+.submenu-content {
+  padding: 0.25rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.submenu-link {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  color: #475569;
+  border-right: none;
+}
+
+.submenu-link i {
+  font-size: 0.85rem;
+  min-width: 1rem;
+  margin-right: 0.4rem;
+}
+
+.submenu-link:hover {
+  background-color: transparent;
+  color: #2563eb;
+}
+
+.submenu-link.active {
+  background-color: transparent;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.sidebar.collapsed .submenu {
+  display: none; /* Hide submenus when collapsed to avoid UI breakage */
+}
+
+
+/* User Profile Section */
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.sidebar-profile:hover {
+  background-color: #f1f5f9;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+.profile-icon {
+  font-size: 1.75rem;
+  color: #64748b;
+  line-height: 1;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.profile-role {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 0.1rem;
+}
+
+.profile-toggle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* Collapsed state adjustments for profile */
+.sidebar.collapsed .sidebar-profile {
+  padding: 0.5rem;
+  justify-content: center;
+  margin: 0.25rem;
+}
+
+.sidebar.collapsed .profile-icon {
+  margin: 0;
+}
+
+/* Logout button transition */
+.logout-btn {
+  margin: 0 0.5rem;
+  border-radius: 6px;
+  color: #ef4444;
+}
+
+.logout-btn:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.logout-btn i {
+  color: #ef4444;
+}
+
+.sidebar.collapsed .logout-btn {
+  margin: 0 0.25rem;
+  justify-content: center;
+}

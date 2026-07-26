@@ -19,6 +19,10 @@ import NotFound from "./pages/NotFound/NotFound.jsx";
 import ManageBranches from "./pages/ManageBranches/ManageBranches.jsx";
 import ManageMachineCategory from "./pages/ManageMachineCategory/ManageMachineCategory.jsx";
 import ManageMachine from "./pages/ManageMachine/ManageMachine.jsx";
+import ManagePaperCategory from "./pages/ManagePaperCategory/ManagePaperCategory.jsx";
+import ManagePaperGroup from "./pages/ManagePaperGroup/ManagePaperGroup.jsx";
+import ManagePaper from "./pages/ManagePaper/ManagePaper.jsx";
+import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
 
 
 
@@ -128,6 +132,42 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageMachine />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/paper-category"
+            element={
+              <ProtectedRoute
+                element={<ManagePaperCategory />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/paper-group"
+            element={
+              <ProtectedRoute
+                element={<ManagePaperGroup />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/paper"
+            element={
+              <ProtectedRoute
+                element={<ManagePaper />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/particulars"
+            element={
+              <ProtectedRoute
+                element={<ManageParticular />}
                 allowedRoles={["ROLE_ADMIN"]}
               />
             }

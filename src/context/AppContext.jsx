@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { fetchCategories } from "../Service/CategoryService.js";
 import { fetchItems } from "../Service/ItemService.js";
 import { fetchUsers } from "../Service/UserService.js";
 
@@ -88,21 +87,15 @@ export const AppContextProvider = (props) => {
         return;
       }
 
-      // Load categories and items in parallel (non-blocking)
-      Promise.all([
-        fetchCategories().catch(err => {
-          console.error("Failed to load categories", err);
-          return { data: [] };
-        }),
-        fetchItems().catch(err => {
+      // Load items (non-blocking)
+      fetchItems()
+        .then((itemResponse) => {
+          if (!cancelled) setItemsData(itemResponse.data || []);
+        })
+        .catch(err => {
           console.error("Failed to load items", err);
-          return { data: [] };
-        }),
-      ]).then(([categoryResponse, itemResponse]) => {
-        if (cancelled) return;
-        setCategories(categoryResponse.data || []);
-        setItemsData(itemResponse.data || []);
-      });
+          if (!cancelled) setItemsData([]);
+        });
 
       // Only fetch users if admin role (non-blocking)
       if (auth.role === "ROLE_ADMIN") {

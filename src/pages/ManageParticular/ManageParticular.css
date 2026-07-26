@@ -1,0 +1,102 @@
+.manage-page {
+  padding: 1.5rem 1rem 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f1724;
+  margin: 0 0 0.25rem 0;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Split View Layout */
+.page-content {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0;
+  transition: all 0.3s ease;
+}
+
+.list-section {
+  flex: 1;
+  transition: flex 0.3s ease;
+  min-width: 0; /* Prevent flex blowout */
+}
+
+/* When form is open, list takes up less space */
+.page-content.split-view .list-section {
+  flex: 0.55;
+}
+
+.form-section {
+  flex: 0.45;
+  min-width: 450px; /* Ensure form doesn't get too squished */
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+  .page-content.split-view {
+    flex-direction: column;
+  }
+  
+  .page-content.split-view .list-section,
+  .form-section {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+}
