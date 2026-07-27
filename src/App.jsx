@@ -23,6 +23,7 @@ import ManagePaperCategory from "./pages/ManagePaperCategory/ManagePaperCategory
 import ManagePaperGroup from "./pages/ManagePaperGroup/ManagePaperGroup.jsx";
 import ManagePaper from "./pages/ManagePaper/ManagePaper.jsx";
 import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
+import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
 
 
 
@@ -168,6 +169,15 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageParticular />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/expense-item"
+            element={
+              <ProtectedRoute
+                element={<ManageExpenseItem />}
                 allowedRoles={["ROLE_ADMIN"]}
               />
             }

@@ -12,6 +12,7 @@ const Menubar = () => {
   const [showLogout, setShowLogout] = useState(false);
   const [machinesOpen, setMachinesOpen] = useState(false);
   const [paperOpen, setPaperOpen] = useState(false);
+  const [operationsOpen, setOperationsOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -186,6 +187,48 @@ const Menubar = () => {
                   >
                     <i className="bi bi-file-earmark-text"></i>
                     <span className="link-text">Paper</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className={`sidebar-link nav-group ${operationsOpen ? "open" : ""}`} 
+              onClick={() => { setOperationsOpen(!operationsOpen); if (isCollapsed) setIsCollapsed(false); }}
+              title="Operations"
+              style={{ cursor: 'pointer' }}
+            >
+              <i className="bi bi-gear"></i>
+              <span className="link-text">Operations</span>
+              <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: operationsOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
+            </div>
+
+            <div className={`submenu-wrapper ${operationsOpen ? 'open' : ''}`}>
+              <div className="submenu">
+                <div className="submenu-content">
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/expense-item") ? "active" : ""}`}
+                    to="/expense-item"
+                    title="Expense Item"
+                  >
+                    <i className="bi bi-receipt"></i>
+                    <span className="link-text">Expense Item</span>
+                  </Link>
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/daily-expense") ? "active" : ""}`}
+                    to="/daily-expense"
+                    title="Daily Expense"
+                  >
+                    <i className="bi bi-calendar-day"></i>
+                    <span className="link-text">Daily Expense</span>
+                  </Link>
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/monthly-expense") ? "active" : ""}`}
+                    to="/monthly-expense"
+                    title="Monthly Expense"
+                  >
+                    <i className="bi bi-calendar-month"></i>
+                    <span className="link-text">Monthly Expense</span>
                   </Link>
                 </div>
               </div>

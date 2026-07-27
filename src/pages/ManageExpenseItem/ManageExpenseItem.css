@@ -1,0 +1,295 @@
+/* Expense Item Management Container */
+.expense-item-container {
+  min-height: calc(100vh - 5rem);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #0f1724;
+  position: relative;
+  overflow: hidden;
+}
+
+.expense-item-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
+  z-index: 1;
+}
+
+/* Banner */
+.expense-item-banner {
+  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  color: white;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.banner-content h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-content h2 i {
+  color: #e64051;
+  font-size: 2rem;
+}
+
+.banner-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  max-width: 600px;
+}
+
+.add-item-btn {
+  background: linear-gradient(135deg, #e64051 0%, #c23544 100%);
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(230, 64, 81, 0.3);
+}
+
+.add-item-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(230, 64, 81, 0.4);
+  background: linear-gradient(135deg, #c23544 0%, #a02a36 100%);
+}
+
+.add-item-btn i {
+  font-size: 1.2rem;
+}
+
+.total-items-count {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.total-items-count i {
+  font-size: 1.1rem;
+}
+
+/* Content Section */
+.expense-item-content {
+  padding: 32px 40px;
+  position: relative;
+  z-index: 2;
+  min-height: calc(100vh - 5rem - 140px);
+}
+
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.list-section {
+  background: transparent;
+  padding: 0;
+}
+
+.filter-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e0e7ef;
+}
+
+.filter-card .form-label {
+  color: #002142;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.filter-card .form-control,
+.filter-card .form-select {
+  border: 2px solid #e0e7ef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.filter-card .form-control:focus,
+.filter-card .form-select:focus {
+  border-color: #002142;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 33, 66, 0.1);
+}
+
+.filter-card .form-control::placeholder {
+  color: #6c757d;
+}
+
+/* Form Styling */
+.expense-item-form-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.expense-item-form-wrapper .form-container {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.expense-item-form-wrapper .card-body {
+  padding: 0;
+}
+
+.form-title {
+  color: #002142;
+  font-weight: 700;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #e64051;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-title i {
+  color: #e64051;
+  font-size: 1.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-actions .btn {
+  min-width: 100px;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .expense-item-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .banner-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .banner-content p {
+    font-size: 0.9rem;
+  }
+
+  .add-item-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .expense-item-content {
+    padding: 24px;
+  }
+
+  .form-section,
+  .list-section {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .expense-item-banner {
+    padding: 20px;
+  }
+
+  .banner-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .banner-content p {
+    font-size: 0.85rem;
+  }
+
+  .expense-item-content {
+    padding: 16px;
+  }
+
+  .form-section,
+  .list-section {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .form-title {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .expense-item-form-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-content h2 {
+    font-size: 1.1rem;
+  }
+
+  .banner-content h2 i {
+    font-size: 1.3rem;
+  }
+
+  .expense-item-banner {
+    padding: 16px;
+  }
+
+  .expense-item-content {
+    padding: 12px;
+  }
+
+  .form-section,
+  .list-section {
+    padding: 12px;
+  }
+}
