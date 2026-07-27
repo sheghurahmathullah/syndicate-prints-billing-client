@@ -20,10 +20,16 @@ const ManagePaper = () => {
   const loadPapers = async () => {
     try {
       setLoading(true);
-      const { data } = await fetchPapers(page, size);
-      setPapers(data.content || []);
-      setTotalPages(data.totalPages || 0);
-      setTotalElements(data.totalElements || 0);
+      const response = await fetchPapers(page, size);
+
+      const pageData = response.data.page || response.data;
+      const content = response.data.content || pageData.content || [];
+      const totalPages = pageData.totalPages || 0;
+      const totalElements = pageData.totalElements || 0;
+
+      setPapers(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
     } catch {
       toast.error("Unable to fetch papers");
     } finally {

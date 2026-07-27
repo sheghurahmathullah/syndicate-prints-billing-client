@@ -107,6 +107,7 @@ const ParticularList = ({ onEdit }) => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Price (₹)</th>
+                <th>Price Back (₹)</th>
                 <th>Comm. Rate (%)</th>
                 <th>Machine Category</th>
                 <th>Paper Group</th>
@@ -121,6 +122,7 @@ const ParticularList = ({ onEdit }) => {
                   <td className="fw-500">{part.particularId}</td>
                   <td>{part.name}</td>
                   <td>{part.price?.toFixed(2)}</td>
+                  <td>{part.priceBack?.toFixed(2) || '0.00'}</td>
                   <td>{part.commisionRate?.toFixed(2) || '0.00'}</td>
                   <td>
                     {part.machineCategory ? (
@@ -177,29 +179,57 @@ const ParticularList = ({ onEdit }) => {
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className="pagination">
+      <div className="custom-pagination-container mt-4 mb-2 d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center gap-2">
+          <label htmlFor="pageSize" className="form-label mb-0 small fw-bold text-muted">Rows per page:</label>
+          <select
+            id="pageSize"
+            className="form-select form-select-sm shadow-sm"
+            style={{ width: "auto" }}
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(0); // Reset to first page when size changes
+              loadParticulars(0, Number(e.target.value));
+            }}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+
+        <div className="custom-pagination">
           <button
-            className="page-btn"
+            className="page-nav-btn"
             disabled={currentPage === 0}
             onClick={() => handlePageChange(currentPage - 1)}
           >
-            <i className="bi bi-chevron-left"></i> Previous
+            <i className="bi bi-chevron-left me-1"></i> PREVIOUS
           </button>
-          
-          <div className="page-info">
-            Page <strong>{currentPage + 1}</strong> of <strong>{totalPages}</strong>
+
+          <div className="page-numbers">
+            {Array.from({ length: totalPages === 0 ? 1 : totalPages }).map((_, idx) => (
+              <button
+                key={idx}
+                className={`page-num-btn ${currentPage === idx ? 'active' : ''}`}
+                onClick={() => handlePageChange(idx)}
+              >
+                {idx + 1}
+              </button>
+            ))}
           </div>
-          
+
           <button
-            className="page-btn"
-            disabled={currentPage === totalPages - 1}
+            className="page-nav-btn"
+            disabled={currentPage >= totalPages - 1}
             onClick={() => handlePageChange(currentPage + 1)}
           >
-            Next <i className="bi bi-chevron-right"></i>
+            NEXT <i className="bi bi-chevron-right ms-1"></i>
           </button>
         </div>
-      )}
+      </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

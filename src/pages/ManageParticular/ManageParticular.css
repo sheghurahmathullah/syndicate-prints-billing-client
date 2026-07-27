@@ -100,3 +100,79 @@
     min-width: 0;
   }
 }
+
+@media (max-width: 768px) {
+  .manage-page {
+    padding: 1rem 0.75rem 0;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-header h4 {
+    font-size: 1.25rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .form-section {
+    min-width: 100%;
+  }
+
+  .machine-banner {
+    padding: 0.75rem !important;
+  }
+
+  .machine-banner h5 {
+    font-size: 0.9rem !important;
+  }
+
+  .machine-banner p {
+    font-size: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .manage-page {
+    padding: 0.75rem 0.5rem 0;
+  }
+
+  .page-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .page-header h4 {
+    font-size: 1.1rem;
+  }
+
+  .btn-primary {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-sm {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .machine-banner {
+    padding: 0.5rem !important;
+  }
+
+  .machine-banner h5 {
+    font-size: 0.8rem !important;
+  }
+
+  .machine-banner p {
+    font-size: 0.7rem !important;
+  }
+}

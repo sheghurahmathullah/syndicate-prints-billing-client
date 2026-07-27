@@ -26,12 +26,15 @@ const ManageMachineCategory = () => {
     try {
       setLoading(true);
       const response = await fetchMachineCategories(page, size);
-      
-      const { content, totalPages: fetchedTotalPages, totalElements: fetchedTotalElements } = response.data;
-      
-      setCategories(content || []);
-      setTotalPages(fetchedTotalPages || 0);
-      setTotalElements(fetchedTotalElements || 0);
+
+      const pageData = response.data.page || response.data;
+      const content = response.data.content || pageData.content || [];
+      const totalPages = pageData.totalPages || 0;
+      const totalElements = pageData.totalElements || 0;
+
+      setCategories(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
       toast.error("Unable to fetch machine categories");

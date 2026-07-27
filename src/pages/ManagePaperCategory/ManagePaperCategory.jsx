@@ -20,10 +20,16 @@ const ManagePaperCategory = () => {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const { data } = await fetchPaperCategories(page, size);
-      setCategories(data.content || []);
-      setTotalPages(data.totalPages || 0);
-      setTotalElements(data.totalElements || 0);
+      const response = await fetchPaperCategories(page, size);
+
+      const pageData = response.data.page || response.data;
+      const content = response.data.content || pageData.content || [];
+      const totalPages = pageData.totalPages || 0;
+      const totalElements = pageData.totalElements || 0;
+
+      setCategories(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
     } catch {
       toast.error("Unable to fetch paper categories");
     } finally {

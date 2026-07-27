@@ -20,10 +20,16 @@ const ManagePaperGroup = () => {
   const loadGroups = async () => {
     try {
       setLoading(true);
-      const { data } = await fetchPaperGroups(page, size);
-      setGroups(data.content || []);
-      setTotalPages(data.totalPages || 0);
-      setTotalElements(data.totalElements || 0);
+      const response = await fetchPaperGroups(page, size);
+
+      const pageData = response.data.page || response.data;
+      const content = response.data.content || pageData.content || [];
+      const totalPages = pageData.totalPages || 0;
+      const totalElements = pageData.totalElements || 0;
+
+      setGroups(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
     } catch {
       toast.error("Unable to fetch paper groups");
     } finally {
