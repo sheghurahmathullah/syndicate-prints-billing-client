@@ -24,6 +24,8 @@ import ManagePaperGroup from "./pages/ManagePaperGroup/ManagePaperGroup.jsx";
 import ManagePaper from "./pages/ManagePaper/ManagePaper.jsx";
 import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
 import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
+import AddDailyExpenses from "./pages/AddDailyExpenses/AddDailyExpenses.jsx";
+import AddMonthlyExpenses from "./pages/AddMonthlyExpenses/AddMonthlyExpenses.jsx";
 
 
 
@@ -178,6 +180,24 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageExpenseItem />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/daily-expenses"
+            element={
+              <ProtectedRoute
+                element={<AddDailyExpenses />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/monthly-expense"
+            element={
+              <ProtectedRoute
+                element={<AddMonthlyExpenses />}
                 allowedRoles={["ROLE_ADMIN"]}
               />
             }

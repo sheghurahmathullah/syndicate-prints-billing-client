@@ -1,0 +1,231 @@
+/* Add Monthly Expenses Container */
+.add-monthly-expenses-container {
+  min-height: calc(100vh - 5rem);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-monthly-expenses-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
+  z-index: 1;
+}
+
+/* Header */
+.monthly-expenses-header {
+  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 33, 66, 0.15);
+  position: relative;
+  z-index: 2;
+}
+
+.monthly-expenses-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.monthly-expenses-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+/* Form */
+.monthly-expenses-form {
+  position: relative;
+  z-index: 2;
+}
+
+/* Form Sections */
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  color: #002142;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.form-label {
+  color: #495057;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-label.small {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #002142;
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
+  outline: none;
+}
+
+/* Monthly Expenses Grid */
+.monthly-expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.expense-item-card {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.expense-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.expense-item-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.expense-item-name {
+  color: #002142;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.expense-item-body {
+  padding: 1rem;
+}
+
+/* Form Switch */
+.form-check-input {
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #003366 0%, #002142 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-top: 1rem;
+}
+
+.btn-lg {
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-monthly-expenses-container {
+    padding: 1rem;
+  }
+
+  .monthly-expenses-header {
+    padding: 1.5rem;
+  }
+
+  .monthly-expenses-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  .monthly-expenses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    padding: 1.5rem 0;
+  }
+
+  .btn-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .monthly-expenses-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .monthly-expenses-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -215,8 +215,8 @@ const Menubar = () => {
                     <span className="link-text">Expense Item</span>
                   </Link>
                   <Link
-                    className={`sidebar-link submenu-link ${isActive("/daily-expense") ? "active" : ""}`}
-                    to="/daily-expense"
+                    className={`sidebar-link submenu-link ${isActive("/daily-expenses") ? "active" : ""}`}
+                    to="/daily-expenses"
                     title="Daily Expense"
                   >
                     <i className="bi bi-calendar-day"></i>

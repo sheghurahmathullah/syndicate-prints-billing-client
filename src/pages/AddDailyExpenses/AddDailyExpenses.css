@@ -1,0 +1,340 @@
+/* Add Daily Expenses Container */
+.add-daily-expenses-container {
+  min-height: calc(100vh - 5rem);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-daily-expenses-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
+  z-index: 1;
+}
+
+/* Header */
+.daily-expenses-header {
+  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 33, 66, 0.15);
+  position: relative;
+  z-index: 2;
+}
+
+.daily-expenses-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.daily-expenses-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+/* Total Cash - Top Right Corner */
+.total-cash-corner {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 10;
+  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 33, 66, 0.2);
+}
+
+.total-cash-label {
+  display: block;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.total-cash-input {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #002142;
+  min-width: 150px;
+}
+
+.total-cash-input:focus {
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(230, 64, 81, 0.3);
+}
+
+.total-cash-input::placeholder {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Form */
+.daily-expenses-form {
+  position: relative;
+  z-index: 2;
+}
+
+/* Form Sections */
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e0e7ef;
+  transition: all 0.3s ease;
+}
+
+.form-section:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #002142;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e7ef;
+  display: flex;
+  align-items: center;
+}
+
+.section-title i {
+  color: #e64051;
+}
+
+/* Form Controls */
+.form-label {
+  font-weight: 600;
+  color: #002142;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border: 2px solid #e0e7ef;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #002142;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 33, 66, 0.1);
+}
+
+.form-control::placeholder {
+  color: #6c757d;
+}
+
+.input-group-text {
+  background-color: #002142;
+  color: white;
+  border: 2px solid #002142;
+  font-weight: 600;
+}
+
+.input-group .form-control {
+  border-left: none;
+}
+
+.input-group .form-control:focus {
+  border-left: none;
+  box-shadow: none;
+}
+
+/* Expense Items Grid */
+.expense-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.expense-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expense-item-label {
+  font-weight: 600;
+  color: #002142;
+  font-size: 0.95rem;
+}
+
+/* Dynamic Rows */
+.dynamic-row {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e0e7ef;
+  transition: all 0.3s ease;
+}
+
+.dynamic-row:hover {
+  background-color: #f1f3f5;
+  border-color: #cbd5e1;
+}
+
+.dynamic-row:last-child {
+  margin-bottom: 0;
+}
+
+.machine-reading-row {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #e64051 0%, #c23544 100%);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(230, 64, 81, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(230, 64, 81, 0.4);
+  background: linear-gradient(135deg, #c23544 0%, #a02a36 100%);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-outline-primary {
+  border: 2px solid #002142;
+  color: #002142;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #002142;
+  color: white;
+  border-color: #002142;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-top: 1rem;
+}
+
+.btn-lg {
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-daily-expenses-container {
+    padding: 1rem;
+  }
+
+  .daily-expenses-header {
+    padding: 1.5rem;
+  }
+
+  .daily-expenses-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .total-cash-corner {
+    position: static;
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+
+  .total-cash-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  .expense-items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-row {
+    padding: 0.75rem;
+  }
+
+  .form-actions {
+    padding: 1.5rem 0;
+  }
+
+  .btn-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .daily-expenses-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .machine-reading-row .row > div {
+    margin-bottom: 0.5rem;
+  }
+}
