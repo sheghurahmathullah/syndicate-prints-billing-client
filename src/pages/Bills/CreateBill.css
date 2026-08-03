@@ -1,0 +1,358 @@
+.create-bill-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.page-header h2 {
+  color: #1e3a8a; /* Deep blue */
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.bill-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  border-top: 4px solid #e11d48; /* Red accent */
+}
+
+/* Rows styling */
+.bill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.bill-row.row-1 {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 200px;
+}
+
+.customer-search-wrapper {
+  flex-direction: row;
+  align-items: flex-end;
+  flex: 2;
+  position: relative;
+}
+.customer-search-wrapper input {
+  flex: 1;
+  width: 100%;
+}
+
+.customer-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.customer-dropdown-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.9rem;
+}
+
+.customer-dropdown-list li:hover {
+  background-color: #f8fafc;
+}
+
+.customer-dropdown-list li.no-results {
+  color: #6b7280;
+  font-style: italic;
+  cursor: default;
+}
+
+.customer-dropdown-list li.no-results:hover {
+  background-color: white;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.form-control, .form-select {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  outline: none;
+}
+
+.disabled-input {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.bill-number-text {
+  font-weight: bold;
+  color: #1e3a8a;
+}
+
+/* Row 3 - Table and Summary */
+.row-3 {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.particulars-section {
+  flex: 7;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.summary-section {
+  flex: 3;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fafaf9;
+}
+
+/* Table styling */
+.particulars-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.particulars-table th {
+  background-color: #0f172a; /* Dark navy */
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.particulars-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.particulars-table tr:last-child td {
+  border-bottom: none;
+}
+
+.type-select {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  width: 100%;
+  min-width: 110px;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-control button {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background-color: #ef4444;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.qty-control button:hover {
+  background-color: #dc2626;
+}
+
+.qty-control span {
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.price-input {
+  width: 100px;
+  padding: 6px 10px;
+}
+
+.particular-add-input {
+  width: 100%;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Summary Box */
+.summary-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.gst-row {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+}
+
+.gst-input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.gst-input {
+  width: 60px;
+  height: 30px;
+  padding: 2px 8px;
+  margin-right: 5px;
+  text-align: center;
+}
+
+.total-pay {
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 2px solid #e5e7eb;
+  font-size: 1.1rem;
+}
+
+.total-pay .text-danger {
+  color: #e11d48 !important;
+  font-size: 1.3rem;
+}
+
+/* Payment Row */
+.payment-row {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #1e3a8a;
+  margin-top: 20px;
+}
+
+.payment-type-group {
+  display: flex;
+  align-items: center;
+}
+
+.payment-select {
+  width: 150px;
+}
+
+.credit-checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.credit-checkbox-group .form-check-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #e11d48;
+}
+
+.payment-total-box, .payment-paid-box {
+  background-color: #fffbeb; /* Light yellow */
+  border: 1px solid #fcd34d;
+  padding: 8px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  color: #92400e;
+}
+
+.payment-total-box {
+  min-width: 150px;
+  justify-content: space-between;
+}
+
+.paid-input {
+  width: 100px;
+  height: 32px;
+  padding: 4px 8px;
+  border-color: #fcd34d;
+}
+.paid-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+/* Actions */
+.bill-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.btn-primary {
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+.btn-primary:hover {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
+
+.btn-secondary {
+  background-color: #64748b;
+  border-color: #64748b;
+}
+.btn-secondary:hover {
+  background-color: #475569;
+  border-color: #475569;
+}

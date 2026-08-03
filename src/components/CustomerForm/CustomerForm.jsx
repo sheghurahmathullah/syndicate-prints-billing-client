@@ -23,7 +23,8 @@ const CustomerForm = ({
     // ManageCustomers page props
     setCustomers,
     selectedCustomer,
-    onUpdateCustomer
+    onUpdateCustomer,
+    onCustomerAdded
 }) => {
     const appCtx = useContext(AppContext);
     let users;
@@ -49,7 +50,10 @@ const CustomerForm = ({
     const [data, setData] = useState({
         name: "",
         phoneNumber: "",
-        email: ""
+        email: "",
+        companyName: "",
+        taxNumber: "",
+        isActive: true
     });
 
     // Function to load customer data for auto-complete
@@ -173,10 +177,13 @@ const CustomerForm = ({
                     name: selectedCustomer.name || '',
                     phoneNumber: selectedCustomer.phoneNumber || '',
                     email: selectedCustomer.email || '',
+                    companyName: selectedCustomer.companyName || '',
+                    taxNumber: selectedCustomer.taxNumber || '',
+                    isActive: selectedCustomer.isActive !== undefined ? selectedCustomer.isActive : true,
                     customerId: customerId
                 });
             } else if (!selectedCustomer) {
-                setData({ name: '', phoneNumber: '', email: '' });
+                setData({ name: '', phoneNumber: '', email: '', companyName: '', taxNumber: '', isActive: true });
             }
         }
     }, [selectedCustomer, isManageMode]);
@@ -196,7 +203,10 @@ const CustomerForm = ({
                 setData({
                     name: "",
                     phoneNumber: "",
-                    email: ""
+                    email: "",
+                    companyName: "",
+                    taxNumber: "",
+                    isActive: true
                 });
             } else { // create new customer
                 const response = await addCustomer(data);
@@ -205,12 +215,18 @@ const CustomerForm = ({
                     toast.success("Customer added successfully");
                     // Dispatch event to refresh customer suggestions in Explore page
                     window.dispatchEvent(new CustomEvent('customerAdded', { detail: response.data }));
+                    if (onCustomerAdded) {
+                        onCustomerAdded(response.data);
+                    }
                 }
                 // Clear form after create
                 setData({
                     name: "",
                     phoneNumber: "",
-                    email: ""
+                    email: "",
+                    companyName: "",
+                    taxNumber: "",
+                    isActive: true
                 });
             }
         } catch (e) {
@@ -225,60 +241,111 @@ const CustomerForm = ({
     // Render ManageCustomers mode
     if (isManageMode) {
         return (
-            <div className="mx-2 mt-2">
-                <div className="row">
-                    <h4 className="text-dark">Create New Customer</h4>
-                    <div className="card col-md-12 form-container">
-                        <div className="card-body">
-                            <form onSubmit={onSubmitHandler}>
-                                <div className="mb-3">
-                                    <label htmlFor="name" className="form-label">Name</label>
-                                    <input type="text"
-                                           name="name"
-                                           id="name"
-                                           className="form-control"
-                                           placeholder="John Doe"
-                                           onChange={onChangeHandler}
-                                           value={data.name}
-                                           required
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
-                                    <input type="text"
-                                           name="phoneNumber"
-                                           id="phoneNumber"
-                                           className="form-control"
-                                           placeholder="1234567890"
-                                           onChange={(e) => {
-                                               const value = e.target.value;
-                                               if (/^\d{0,10}$/.test(value)) {
-                                                   onChangeHandler(e);
-                                               }
-                                           }}
-                                           value={data.phoneNumber}
-                                           maxLength={10}
-                                           required
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
-                                    <input type="email"
-                                           name="email"
-                                           id="email"
-                                           className="form-control"
-                                           placeholder="yourname@example.com"
-                                           onChange={onChangeHandler}
-                                           value={data.email}
-                                    />
-                                </div>
-                                <button type="submit" className="btn  btn-warning w-100" disabled={loading}>
-                                    {loading ? "Loading..." : (data.customerId ? 'Update Customer' : 'Save')}
-                                </button>
-                            </form>
+            <div className="mt-2">
+                <form onSubmit={onSubmitHandler}>
+                    <div className="row">
+                        <div className="col-md-6 mb-3">
+                            <label htmlFor="name" className="form-label fw-bold text-dark">Name <span className="text-danger">*</span></label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-light"><i className="bi bi-person"></i></span>
+                                <input type="text"
+                                       name="name"
+                                       id="name"
+                                       className="form-control"
+                                       placeholder="John Doe"
+                                       onChange={onChangeHandler}
+                                       value={data.name}
+                                       required
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <label htmlFor="phoneNumber" className="form-label fw-bold text-dark">Phone Number <span className="text-danger">*</span></label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-light"><i className="bi bi-telephone"></i></span>
+                                <input type="text"
+                                       name="phoneNumber"
+                                       id="phoneNumber"
+                                       className="form-control"
+                                       placeholder="1234567890"
+                                       onChange={(e) => {
+                                           const value = e.target.value;
+                                           if (/^\d{0,10}$/.test(value)) {
+                                               onChangeHandler(e);
+                                           }
+                                       }}
+                                       value={data.phoneNumber}
+                                       maxLength={10}
+                                       required
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <label htmlFor="email" className="form-label fw-bold text-dark">Email</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-light"><i className="bi bi-envelope"></i></span>
+                                <input type="email"
+                                       name="email"
+                                       id="email"
+                                       className="form-control"
+                                       placeholder="yourname@example.com"
+                                       onChange={onChangeHandler}
+                                       value={data.email}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <label htmlFor="companyName" className="form-label fw-bold text-dark">Company Name</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-light"><i className="bi bi-building"></i></span>
+                                <input type="text"
+                                       name="companyName"
+                                       id="companyName"
+                                       className="form-control"
+                                       placeholder="Company LLC"
+                                       onChange={onChangeHandler}
+                                       value={data.companyName}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <label htmlFor="taxNumber" className="form-label fw-bold text-dark">Tax Number (GSTIN)</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-light"><i className="bi bi-receipt"></i></span>
+                                <input type="text"
+                                       name="taxNumber"
+                                       id="taxNumber"
+                                       className="form-control"
+                                       placeholder="TAX-12345"
+                                       onChange={onChangeHandler}
+                                       value={data.taxNumber}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-3 d-flex align-items-end">
+                            <div className="form-check form-switch mb-2">
+                                <input type="checkbox"
+                                       name="isActive"
+                                       id="isActive"
+                                       className="form-check-input"
+                                       onChange={(e) => setData({ ...data, isActive: e.target.checked })}
+                                       checked={data.isActive}
+                                />
+                                <label htmlFor="isActive" className="form-check-label fw-bold text-dark ms-1">Is Active</label>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <div className="d-flex justify-content-end mt-3 border-top pt-3">
+                        <button type="submit" className="btn btn-primary px-4" disabled={loading}>
+                            {loading ? (
+                                <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...</>
+                            ) : (
+                                <><i className="bi bi-check-circle me-1"></i> {data.customerId ? 'Update Customer' : 'Save Customer'}</>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
         );
     }

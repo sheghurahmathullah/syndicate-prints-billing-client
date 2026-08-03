@@ -52,3 +52,8 @@ export const deleteParticular = (particularId) =>
   axios.delete(`${API_URL}api/v1.0/admin/deleteParticular/${particularId}`, {
     headers: getAuthHeaders(),
   });
+
+export const getParticularDetailsById = (particularId) =>
+  axios.get(`${API_URL}api/v1.0/admin/getParticularDetails/${particularId}`, {
+    headers: getAuthHeaders(),
+  });

@@ -13,6 +13,7 @@ const Menubar = () => {
   const [machinesOpen, setMachinesOpen] = useState(false);
   const [paperOpen, setPaperOpen] = useState(false);
   const [operationsOpen, setOperationsOpen] = useState(false);
+  const [billsOpen, setBillsOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -60,6 +61,49 @@ const Menubar = () => {
           <i className="bi bi-compass"></i>
           <span className="link-text">Explore</span>
         </Link>
+
+        <div 
+          className={`sidebar-link nav-group ${billsOpen ? "open" : ""}`} 
+          onClick={() => { setBillsOpen(!billsOpen); if (isCollapsed) setIsCollapsed(false); }}
+          title="Bills"
+          style={{ cursor: 'pointer' }}
+        >
+          <i className="bi bi-receipt-cutoff"></i>
+          <span className="link-text">Bill</span>
+          <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: billsOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
+        </div>
+        
+        <div className={`submenu-wrapper ${billsOpen ? 'open' : ''}`}>
+          <div className="submenu">
+            <div className="submenu-content">
+              <Link
+                className={`sidebar-link submenu-link ${isActive("/bills/create") ? "active" : ""}`}
+                to="/bills/create"
+                title="Create Bill"
+              >
+                <i className="bi bi-plus-circle"></i>
+                <span className="link-text">Bills</span>
+              </Link>
+              <Link
+                className={`sidebar-link submenu-link ${isActive("/bills/today") ? "active" : ""}`}
+                to="/bills/today"
+                title="View Today"
+              >
+                <i className="bi bi-calendar-event"></i>
+                <span className="link-text">View Today</span>
+              </Link>
+              <Link
+                className={`sidebar-link submenu-link ${isActive("/bills/all") ? "active" : ""}`}
+                to="/bills/all"
+                title="View All Bills"
+              >
+                <i className="bi bi-list-check"></i>
+                <span className="link-text">View All bills</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
 
         {isAdmin && (
           <Link

@@ -26,6 +26,7 @@ import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
 import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
 import AddDailyExpenses from "./pages/AddDailyExpenses/AddDailyExpenses.jsx";
 import AddMonthlyExpenses from "./pages/AddMonthlyExpenses/AddMonthlyExpenses.jsx";
+import CreateBill from "./pages/Bills/CreateBill.jsx";
 
 
 
@@ -62,6 +63,16 @@ const App = () => {
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/explore" element={<Explore />} />
+          
+          {/* Bills Route (Accessible to all authenticated users) */}
+          <Route
+            path="/bills/create"
+            element={
+              <ProtectedRoute
+                element={<CreateBill />}
+              />
+            }
+          />
           
           <Route path="/orders" element={<OrderHistory />} />
 

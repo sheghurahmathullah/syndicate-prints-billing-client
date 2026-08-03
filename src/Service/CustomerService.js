@@ -22,6 +22,12 @@ export const fetchCustomers = async () => {
   });
 };
 
+export const fetchPaginatedCustomers = async (page = 0, size = 10) => {
+  return await axios.get(`${API_URL}api/v1.0/customers/paginated?page=${page}&size=${size}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
+
 export const addCustomer = async (customer) => {
   return await axios.post(`${API_URL}api/v1.0/customers`, customer, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
