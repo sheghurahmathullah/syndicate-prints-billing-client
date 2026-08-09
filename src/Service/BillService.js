@@ -21,3 +21,18 @@ export const createBill = (data) =>
   axios.post(`${API_URL}api/v1.0/bills`, data, {
     headers: getAuthHeaders(),
   });
+
+export const getAllBills = (page, size, dateFilter, startDate, endDate, paymentMode, customerName) => {
+  return axios.get(`${API_URL}api/v1.0/bills/get-all-bills`, {
+    headers: getAuthHeaders(),
+    params: {
+      page,
+      size,
+      dateFilter,
+      startDate,
+      endDate,
+      paymentMode,
+      customerName,
+    },
+  });
+};

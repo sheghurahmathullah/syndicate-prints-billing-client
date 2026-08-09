@@ -27,6 +27,7 @@ import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
 import AddDailyExpenses from "./pages/AddDailyExpenses/AddDailyExpenses.jsx";
 import AddMonthlyExpenses from "./pages/AddMonthlyExpenses/AddMonthlyExpenses.jsx";
 import CreateBill from "./pages/Bills/CreateBill.jsx";
+import ViewBills from "./pages/Bills/ViewBills.jsx";
 
 
 
@@ -70,6 +71,15 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<CreateBill />}
+              />
+            }
+          />
+          
+          <Route
+            path="/bills/all"
+            element={
+              <ProtectedRoute
+                element={<ViewBills />}
               />
             }
           />
