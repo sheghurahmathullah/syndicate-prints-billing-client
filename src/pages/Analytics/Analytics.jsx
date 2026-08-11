@@ -1,147 +1,55 @@
 import "./Analytics.css";
 import { useEffect, useState } from "react";
-import { fetchDashboardData } from "../../Service/Dashboard.js";
+import { fetchAnalyticsData } from "../../Service/Dashboard.js";
 import toast from "react-hot-toast";
 
 const Analytics = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState("month");
-  const [orders, setOrders] = useState([]);
+  const [filter, setFilter] = useState("this_month");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isCustomDate, setIsCustomDate] = useState(false);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const filterToSend = isCustomDate ? "custom_range" : filter;
+      const response = await fetchAnalyticsData(filterToSend, isCustomDate ? startDate : null, isCustomDate ? endDate : null);
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to load analytics data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetchDashboardData('annual',null, null, null);
-        setData(response.data);
-        setOrders(response.data.recentOrders || []);
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to load analytics data");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-
-  // Calculate payment breakdown
-  const getPaymentBreakdown = () => {
-    const breakdown = { CASH: 0, UPI: 0, CARD: 0 };
-    orders.forEach((order) => {
-      const mode = order.paymentMethod?.toUpperCase();
-      if (mode && breakdown.hasOwnProperty(mode)) {
-        breakdown[mode] += order.grandTotal || 0;
-      }
-    });
-    const total = breakdown.CASH + breakdown.UPI + breakdown.CARD;
-    return {
-      CASH: {
-        amount: breakdown.CASH,
-        percentage: total > 0 ? (breakdown.CASH / total) * 100 : 0,
-      },
-      UPI: {
-        amount: breakdown.UPI,
-        percentage: total > 0 ? (breakdown.UPI / total) * 100 : 0,
-      },
-      CARD: {
-        amount: breakdown.CARD,
-        percentage: total > 0 ? (breakdown.CARD / total) * 100 : 0,
-      },
-    };
-  };
-
-  // Calculate revenue by employee
-  const getEmployeeRevenue = () => {
-    const revenueByUser = {};
-    orders.forEach((order) => {
-      const user = order.username || "Unknown";
-      if (!revenueByUser[user]) {
-        revenueByUser[user] = { revenue: 0, orders: 0 };
-      }
-      revenueByUser[user].revenue += order.grandTotal || 0;
-      revenueByUser[user].orders += 1;
-    });
-    return Object.entries(revenueByUser)
-      .map(([name, stats]) => ({ name, ...stats }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
-  };
-
-  // Calculate top products
-  const getTopProducts = () => {
-    const productStats = {};
-    orders.forEach((order) => {
-      const items = order.items || order.orderItems || order.cartItems || [];
-      if (Array.isArray(items)) {
-        items.forEach((item) => {
-          const name =
-            item.name || item.itemName || item.productName || "Unknown";
-          if (!productStats[name]) {
-            productStats[name] = { revenue: 0, quantity: 0 };
-          }
-          const price =
-            item.total ?? item.price * item.quantity ?? item.amount ?? 0;
-          productStats[name].revenue += price;
-          productStats[name].quantity += item.quantity || 1;
-        });
-      }
-    });
-    return Object.entries(productStats)
-      .map(([name, stats]) => ({ name, ...stats }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
-  };
-
-  // Calculate revenue trend (last 7 days)
-  const getRevenueTrend = () => {
-    const trend = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      date.setHours(0, 0, 0, 0);
-      const nextDate = new Date(date);
-      nextDate.setDate(nextDate.getDate() + 1);
-
-      const dayRevenue = orders
-        .filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate >= date && orderDate < nextDate;
-        })
-        .reduce((sum, order) => sum + order.grandTotal, 0);
-
-      trend.push({
-        date: date.toLocaleDateString("en-US", { weekday: "short" }),
-        revenue: dayRevenue,
-      });
+    if (!isCustomDate) {
+      loadData();
     }
-    return trend;
+  }, [filter, isCustomDate]);
+
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    if (value === "custom_range") {
+      setIsCustomDate(true);
+    } else {
+      setIsCustomDate(false);
+      setFilter(value);
+    }
   };
 
-  // Calculate order status distribution
-  const getOrderStatusDistribution = () => {
-    const statusCount = { COMPLETED: 0, PENDING: 0 };
-    orders.forEach((order) => {
-      const status = order.paymentDetails?.status || "PENDING";
-      if (statusCount.hasOwnProperty(status)) {
-        statusCount[status] += 1;
-      }
-    });
-    const total = statusCount.COMPLETED + statusCount.PENDING;
-    return {
-      COMPLETED: {
-        count: statusCount.COMPLETED,
-        percentage: total > 0 ? (statusCount.COMPLETED / total) * 100 : 0,
-      },
-      PENDING: {
-        count: statusCount.PENDING,
-        percentage: total > 0 ? (statusCount.PENDING / total) * 100 : 0,
-      },
-    };
+  const handleApplyCustomDate = () => {
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates");
+      return;
+    }
+    loadData();
   };
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="analytics-container">
         <div className="loading-state">
@@ -163,13 +71,44 @@ const Analytics = () => {
     );
   }
 
-  const paymentBreakdown = getPaymentBreakdown();
-  const employeeRevenue = getEmployeeRevenue();
-  const topProducts = getTopProducts();
-  const revenueTrend = getRevenueTrend();
-  const orderStatus = getOrderStatusDistribution();
-  const totalRevenue = orders.reduce((sum, order) => sum + order.grandTotal, 0);
-  const maxTrendRevenue = Math.max(...revenueTrend.map((d) => d.revenue), 1);
+  const { kpi, paymentWiseData, last7DaysSales, customerWiseData, employeeWiseData } = data;
+
+  const totalRevenue = kpi.totalAmount || 0;
+
+  // Max for revenue trend
+  const maxTrendRevenue = Math.max(...last7DaysSales.map((d) => d.amount), 1);
+  
+  // Max for employee bar chart
+  const maxEmployeeRevenue = Math.max(...(employeeWiseData || []).map((d) => d.totalAmount), 1);
+
+  // Payment breakdown logic
+  const paymentKeys = Object.keys(paymentWiseData || {});
+  const totalPayment = paymentKeys.reduce((sum, key) => sum + (paymentWiseData[key] || 0), 0);
+  const getPercentage = (amt) => totalPayment > 0 ? (amt / totalPayment) * 100 : 0;
+  
+  const paymentColors = {
+    CASH: "#10b981",
+    UPI: "#3b82f6",
+    CARD: "#f59e0b",
+    CREDIT: "#8b5cf6",
+    CHEQUE: "#e64051"
+  };
+  
+  const paymentIcons = {
+    CASH: "bi-cash",
+    UPI: "bi-phone",
+    CARD: "bi-credit-card",
+    CREDIT: "bi-journal-text",
+    CHEQUE: "bi-bank"
+  };
+
+  let currentPercent = 0;
+  const pieGradient = paymentKeys.map(key => {
+    const start = currentPercent;
+    currentPercent += getPercentage(paymentWiseData[key] || 0);
+    const color = paymentColors[key.toUpperCase()] || "#94a3b8";
+    return `${color} ${start}% ${currentPercent}%`;
+  }).join(", ");
 
   return (
     <div className="analytics-container">
@@ -177,12 +116,34 @@ const Analytics = () => {
       <div className="analytics-header">
         <div className="header-content">
           <h1>
-            {/* <i className="bi bi-graph-up-arrow"></i> */}
             Analytics Dashboard
           </h1>
           <p className="header-subtitle">
             Comprehensive business insights and performance metrics
           </p>
+        </div>
+        
+        {/* Filters Section */}
+        <div className="filters-section">
+          <select value={isCustomDate ? "custom_range" : filter} onChange={handleFilterChange} className="filter-select">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="this_week">This Week</option>
+            <option value="last_week">Last Week</option>
+            <option value="this_month">This Month</option>
+            <option value="last_month">Last Month</option>
+            <option value="this_year">This Year</option>
+            <option value="custom_range">Custom Range</option>
+          </select>
+          
+          {isCustomDate && (
+            <div className="custom-date-picker">
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="date-input" />
+              <span>to</span>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="date-input" />
+              <button onClick={handleApplyCustomDate} className="apply-btn">Apply</button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -193,9 +154,28 @@ const Analytics = () => {
             <i className="bi bi-currency-rupee"></i>
           </div>
           <div className="metric-content">
-            <h3>Total Revenue</h3>
-            <p className="metric-value">₹{totalRevenue.toFixed(2)}</p>
-            <span className="metric-label">All time</span>
+            <h3>Total Amount</h3>
+            <p className="metric-value">₹{kpi.totalAmount.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div className="metric-card success">
+          <div className="metric-icon">
+            <i className="bi bi-cash-coin"></i>
+          </div>
+          <div className="metric-content">
+            <h3>Paid Amount</h3>
+            <p className="metric-value">₹{kpi.paidAmount.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div className="metric-card warning">
+          <div className="metric-icon">
+            <i className="bi bi-credit-card-2-front"></i>
+          </div>
+          <div className="metric-content">
+            <h3>Credit Amount</h3>
+            <p className="metric-value">₹{kpi.creditAmount.toFixed(2)}</p>
           </div>
         </div>
 
@@ -204,35 +184,28 @@ const Analytics = () => {
             <i className="bi bi-cart-check"></i>
           </div>
           <div className="metric-content">
-            <h3>Total Orders</h3>
-            <p className="metric-value">{orders.length}</p>
-            <span className="metric-label">All time</span>
+            <h3>Completed Orders</h3>
+            <p className="metric-value">{kpi.completedOrders}</p>
           </div>
         </div>
-
-        <div className="metric-card success">
+        
+        <div className="metric-card primary">
           <div className="metric-icon">
-            <i className="bi bi-check-circle"></i>
+            <i className="bi bi-bag-check"></i>
           </div>
           <div className="metric-content">
-            <h3>Completed</h3>
-            <p className="metric-value">{orderStatus.COMPLETED.count}</p>
-            <span className="metric-label">
-              {orderStatus.COMPLETED.percentage.toFixed(1)}% of orders
-            </span>
+            <h3>Today's Orders</h3>
+            <p className="metric-value">{kpi.todayOrderCount}</p>
           </div>
         </div>
 
         <div className="metric-card warning">
           <div className="metric-icon">
-            <i className="bi bi-clock-history"></i>
+            <i className="bi bi-bag-x"></i>
           </div>
           <div className="metric-content">
-            <h3>Pending</h3>
-            <p className="metric-value">{orderStatus.PENDING.count}</p>
-            <span className="metric-label">
-              {orderStatus.PENDING.percentage.toFixed(1)}% of orders
-            </span>
+            <h3>Today's Credit Orders</h3>
+            <p className="metric-value">{kpi.todayCreditOrderCount}</p>
           </div>
         </div>
       </div>
@@ -249,21 +222,64 @@ const Analytics = () => {
           </div>
           <div className="chart-content">
             <div className="bar-chart">
-              {revenueTrend.map((day, index) => (
-                <div key={index} className="bar-item">
-                  <div className="bar-wrapper">
-                    <div
-                      className="bar"
-                      style={{
-                        height: `${(day.revenue / maxTrendRevenue) * 100}%`,
-                      }}
-                      data-value={`₹${day.revenue.toFixed(0)}`}
-                    ></div>
+              {last7DaysSales.map((day, index) => {
+                const dateObj = new Date(day.date);
+                const shortDate = dateObj.toLocaleDateString("en-US", { weekday: "short", day: "numeric" });
+                return (
+                  <div key={index} className="bar-item">
+                    <div className="bar-wrapper">
+                      <div
+                        className="bar"
+                        style={{
+                          height: `${(day.amount / maxTrendRevenue) * 100}%`,
+                        }}
+                        data-value={`₹${day.amount.toFixed(2)} | ${day.day}`}
+                      >
+                        <span className="bar-value-above">₹{day.amount.toFixed(0)}</span>
+                      </div>
+                    </div>
+                    <span className="bar-label">{shortDate}</span>
                   </div>
-                  <span className="bar-label">{day.date}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
+          </div>
+        </div>
+        
+        {/* Employee Wise Data Chart */}
+        <div className="chart-card wide">
+          <div className="chart-header">
+            <h3>
+              <i className="bi bi-person-workspace"></i>
+              Employee Performance (Revenue)
+            </h3>
+          </div>
+          <div className="chart-content">
+            {employeeWiseData && employeeWiseData.length > 0 ? (
+              <div className="bar-chart employee-chart">
+                {employeeWiseData.map((emp, index) => (
+                  <div key={index} className="bar-item">
+                    <div className="bar-wrapper">
+                      <div
+                        className="bar employee-bar"
+                        style={{
+                          height: `${(emp.totalAmount / maxEmployeeRevenue) * 100}%`,
+                        }}
+                        data-value={`₹${emp.totalAmount.toFixed(2)}`}
+                      >
+                        <span className="bar-value-above">₹{emp.totalAmount.toFixed(0)}</span>
+                      </div>
+                    </div>
+                    <span className="bar-label">{emp.employeeName}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-data">
+                <i className="bi bi-inbox"></i>
+                <p>No employee data available</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -282,24 +298,14 @@ const Analytics = () => {
                 <div
                   className="pie-chart"
                   style={{
-                    background: `conic-gradient(
-                      #10b981 0% ${paymentBreakdown.CASH.percentage}%,
-                      #3b82f6 ${paymentBreakdown.CASH.percentage}% ${
-                      paymentBreakdown.CASH.percentage +
-                      paymentBreakdown.UPI.percentage
-                    }%,
-                      #f59e0b ${
-                        paymentBreakdown.CASH.percentage +
-                        paymentBreakdown.UPI.percentage
-                      }% 100%
-                    )`,
+                    background: `conic-gradient(${pieGradient || '#f8fafc 0% 100%'})`,
                   }}
                 >
                   <div className="pie-chart-center">
                     <div className="pie-chart-total">
                       <span className="pie-total-label">Total</span>
                       <span className="pie-total-value">
-                        ₹{totalRevenue.toFixed(2)}
+                        ₹{totalPayment.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -308,56 +314,24 @@ const Analytics = () => {
 
               {/* Legend */}
               <div className="pie-chart-legend">
-                <div className="legend-item">
-                  <div className="legend-marker cash"></div>
-                  <div className="legend-content">
-                    <div className="legend-header">
-                      <span className="legend-label">
-                        <i className="bi bi-cash"></i> Cash
-                      </span>
-                      <span className="legend-percentage">
-                        {paymentBreakdown.CASH.percentage.toFixed(1)}%
-                      </span>
-                    </div>
-                    <span className="legend-value">
-                      ₹{paymentBreakdown.CASH.amount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="legend-item">
-                  <div className="legend-marker upi"></div>
-                  <div className="legend-content">
-                    <div className="legend-header">
-                      <span className="legend-label">
-                        <i className="bi bi-phone"></i> UPI
-                      </span>
-                      <span className="legend-percentage">
-                        {paymentBreakdown.UPI.percentage.toFixed(1)}%
+                {paymentKeys.map(key => (
+                  <div className="legend-item" key={key}>
+                    <div className="legend-marker" style={{ background: paymentColors[key.toUpperCase()] || "#94a3b8" }}></div>
+                    <div className="legend-content">
+                      <div className="legend-header">
+                        <span className="legend-label">
+                          <i className={`bi ${paymentIcons[key.toUpperCase()] || "bi-wallet2"}`}></i> {key}
+                        </span>
+                        <span className="legend-percentage">
+                          {getPercentage(paymentWiseData[key]).toFixed(1)}%
+                        </span>
+                      </div>
+                      <span className="legend-value">
+                        ₹{(paymentWiseData[key] || 0).toFixed(2)}
                       </span>
                     </div>
-                    <span className="legend-value">
-                      ₹{paymentBreakdown.UPI.amount.toFixed(2)}
-                    </span>
                   </div>
-                </div>
-
-                <div className="legend-item">
-                  <div className="legend-marker card"></div>
-                  <div className="legend-content">
-                    <div className="legend-header">
-                      <span className="legend-label">
-                        <i className="bi bi-credit-card"></i> Card
-                      </span>
-                      <span className="legend-percentage">
-                        {paymentBreakdown.CARD.percentage.toFixed(1)}%
-                      </span>
-                    </div>
-                    <span className="legend-value">
-                      ₹{paymentBreakdown.CARD.amount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -366,37 +340,35 @@ const Analytics = () => {
 
       {/* Tables Section */}
       <div className="tables-grid">
-        {/* Top Employees */}
+        {/* Top Customers */}
         <div className="table-card">
           <div className="table-header">
             <h3>
-              <i className="bi bi-person-badge"></i>
-              Top Employees by Revenue
+              <i className="bi bi-people"></i>
+              Top Customers by Revenue
             </h3>
           </div>
           <div className="table-content">
-            {employeeRevenue.length > 0 ? (
+            {customerWiseData && customerWiseData.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
                     <th>Rank</th>
-                    <th>Employee</th>
-                    <th>Orders</th>
+                    <th>Customer</th>
                     <th>Revenue</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {employeeRevenue.map((employee, index) => (
+                  {customerWiseData.map((customer, index) => (
                     <tr key={index}>
                       <td>
-                        <span className={`rank-badge rank-${index + 1}`}>
+                        <span className={`rank-badge rank-${index + 1 > 5 ? 'other' : index + 1}`}>
                           {index + 1}
                         </span>
                       </td>
-                      <td className="employee-name">{employee.name}</td>
-                      <td>{employee.orders}</td>
+                      <td className="customer-name">{customer.customer}</td>
                       <td className="revenue-cell">
-                        ₹{employee.revenue.toFixed(2)}
+                        ₹{customer.totalAmount.toFixed(2)}
                       </td>
                     </tr>
                   ))}
@@ -405,52 +377,7 @@ const Analytics = () => {
             ) : (
               <div className="empty-data">
                 <i className="bi bi-inbox"></i>
-                <p>No employee data available</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Top Products */}
-        <div className="table-card">
-          <div className="table-header">
-            <h3>
-              <i className="bi bi-box-seam"></i>
-              Top Products by Revenue
-            </h3>
-          </div>
-          <div className="table-content">
-            {topProducts.length > 0 ? (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Product</th>
-                    <th>Sold</th>
-                    <th>Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topProducts.map((product, index) => (
-                    <tr key={index}>
-                      <td>
-                        <span className={`rank-badge rank-${index + 1}`}>
-                          {index + 1}
-                        </span>
-                      </td>
-                      <td className="product-name">{product.name}</td>
-                      <td>{product.quantity}</td>
-                      <td className="revenue-cell">
-                        ₹{product.revenue.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="empty-data">
-                <i className="bi bi-inbox"></i>
-                <p>No product data available</p>
+                <p>No customer data available</p>
               </div>
             )}
           </div>

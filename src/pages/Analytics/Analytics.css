@@ -891,3 +891,97 @@
     font-size: 0.8rem;
   }
 }
+
+/* Filters Section */
+.filters-section {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select option {
+  color: #002142;
+}
+
+.custom-date-picker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: white;
+}
+
+.date-input {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+.date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.apply-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #e64051;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.apply-btn:hover {
+  background: #c23544;
+}
+
+/* Bar Value Above */
+.bar-value-above {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #002142;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* Legend markers */
+.legend-marker.credit {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+.legend-marker.cheque {
+  background: linear-gradient(135deg, #e64051 0%, #be123c 100%);
+}
+
+.rank-badge.rank-other {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.4);
+}
+
+/* Employee chart styles */
+.employee-chart {
+  height: 300px;
+}
+.employee-bar {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 -4px 15px rgba(59, 130, 246, 0.3);
+}
+.employee-bar:hover {
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+}
