@@ -41,3 +41,22 @@ export const fetchExpenseItems = async (page = 0, size = 10, sortBy = "name", ty
 export const fetchExpenseItemById = async (expenseItemId) => {
     return await axios.get(`${API_URL}api/v1.0/admin/expense/expense-items/${expenseItemId}`, {headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 }
+
+export const fetchDailyReports = async (startDate, endDate, branch) => {
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    if (branch) params.branch = branch;
+    
+    return await axios.get(`${API_URL}api/v1.0/admin/expense/daily-reports`, {
+        params,
+        headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}
+    });
+}
+
+export const downloadDailyExpensePdf = async (dailyExpenseId) => {
+    return await axios.get(`${API_URL}api/v1.0/admin/expense/daily-reports/${dailyExpenseId}/pdf`, {
+        responseType: 'blob',
+        headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}
+    });
+}

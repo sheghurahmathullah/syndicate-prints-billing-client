@@ -54,3 +54,9 @@ export const fetchAnalyticsData = async (filter = "month", startDate = null, end
     });
 }
 
+export const fetchTodayBills = async (page = 0, size = 15) => {
+    return await axios.get(`${API_URL}api/v1.0/dashboard/today-bills`, {
+        params: { page, size },
+        headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}
+    });
+};

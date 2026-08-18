@@ -23,12 +23,14 @@ import ManagePaperCategory from "./pages/ManagePaperCategory/ManagePaperCategory
 import ManagePaperGroup from "./pages/ManagePaperGroup/ManagePaperGroup.jsx";
 import ManagePaper from "./pages/ManagePaper/ManagePaper.jsx";
 import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
+import ManageEmployee from "./pages/ManageEmployee/ManageEmployee.jsx";
 import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
 import AddDailyExpenses from "./pages/AddDailyExpenses/AddDailyExpenses.jsx";
 import AddMonthlyExpenses from "./pages/AddMonthlyExpenses/AddMonthlyExpenses.jsx";
 import CreateBill from "./pages/Bills/CreateBill.jsx";
 import ViewBills from "./pages/Bills/ViewBills.jsx";
-
+import TodayBills from "./pages/Bills/TodayBills.jsx";
+import DailyExpenseReport from "./pages/Reports/DailyExpenseReport.jsx";
 
 
 const App = () => {
@@ -83,6 +85,16 @@ const App = () => {
               />
             }
           />
+          
+          <Route
+            path="/bills/today"
+            element={
+              <ProtectedRoute
+                element={<TodayBills />}
+              />
+            }
+          />
+
           
           <Route path="/orders" element={<OrderHistory />} />
 
@@ -197,6 +209,15 @@ const App = () => {
             }
           />
           <Route
+            path="/employees"
+            element={
+              <ProtectedRoute
+                element={<ManageEmployee />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
             path="/expense-item"
             element={
               <ProtectedRoute
@@ -219,6 +240,16 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<AddMonthlyExpenses />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+
+          <Route
+            path="/reports/daily-expense"
+            element={
+              <ProtectedRoute
+                element={<DailyExpenseReport />}
                 allowedRoles={["ROLE_ADMIN"]}
               />
             }

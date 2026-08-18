@@ -3,15 +3,23 @@ import './CreateBill.css';
 import { AppContext } from '../../context/AppContext';
 import { getNextBillNumber, createBill } from '../../Service/BillService';
 import { fetchCustomers } from '../../Service/CustomerService';
+import { fetchEmployeeNames } from '../../Service/EmployeeService';
 import { getParticularDetailsById } from '../../Service/ParticularService';
 import toast from 'react-hot-toast';
 
 const CreateBill = () => {
   const { auth } = useContext(AppContext);
-  const employeeName = auth?.username || 'Employee';
 
   // State
   const [billNumber, setBillNumber] = useState('');
+
+  // Employee Search State
+  const [employeeNames, setEmployeeNames] = useState([]);
+  const [employeeSearch, setEmployeeSearch] = useState('');
+  const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState('');
+
+  // Customer Search State
   const [customers, setCustomers] = useState([]);
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
@@ -73,11 +81,43 @@ const CreateBill = () => {
       if (custRes.data) {
         setCustomers(custRes.data.content || custRes.data);
       }
+
+      const empRes = await fetchEmployeeNames();
+      if (empRes.data) {
+        setEmployeeNames(empRes.data);
+      }
+
+      if (auth?.username) {
+        setSelectedEmployee(auth.username);
+        setEmployeeSearch(auth.username);
+      }
     } catch (error) {
       console.error("Error fetching initial data", error);
       toast.error("Failed to load initial data");
     }
   };
+
+  const handleEmployeeSelect = (emp) => {
+    const fullName = emp.fullName || emp.name || '';
+    setSelectedEmployee(fullName);
+    setEmployeeSearch(fullName);
+  };
+
+  const handleEmployeeSearchChange = (e) => {
+    const val = e.target.value;
+    setEmployeeSearch(val);
+    setSelectedEmployee(val); // Allow manual typing too
+    if (val.trim()) {
+      setShowEmployeeDropdown(true);
+    } else {
+      setShowEmployeeDropdown(false);
+    }
+  };
+
+  const filteredEmployees = employeeNames.filter(emp => {
+    const fullName = emp.fullName || emp.name || '';
+    return fullName.toLowerCase().includes(employeeSearch.toLowerCase());
+  });
 
   const handleCustomerSelect = (customer) => {
     setSelectedCustomer({
@@ -106,6 +146,14 @@ const CreateBill = () => {
   const handleParticularAdd = async (e, id) => {
     const item = particularsList.find(p => p.id === id);
     if (e.key === 'Enter' && item && item.particularId.trim()) {
+      const searchId = item.particularId.trim().toLowerCase();
+      const isDuplicate = particularsList.some(p => p.id !== id && p.isFilled && p.particularName && p.particularName.toLowerCase() === searchId);
+
+      if (isDuplicate) {
+        toast.error("This particular is already added to the bill.");
+        return;
+      }
+
       try {
         const res = await getParticularDetailsById(item.particularId.trim());
         const data = res.data;
@@ -115,7 +163,7 @@ const CreateBill = () => {
               if (p.id === id) {
                 return {
                   ...p,
-                  particularName: data.particularId, // Using ID as name as per response
+                  particularName: data.particularName || data.name || data.particularId,
                   type: 'Single Side',
                   qty: 1,
                   basePrice: data.price || 0,
@@ -182,7 +230,7 @@ const CreateBill = () => {
     const totalItems = filledItems.length;
     const totalBillsWithoutGst = filledItems.reduce((acc, curr) => acc + curr.totalPrice, 0);
     const gstAmount = (totalBillsWithoutGst * totals.gstPercentage) / 100;
-    
+
     const discount = Number(priceDiscount) || 0;
     const tds = Number(tdsAmount) || 0;
     const totalToPay = totalBillsWithoutGst + gstAmount - discount;
@@ -192,7 +240,7 @@ const CreateBill = () => {
     if (enableCredit) {
       totalCredits = totalToPay - paid;
     } else {
-      paid = amountPaid ? Number(amountPaid) : totalToPay;
+      totalCredits = 0;
     }
 
     setTotals(prev => ({
@@ -208,7 +256,7 @@ const CreateBill = () => {
     }));
   }, [particularsList, totals.gstPercentage, enableCredit, amountPaid, priceDiscount, tdsAmount]);
 
-  const handleSave = async () => {
+  const handleSave = async (printAfter = false) => {
     try {
       const filledItems = particularsList.filter(p => p.isFilled);
       if (filledItems.length === 0) {
@@ -222,24 +270,24 @@ const CreateBill = () => {
       }
 
       const payload = {
-        employee: employeeName,
+        employee: selectedEmployee || employeeSearch,
         customerName: selectedCustomer.customerName,
         customerEmail: selectedCustomer.customerEmail,
         customerMobileNo: selectedCustomer.customerMobileNo,
         customerGstNo: selectedCustomer.customerGstNo,
         payment: paymentType,
-        totalPaid: amountPaid ? Number(amountPaid) : totals.totalToPay,
-        total: totals.totalBillsWithoutGst,
-        creditAmount: totals.totalCredits,
-        totalWithGst: totals.totalToPay,
+        totalPaid: amountPaid ? Number(Number(amountPaid).toFixed(2)) : Number(totals.totalToPay.toFixed(2)),
+        total: Number(totals.totalToPay.toFixed(2)),
+        creditAmount: Number(totals.totalCredits.toFixed(2)),
+        totalWithGst: Number(totals.totalToPay.toFixed(2)),
         totalItems: totals.totalItems,
-        discount: totals.discount,
-        tdsAmount: totals.tdsAmount,
-        creditPaidAmount: enableCredit ? Number(amountPaid) : 0,
+        discount: Number(totals.discount.toFixed(2)),
+        tdsAmount: Number(totals.tdsAmount.toFixed(2)),
+        creditPaidAmount: enableCredit ? Number(Number(amountPaid).toFixed(2)) : 0,
         particulars: JSON.stringify(filledItems.map(p => ({
           particularId: p.particularId,
           qty: p.qty,
-          price: p.individualPrice
+          price: Number(Number(p.individualPrice).toFixed(2))
         })))
       };
 
@@ -257,6 +305,12 @@ const CreateBill = () => {
         setTdsAmount('');
         setShowExtra(false);
         fetchInitialData(); // get next bill number
+
+        if (printAfter === true) {
+          setTimeout(() => {
+            window.print();
+          }, 300);
+        }
       }
     } catch (error) {
       toast.error("Failed to save bill");
@@ -270,18 +324,39 @@ const CreateBill = () => {
       </div>
 
       <div className="bill-card">
-        {/* Row 1: Employee, Bill No, Customer Search */}
+        {/* Row 1: Bill No, Employee, Customer Search */}
         <div className="bill-row row-1">
-          <div className="form-group">
-            <label>Employee Name</label>
-            <input type="text" value={employeeName} disabled className="form-control disabled-input" />
-          </div>
           <div className="form-group">
             <label>Bill Number</label>
             <input type="text" value={billNumber?.billNumber || billNumber || ''} disabled className="form-control disabled-input bill-number-text" />
           </div>
           <div className="form-group customer-search-wrapper">
-            <label>Search Customer</label>
+            <label>Employee Name</label>
+            <input
+              type="text"
+              placeholder="Search employee..."
+              value={employeeSearch}
+              onChange={handleEmployeeSearchChange}
+              onFocus={() => { if (employeeSearch) setShowEmployeeDropdown(true) }}
+              onBlur={() => setTimeout(() => setShowEmployeeDropdown(false), 200)}
+              className="form-control"
+            />
+            {showEmployeeDropdown && (
+              <ul className="customer-dropdown-list">
+                {filteredEmployees.length > 0 ? (
+                  filteredEmployees.map((emp, idx) => (
+                    <li key={idx} onMouseDown={(e) => { e.preventDefault(); handleEmployeeSelect(emp); setShowEmployeeDropdown(false); }}>
+                      <span className="fw-bold">{emp.fullName || emp.name}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="no-results">No employees found</li>
+                )}
+              </ul>
+            )}
+          </div>
+          <div className="form-group customer-search-wrapper">
+            <label>Customer Name</label>
             <input
               type="text"
               placeholder="Search by name..."
@@ -389,6 +464,7 @@ const CreateBill = () => {
                             value={item.individualPrice}
                             onChange={(e) => updateParticularRow(item.id, 'individualPrice', Number(e.target.value))}
                             className="form-control price-input"
+                            onWheel={(e) => e.target.blur()}
                           />
                         ) : '-'}
                       </td>
@@ -425,11 +501,11 @@ const CreateBill = () => {
                 <span>Total Credits:</span>
                 <span className="fw-bold">₹{totals.totalCredits.toFixed(2)}</span>
               </div>
-              
+
               <hr className="my-1 text-muted" />
 
               <div className="summary-item text-danger fw-bold">
-                <span>Total Bills without GST:</span>
+                <span>Total Bill:</span>
                 <span>₹{totals.totalBillsWithoutGst.toFixed(2)}</span>
               </div>
               <div className="summary-item">
@@ -440,6 +516,7 @@ const CreateBill = () => {
                     value={totals.gstPercentage}
                     onChange={(e) => setTotals({ ...totals, gstPercentage: Number(e.target.value) })}
                     className="form-control gst-input"
+                    onWheel={(e) => e.target.blur()}
                   />
                   <span>%</span>
                   <span className="fw-bold ms-2">₹{totals.gstAmount.toFixed(2)}</span>
@@ -462,10 +539,10 @@ const CreateBill = () => {
             </div>
 
             <div className="mt-4 d-flex align-items-center justify-content-end gap-3">
-               <span className="fs-4 fw-bold" style={{color: '#6b7280'}}>TOTAL</span>
-               <div className="fs-4 fw-bold text-dark" style={{backgroundColor: '#fffde7', border: '1px solid #90caf9', padding: '5px 15px', minWidth: '150px', textAlign: 'right'}}>
-                   {totals.totalPaidCredits.toFixed(2)}
-               </div>
+              <span className="fs-4 fw-bold" style={{ color: '#6b7280' }}>TOTAL</span>
+              <div className="fs-4 fw-bold text-dark" style={{ backgroundColor: '#fffde7', border: '1px solid #90caf9', padding: '5px 15px', minWidth: '150px', textAlign: 'right' }}>
+                {totals.totalToPay.toFixed(2)}
+              </div>
             </div>
           </div>
 
@@ -492,9 +569,18 @@ const CreateBill = () => {
             <input
               type="number"
               value={amountPaid}
-              onChange={(e) => setAmountPaid(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && Number(val) > totals.totalToPay) {
+                  toast.error("Paid amount cannot exceed total bill amount.");
+                  setAmountPaid(totals.totalToPay.toString());
+                } else {
+                  setAmountPaid(val);
+                }
+              }}
               className="form-control paid-input"
               placeholder="Amount"
+              onWheel={(e) => e.target.blur()}
             />
           </div>
 
@@ -532,6 +618,7 @@ const CreateBill = () => {
                     value={priceDiscount}
                     onChange={e => setPriceDiscount(e.target.value)}
                     placeholder="Amount"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
                 <div className="form-group d-flex align-items-center m-0">
@@ -543,6 +630,7 @@ const CreateBill = () => {
                     value={tdsAmount}
                     onChange={e => setTdsAmount(e.target.value)}
                     placeholder="Amount"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -550,8 +638,8 @@ const CreateBill = () => {
           </div>
 
           <div className="save-actions">
-            <button className="btn btn-primary px-4 me-3" onClick={handleSave}>Save</button>
-            <button className="btn btn-secondary px-4">Save and Print</button>
+            <button className="btn btn-primary px-4 me-3" onClick={() => handleSave(false)}>Save</button>
+            <button className="btn btn-secondary px-4" onClick={() => handleSave(true)}>Save and Print</button>
           </div>
         </div>
 

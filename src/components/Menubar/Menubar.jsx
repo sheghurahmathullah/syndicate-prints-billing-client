@@ -14,6 +14,8 @@ const Menubar = () => {
   const [paperOpen, setPaperOpen] = useState(false);
   const [operationsOpen, setOperationsOpen] = useState(false);
   const [billsOpen, setBillsOpen] = useState(false);
+  const [employeesOpen, setEmployeesOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -53,14 +55,7 @@ const Menubar = () => {
           <span className="link-text">Dashboard</span>
         </Link>
 
-        <Link
-          className={`sidebar-link ${isActive("/explore") ? "active" : ""}`}
-          to="/explore"
-          title="Explore"
-        >
-          <i className="bi bi-compass"></i>
-          <span className="link-text">Explore</span>
-        </Link>
+        {/* Explore hidden as requested */}
 
         <div 
           className={`sidebar-link nav-group ${billsOpen ? "open" : ""}`} 
@@ -135,28 +130,47 @@ const Menubar = () => {
               <i className="bi bi-building"></i>
               <span className="link-text">Branch</span>
             </Link>
-            <Link
-              className={`sidebar-link ${isActive("/items") ? "active" : ""}`}
-              to="/items"
-              title="Manage Products"
+            {/* Products hidden as requested */}
+
+            <div 
+              className={`sidebar-link nav-group ${employeesOpen ? "open" : ""}`} 
+              onClick={() => { setEmployeesOpen(!employeesOpen); if (isCollapsed) setIsCollapsed(false); }}
+              title="Manage Employees"
+              style={{ cursor: 'pointer' }}
             >
-              <i className="bi bi-box-seam"></i>
-              <span className="link-text">Products</span>
-            </Link>
-            <Link
-              className={`sidebar-link ${isActive("/users") ? "active" : ""}`}
-              to="/users"
-              title="Manage Users"
-            >
-              <i className="bi bi-people"></i>
-              <span className="link-text">Users</span>
-            </Link>
+              <i className="bi bi-people-fill"></i>
+              <span className="link-text">Manage Employees</span>
+              <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: employeesOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
+            </div>
+            
+            <div className={`submenu-wrapper ${employeesOpen ? 'open' : ''}`}>
+              <div className="submenu">
+                <div className="submenu-content">
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/employees") ? "active" : ""}`}
+                    to="/employees"
+                    title="Employees"
+                  >
+                    <i className="bi bi-person-badge"></i>
+                    <span className="link-text">Employees</span>
+                  </Link>
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/users") ? "active" : ""}`}
+                    to="/users"
+                    title="Users"
+                  >
+                    <i className="bi bi-person"></i>
+                    <span className="link-text">Users</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
             <Link
               className={`sidebar-link ${isActive("/customers") ? "active" : ""}`}
               to="/customers"
               title="Manage Customers"
             >
-              <i className="bi bi-person-badge"></i>
+              <i className="bi bi-person-lines-fill"></i>
               <span className="link-text">Customers</span>
             </Link>
             
@@ -273,6 +287,32 @@ const Menubar = () => {
                   >
                     <i className="bi bi-calendar-month"></i>
                     <span className="link-text">Monthly Expense</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className={`sidebar-link nav-group ${reportsOpen ? "open" : ""}`} 
+              onClick={() => { setReportsOpen(!reportsOpen); if (isCollapsed) setIsCollapsed(false); }}
+              title="Reports"
+              style={{ cursor: 'pointer' }}
+            >
+              <i className="bi bi-file-bar-graph"></i>
+              <span className="link-text">Reports</span>
+              <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: reportsOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
+            </div>
+
+            <div className={`submenu-wrapper ${reportsOpen ? 'open' : ''}`}>
+              <div className="submenu">
+                <div className="submenu-content">
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/reports/daily-expense") ? "active" : ""}`}
+                    to="/reports/daily-expense"
+                    title="Daily Expense Report"
+                  >
+                    <i className="bi bi-journal-text"></i>
+                    <span className="link-text">Daily Expense</span>
                   </Link>
                 </div>
               </div>

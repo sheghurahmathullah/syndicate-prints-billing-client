@@ -1,0 +1,10 @@
+.employee-form-container {
+  padding: 1rem;
+}
+
+.file-upload-wrapper {
+  background-color: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+}

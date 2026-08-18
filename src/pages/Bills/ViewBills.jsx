@@ -4,6 +4,7 @@ import { fetchCustomers } from "../../Service/CustomerService";
 import toast from "react-hot-toast";
 import "./ViewBills.css";
 import BillDetailsModal from "./BillDetailsModal.jsx";
+import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
 
 const ViewBills = () => {
   const [bills, setBills] = useState([]);
@@ -18,6 +19,7 @@ const ViewBills = () => {
   const [customers, setCustomers] = useState([]);
   const [pageSize, setPageSize] = useState(15);
   const [selectedBill, setSelectedBill] = useState(null);
+  const [printBill, setPrintBill] = useState(null);
 
   const fetchBills = async () => {
     setLoading(true);
@@ -76,7 +78,45 @@ const ViewBills = () => {
     setPage(0);
   };
 
-  const filteredCustomers = customers.filter(c => 
+  const handlePrintClick = (bill) => {
+    let particulars = [];
+    try {
+      if (typeof bill.particulars === "string") {
+        particulars = JSON.parse(bill.particulars);
+      } else if (Array.isArray(bill.particulars)) {
+        particulars = bill.particulars;
+      }
+    } catch (error) {
+      console.error("Error parsing particulars:", error);
+    }
+
+    const items = particulars.map(p => ({
+      name: p.name || p.particularName,
+      quantity: p.qty || 1,
+      price: p.price || 0
+    }));
+
+    const orderDetails = {
+      invoiceNumber: bill.billNumber,
+      orderId: bill.id,
+      createdAt: bill.createdAt || bill.date,
+      username: bill.employee,
+      customerName: bill.customerName || "CASH CUSTOMER",
+      grandTotal: bill.totalWithGst || bill.total || 0,
+      paidAmount: bill.totalPaid || 0,
+      tax: bill.gstAmount || 0,
+      items: items,
+      creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
+      pendingAmount: bill.creditAmount || 0,
+      taxPercent: bill.gstPercentage || 0,
+      subtotal: bill.total || 0,
+      gstin: bill.customerGstNo || ""
+    };
+
+    setPrintBill(orderDetails);
+  };
+
+  const filteredCustomers = customers.filter(c =>
     c.name && c.name.toLowerCase().includes(customerSearch.toLowerCase())
   );
 
@@ -88,9 +128,9 @@ const ViewBills = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    const options = { 
-      year: "numeric", month: "short", day: "numeric", 
-      hour: "2-digit", minute: "2-digit" 
+    const options = {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "2-digit", minute: "2-digit"
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -107,10 +147,10 @@ const ViewBills = () => {
           <label htmlFor="dateFilter" className="filter-label">
             <i className="bi bi-calendar-event text-primary"></i> Date:
           </label>
-          <select 
-            id="dateFilter" 
-            className="form-select form-select-sm shadow-sm modern-select" 
-            value={dateFilter} 
+          <select
+            id="dateFilter"
+            className="form-select form-select-sm shadow-sm modern-select"
+            value={dateFilter}
             onChange={handleFilterChange}
             style={{ width: "180px" }}
           >
@@ -124,9 +164,9 @@ const ViewBills = () => {
             <option value="custom_range">Custom Range</option>
           </select>
         </div>
-        
+
         <div className="filter-divider"></div>
-        
+
         <div className="filter-group">
           <label htmlFor="customerSearch" className="filter-label">
             <i className="bi bi-person-badge text-primary"></i> Customer:
@@ -143,27 +183,27 @@ const ViewBills = () => {
               onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
             />
             {customerSearch && (
-               <i 
-                 className="bi bi-x-circle-fill text-muted position-absolute" 
-                 style={{right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', fontSize: '0.85rem'}}
-                 onMouseDown={(e) => {
-                   e.preventDefault();
-                   setCustomerSearch("");
-                   setCustomerFilter("");
-                   setPage(0);
-                   setShowCustomerDropdown(false);
-                 }}
-               ></i>
+              <i
+                className="bi bi-x-circle-fill text-muted position-absolute"
+                style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', fontSize: '0.85rem' }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setCustomerSearch("");
+                  setCustomerFilter("");
+                  setPage(0);
+                  setShowCustomerDropdown(false);
+                }}
+              ></i>
             )}
             {showCustomerDropdown && customerSearch.trim().length > 0 && (
               <ul className="customer-dropdown-list">
                 {filteredCustomers.length > 0 ? (
                   filteredCustomers.map((cust, idx) => (
-                    <li 
-                      key={idx} 
-                      onMouseDown={(e) => { 
-                        e.preventDefault(); 
-                        handleCustomerSelect(cust.name); 
+                    <li
+                      key={idx}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleCustomerSelect(cust.name);
                       }}
                     >
                       {cust.name}
@@ -182,13 +222,13 @@ const ViewBills = () => {
         <table className="bills-table data-table">
           <thead>
             <tr>
-              <th className="text-center" style={{width: '60px'}}>S.No</th>
+              <th className="text-center" style={{ width: '60px' }}>S.No</th>
               <th>Bill Number</th>
               <th>Customer Name</th>
               <th>Amount (₹)</th>
               <th>Created At</th>
               <th>Employee</th>
-              <th className="text-center" style={{width: '120px'}}>Actions</th>
+              <th className="text-center" style={{ width: '120px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -218,18 +258,22 @@ const ViewBills = () => {
                   <td className="text-muted small">{formatDate(bill.createdAt || bill.date)}</td>
                   <td>
                     {bill.employee ? (
-                       <span className="badge bg-light text-dark border">{bill.employee}</span>
+                      <span className="badge bg-light text-dark border">{bill.employee}</span>
                     ) : (
                       <span className="text-muted">-</span>
                     )}
                   </td>
                   <td>
                     <div className="d-flex justify-content-center gap-2">
-                      <button className="btn btn-sm btn-outline-secondary modern-action-btn" title="Print">
+                      <button
+                        className="btn btn-sm btn-outline-secondary modern-action-btn"
+                        title="Print"
+                        onClick={() => handlePrintClick(bill)}
+                      >
                         <i className="bi bi-printer"></i>
                       </button>
-                      <button 
-                        className="btn btn-sm btn-outline-primary modern-action-btn" 
+                      <button
+                        className="btn btn-sm btn-outline-primary modern-action-btn"
                         title="View"
                         onClick={() => setSelectedBill(bill)}
                       >
@@ -284,7 +328,7 @@ const ViewBills = () => {
                   if (idx === 1 || idx === totalPages - 2) return <span key={idx} className="text-muted px-1">...</span>;
                   return null;
                 }
-                
+
                 return (
                   <button
                     key={idx}
@@ -310,9 +354,16 @@ const ViewBills = () => {
       </div>
 
       {selectedBill && (
-        <BillDetailsModal 
-          bill={selectedBill} 
-          onClose={() => setSelectedBill(null)} 
+        <BillDetailsModal
+          bill={selectedBill}
+          onClose={() => setSelectedBill(null)}
+        />
+      )}
+
+      {printBill && (
+        <ReceiptPopup
+          orderDetails={printBill}
+          onClose={() => setPrintBill(null)}
         />
       )}
     </div>
@@ -320,3 +371,4 @@ const ViewBills = () => {
 };
 
 export default ViewBills;
+

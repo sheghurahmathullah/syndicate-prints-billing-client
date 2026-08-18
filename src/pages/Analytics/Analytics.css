@@ -192,10 +192,9 @@
   font-weight: 500;
 }
 
-/* Charts Grid */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 25px;
   margin-bottom: 30px;
 }
@@ -226,7 +225,7 @@
 
 .chart-header h3 {
   color: #002142;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -246,7 +245,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  height: 250px;
+  height: 200px;
   gap: 15px;
   padding: 20px 0;
 }
@@ -261,7 +260,7 @@
 
 .bar-wrapper {
   width: 100%;
-  height: 200px;
+  height: 150px;
   display: flex;
   align-items: flex-end;
   position: relative;
@@ -306,18 +305,20 @@
 
 .bar-label {
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  text-align: center;
 }
 
 /* Pie Chart Container */
 .pie-chart-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  gap: 60px;
-  padding: 30px 20px;
+  gap: 15px;
+  padding: 10px;
 }
 
 .pie-chart-wrapper {
@@ -325,8 +326,8 @@
 }
 
 .pie-chart {
-  width: 280px;
-  height: 280px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   position: relative;
   box-shadow: 0 8px 30px rgba(0, 33, 66, 0.2);
@@ -352,8 +353,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 160px;
-  height: 160px;
+  width: 110px;
+  height: 110px;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 50%;
   display: flex;
@@ -389,15 +390,14 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-width: 400px;
+  gap: 10px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
+  gap: 10px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 12px;
   border: 2px solid #e2e8f0;
@@ -412,8 +412,8 @@
 }
 
 .legend-marker {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border-radius: 6px;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -447,7 +447,7 @@
 .legend-label {
   color: #002142;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -457,19 +457,19 @@
 
 .legend-label i {
   color: #e64051;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .legend-percentage {
   color: #e64051;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .legend-value {
   color: #64748b;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 /* Tables Grid */

@@ -25,9 +25,9 @@ const BillDetailsModal = ({ bill, onClose }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    const options = { 
-      year: "numeric", month: "short", day: "numeric", 
-      hour: "numeric", minute: "2-digit", hour12: true 
+    const options = {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "numeric", minute: "2-digit", hour12: true
     };
     const formatted = new Date(dateString).toLocaleDateString("en-GB", options);
     return formatted.replace(",", "");
@@ -44,17 +44,17 @@ const BillDetailsModal = ({ bill, onClose }) => {
     console.error("Error parsing particulars:", error);
   }
 
-  const totalAmount = bill.total || 0; 
-  const netAmount = bill.totalWithGst || totalAmount; 
+  const totalAmount = bill.total || 0;
+  const netAmount = bill.totalWithGst || totalAmount;
   const totalPaid = bill.totalPaid || 0;
 
   return (
     <div className={`bill-modal-overlay ${isClosing ? 'fade-out' : 'fade-in'}`} onClick={handleClose}>
       <div className={`bill-modal-content ${isClosing ? 'scale-out' : 'scale-in'}`} onClick={(e) => e.stopPropagation()}>
-        
+
         {/* Header Ribbon */}
         <div className="modal-top-ribbon"></div>
-        
+
         <div className="bill-modal-header">
           <div className="d-flex align-items-center gap-2">
             <div className="icon-circle bg-primary-subtle text-primary">
@@ -66,7 +66,7 @@ const BillDetailsModal = ({ bill, onClose }) => {
             <i className="bi bi-x"></i>
           </button>
         </div>
-        
+
         <div className="bill-modal-body">
           {/* Info Cards */}
           <div className="bill-info-grid mb-4">
@@ -105,7 +105,7 @@ const BillDetailsModal = ({ bill, onClose }) => {
                 {particulars.length > 0 ? (
                   particulars.map((item, idx) => (
                     <tr key={idx} className="item-row">
-                      <td className="text-start ps-4 fw-medium text-dark">{item.particularId || item.particularName || "Item"}</td>
+                      <td className="text-start ps-4 fw-medium text-dark">{item.name || item.particularName}</td>
                       <td className="text-center">
                         <span className="qty-badge">{item.qty || 1}</span>
                       </td>
@@ -138,6 +138,15 @@ const BillDetailsModal = ({ bill, onClose }) => {
                 <span className="summary-label text-muted">Total Paid</span>
                 <span className="summary-value fw-bold text-success fs-5">₹ {totalPaid.toFixed(2)}</span>
               </div>
+              {bill.billStatus?.toUpperCase() === 'CREDIT' && (
+                <>
+                  <div className="summary-divider-vertical"></div>
+                  <div className="summary-col">
+                    <span className="summary-label text-muted">Balance</span>
+                    <span className="summary-value fw-bold text-danger fs-5">₹ {(bill.creditAmount || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

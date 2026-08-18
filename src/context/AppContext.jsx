@@ -7,7 +7,11 @@ export const AppContext = createContext(null);
 export const AppContextProvider = (props) => {
   const [categories, setCategories] = useState([]);
   const [itemsData, setItemsData] = useState([]);
-  const [auth, setAuth] = useState({ token: null, role: null });
+  const [auth, setAuth] = useState(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    return { token: token || null, role: role || null };
+  });
   const [cartItems, setCartItems] = useState([]);
   const [users, setUsers] = useState([]);
 
@@ -66,12 +70,7 @@ export const AppContextProvider = (props) => {
     );
   };
 
-  // on mount, restore auth from localStorage (so refresh keeps login)
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    if (token && role) setAuthData(token, role);
-  }, []);
+  // Auth state is now initialized synchronously in useState to prevent redirect loops on refresh
 
   // fetch protected data only when authenticated
   // This runs in the background and doesn't block navigation

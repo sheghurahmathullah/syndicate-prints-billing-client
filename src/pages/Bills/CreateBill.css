@@ -39,8 +39,8 @@
 }
 
 .customer-search-wrapper {
-  flex-direction: row;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: stretch;
   flex: 2;
   position: relative;
 }
