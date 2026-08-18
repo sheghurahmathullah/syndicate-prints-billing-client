@@ -17,10 +17,17 @@ export const getNextBillNumber = () =>
     headers: getAuthHeaders(),
   });
 
-export const createBill = (data) =>
-  axios.post(`${API_URL}api/v1.0/bills`, data, {
+export const createBill = (billData) => {
+  return axios.post(`${API_URL}api/v1.0/bills`, billData, {
     headers: getAuthHeaders(),
   });
+};
+
+export const updateBill = (id, billData) => {
+  return axios.put(`${API_URL}api/v1.0/bills/${id}`, billData, {
+    headers: getAuthHeaders(),
+  });
+};
 
 export const getAllBills = (page, size, dateFilter, startDate, endDate, paymentMode, customerName) => {
   return axios.get(`${API_URL}api/v1.0/bills/get-all-bills`, {
@@ -33,6 +40,30 @@ export const getAllBills = (page, size, dateFilter, startDate, endDate, paymentM
       endDate,
       paymentMode,
       customerName,
+    },
+  });
+};
+
+export const getCustomerWiseData = (page, size) => {
+  return axios.get(`${API_URL}api/v1.0/bills/customer-wise-data`, {
+    headers: getAuthHeaders(),
+    params: {
+      page,
+      size,
+    },
+  });
+};
+
+export const getEmployeeWiseData = (page, size, dateFilter, startDate, endDate, employeeName) => {
+  return axios.get(`${API_URL}api/v1.0/bills/employee-wise-data`, {
+    headers: getAuthHeaders(),
+    params: {
+      page,
+      size,
+      dateFilter,
+      startDate,
+      endDate,
+      employeeName,
     },
   });
 };

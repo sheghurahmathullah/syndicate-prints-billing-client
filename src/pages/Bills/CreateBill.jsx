@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import './CreateBill.css';
 import { AppContext } from '../../context/AppContext';
-import { getNextBillNumber, createBill } from '../../Service/BillService';
+import { getNextBillNumber, createBill, updateBill } from '../../Service/BillService';
 import { fetchCustomers } from '../../Service/CustomerService';
 import { fetchEmployeeNames } from '../../Service/EmployeeService';
 import { getParticularDetailsById } from '../../Service/ParticularService';
 import toast from 'react-hot-toast';
+import ReceiptPopup from '../../components/ReceiptPopup/ReceiptPopup.jsx';
 
 const CreateBill = () => {
   const { auth } = useContext(AppContext);
+  const location = useLocation();
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const isEditMode = !!id;
+  const editingBill = location.state?.bill;
+
+  const [printBill, setPrintBill] = useState(null);
 
   // State
   const [billNumber, setBillNumber] = useState('');
@@ -70,13 +80,10 @@ const CreateBill = () => {
 
   useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [isEditMode, editingBill]);
 
   const fetchInitialData = async () => {
     try {
-      const billRes = await getNextBillNumber();
-      setBillNumber(billRes.data.nextBillNumber || billRes.data);
-
       const custRes = await fetchCustomers();
       if (custRes.data) {
         setCustomers(custRes.data.content || custRes.data);
@@ -87,9 +94,66 @@ const CreateBill = () => {
         setEmployeeNames(empRes.data);
       }
 
-      if (auth?.username) {
-        setSelectedEmployee(auth.username);
-        setEmployeeSearch(auth.username);
+      if (isEditMode && editingBill) {
+        // Populate form with existing bill data
+        setBillNumber(editingBill.billNumber);
+        setSelectedEmployee(editingBill.employee || '');
+        setEmployeeSearch(editingBill.employee || '');
+        
+        setCustomerSearch(editingBill.customerName || '');
+        setSelectedCustomer({
+          customerName: editingBill.customerName || '',
+          customerGstNo: editingBill.customerGstNo || '',
+          customerMobileNo: editingBill.customerMobileNo || '',
+          customerEmail: editingBill.customerEmail || ''
+        });
+
+        setPaymentType(editingBill.payment || 'Cash');
+        setAmountPaid(editingBill.totalPaid || '');
+        setEnableCredit(editingBill.creditAmount > 0);
+        
+        // Handle specifics if they have extra fields like discount, tds (Not in original model, default to 0)
+        setPriceDiscount(''); 
+        setTdsAmount('');
+        
+        let parsedParticulars = [];
+        try {
+          if (typeof editingBill.particulars === 'string') {
+            parsedParticulars = JSON.parse(editingBill.particulars);
+          } else if (Array.isArray(editingBill.particulars)) {
+            parsedParticulars = editingBill.particulars;
+          }
+        } catch (e) {
+          console.error("Failed to parse particulars", e);
+        }
+
+        const newParticularsList = parsedParticulars.map(p => ({
+          id: Date.now().toString() + Math.random().toString(),
+          particularId: p.particularId || p.particularName || '',
+          particularName: p.name || p.particularName || '',
+          type: 'Single Side', // Since type is not saved in backend, assume default
+          qty: p.qty || 1,
+          basePrice: p.price || 0,
+          priceBack: p.price || 0,
+          individualPrice: p.price || 0,
+          totalPrice: (p.qty || 1) * (p.price || 0),
+          isFilled: true
+        }));
+
+        while (newParticularsList.length < 5 || newParticularsList.filter(p => !p.isFilled).length < 2) {
+          newParticularsList.push(getEmptyParticularRow());
+        }
+        
+        setParticularsList(newParticularsList);
+
+      } else {
+        const billRes = await getNextBillNumber();
+        setBillNumber(billRes.data.nextBillNumber || billRes.data);
+
+        if (auth?.username) {
+          setSelectedEmployee(auth.username);
+          setEmployeeSearch(auth.username);
+        }
       }
     } catch (error) {
       console.error("Error fetching initial data", error);
@@ -256,6 +320,49 @@ const CreateBill = () => {
     }));
   }, [particularsList, totals.gstPercentage, enableCredit, amountPaid, priceDiscount, tdsAmount]);
 
+  const handleShowReceipt = (bill, autoPrint = false) => {
+    let particulars = [];
+    try {
+      if (typeof bill.particulars === "string") {
+        particulars = JSON.parse(bill.particulars);
+      } else if (Array.isArray(bill.particulars)) {
+        particulars = bill.particulars;
+      }
+    } catch (error) {
+      console.error("Error parsing particulars:", error);
+    }
+
+    const items = particulars.map(p => ({
+      name: p.name || p.particularName,
+      quantity: p.qty || 1,
+      price: p.price || 0
+    }));
+
+    const orderDetails = {
+      invoiceNumber: bill.billNumber,
+      orderId: bill.id,
+      createdAt: bill.createdAt || bill.date,
+      username: bill.employee,
+      customerName: bill.customerName || "CASH CUSTOMER",
+      grandTotal: bill.totalWithGst || bill.total || 0,
+      paidAmount: bill.totalPaid || 0,
+      tax: (bill.totalWithGst || 0) - (bill.total || 0),
+      items: items,
+      creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
+      pendingAmount: bill.creditAmount || 0,
+      taxPercent: totals.gstPercentage || 0,
+      subtotal: bill.total || 0,
+      gstin: bill.customerGstNo || ""
+    };
+
+    setPrintBill(orderDetails);
+    if (autoPrint) {
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+  };
+
   const handleSave = async (printAfter = false) => {
     try {
       const filledItems = particularsList.filter(p => p.isFilled);
@@ -291,36 +398,47 @@ const CreateBill = () => {
         })))
       };
 
-      const res = await createBill(payload);
-      if (res.data) {
-        toast.success("Bill saved successfully!");
-        // Reset form
-        setCustomerSearch('');
-        setSelectedCustomer({ customerName: '', customerGstNo: '', customerMobileNo: '', customerEmail: '' });
-        setParticularsList(Array(5).fill(null).map(() => getEmptyParticularRow()));
-        setPaymentType('Cash');
-        setEnableCredit(false);
-        setAmountPaid('');
-        setPriceDiscount('');
-        setTdsAmount('');
-        setShowExtra(false);
-        fetchInitialData(); // get next bill number
+      if (isEditMode) {
+        const res = await updateBill(id, payload);
+        if (res.data) {
+          toast.success("Bill updated successfully!");
+          handleShowReceipt(res.data, printAfter);
+        }
+      } else {
+        const res = await createBill(payload);
+        if (res.data) {
+          toast.success("Bill saved successfully!");
+          // Reset form
+          setCustomerSearch('');
+          setSelectedCustomer({ customerName: '', customerGstNo: '', customerMobileNo: '', customerEmail: '' });
+          setParticularsList(Array(5).fill(null).map(() => getEmptyParticularRow()));
+          setPaymentType('Cash');
+          setEnableCredit(false);
+          setAmountPaid('');
+          setPriceDiscount('');
+          setTdsAmount('');
+          setShowExtra(false);
+          fetchInitialData(); // get next bill number
 
-        if (printAfter === true) {
-          setTimeout(() => {
-            window.print();
-          }, 300);
+          handleShowReceipt(res.data, printAfter);
         }
       }
     } catch (error) {
-      toast.error("Failed to save bill");
+      toast.error(`Failed to ${isEditMode ? 'update' : 'save'} bill`);
+    }
+  };
+
+  const handleCloseReceipt = () => {
+    setPrintBill(null);
+    if (isEditMode) {
+      navigate('/bills/all');
     }
   };
 
   return (
-    <div className="create-bill-container">
+    <div className="create-bill-container fade-in">
       <div className="page-header">
-        <h2>Create Bill</h2>
+        <h2>{isEditMode ? 'Edit Bill' : 'Create Bill'}</h2>
       </div>
 
       <div className="bill-card">
@@ -644,6 +762,13 @@ const CreateBill = () => {
         </div>
 
       </div>
+
+      {printBill && (
+        <ReceiptPopup
+          orderDetails={printBill}
+          onClose={handleCloseReceipt}
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAllBills } from "../../Service/BillService";
 import { fetchCustomers } from "../../Service/CustomerService";
 import toast from "react-hot-toast";
@@ -7,6 +8,7 @@ import BillDetailsModal from "./BillDetailsModal.jsx";
 import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
 
 const ViewBills = () => {
+  const navigate = useNavigate();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
@@ -279,7 +281,11 @@ const ViewBills = () => {
                       >
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button className="btn btn-sm btn-outline-danger modern-action-btn" title="Edit">
+                      <button 
+                        className="btn btn-sm btn-outline-danger modern-action-btn" 
+                        title="Edit"
+                        onClick={() => navigate(`/bills/edit/${bill.id}`, { state: { bill } })}
+                      >
                         <i className="bi bi-pencil"></i>
                       </button>
                     </div>

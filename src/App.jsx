@@ -6,6 +6,7 @@ import ManageCategory from "./pages/ManageCategory/ManageCategory.jsx";
 import ManageUsers from "./pages/ManageUsers/ManageUsers.jsx";
 import ManageItems from "./pages/ManageItems/ManageItems.jsx";
 import ManageCustomers from "./pages/ManageCustomers/ManageCustomers.jsx";
+import CustomerView from "./pages/CustomerView/CustomerView.jsx";
 import Explore from "./pages/Explore/Explore.jsx";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
@@ -24,6 +25,7 @@ import ManagePaperGroup from "./pages/ManagePaperGroup/ManagePaperGroup.jsx";
 import ManagePaper from "./pages/ManagePaper/ManagePaper.jsx";
 import ManageParticular from "./pages/ManageParticular/ManageParticular.jsx";
 import ManageEmployee from "./pages/ManageEmployee/ManageEmployee.jsx";
+import EmployeeView from "./pages/EmployeeView/EmployeeView.jsx";
 import ManageExpenseItem from "./pages/ManageExpenseItem/ManageExpenseItem.jsx";
 import AddDailyExpenses from "./pages/AddDailyExpenses/AddDailyExpenses.jsx";
 import AddMonthlyExpenses from "./pages/AddMonthlyExpenses/AddMonthlyExpenses.jsx";
@@ -70,6 +72,15 @@ const App = () => {
           {/* Bills Route (Accessible to all authenticated users) */}
           <Route
             path="/bills/create"
+            element={
+              <ProtectedRoute
+                element={<CreateBill />}
+              />
+            }
+          />
+
+          <Route
+            path="/bills/edit/:id"
             element={
               <ProtectedRoute
                 element={<CreateBill />}
@@ -146,6 +157,15 @@ const App = () => {
             }
           />
           <Route
+            path="/customer-view"
+            element={
+              <ProtectedRoute
+                element={<CustomerView />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
             path="/items"
             element={
               <ProtectedRoute
@@ -213,6 +233,15 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageEmployee />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/employee-view"
+            element={
+              <ProtectedRoute
+                element={<EmployeeView />}
                 allowedRoles={["ROLE_ADMIN"]}
               />
             }

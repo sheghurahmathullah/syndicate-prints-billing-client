@@ -90,7 +90,7 @@ const Analytics = () => {
 
   const paymentColors = {
     CASH: "#10b981",
-    UPI: "#3b82f6",
+    UPI: "#002142",
     CARD: "#f59e0b",
     CREDIT: "#8b5cf6",
     CHEQUE: "#e64051"

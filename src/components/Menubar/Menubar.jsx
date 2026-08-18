@@ -16,6 +16,7 @@ const Menubar = () => {
   const [billsOpen, setBillsOpen] = useState(false);
   const [employeesOpen, setEmployeesOpen] = useState(false);
   const [reportsOpen, setReportsOpen] = useState(false);
+  const [customersOpen, setCustomersOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -162,17 +163,50 @@ const Menubar = () => {
                     <i className="bi bi-person"></i>
                     <span className="link-text">Users</span>
                   </Link>
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/employee-view") ? "active" : ""}`}
+                    to="/employee-view"
+                    title="Employee View"
+                  >
+                    <i className="bi bi-person-workspace"></i>
+                    <span className="link-text">Employee View</span>
+                  </Link>
                 </div>
               </div>
             </div>
-            <Link
-              className={`sidebar-link ${isActive("/customers") ? "active" : ""}`}
-              to="/customers"
-              title="Manage Customers"
+            <div 
+              className={`sidebar-link nav-group ${customersOpen ? "open" : ""}`} 
+              onClick={() => { setCustomersOpen(!customersOpen); if (isCollapsed) setIsCollapsed(false); }}
+              title="Customers"
+              style={{ cursor: 'pointer' }}
             >
               <i className="bi bi-person-lines-fill"></i>
               <span className="link-text">Customers</span>
-            </Link>
+              <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: customersOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
+            </div>
+            
+            <div className={`submenu-wrapper ${customersOpen ? 'open' : ''}`}>
+              <div className="submenu">
+                <div className="submenu-content">
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/customers") ? "active" : ""}`}
+                    to="/customers"
+                    title="Manage Customers"
+                  >
+                    <i className="bi bi-person-lines-fill"></i>
+                    <span className="link-text">Manage</span>
+                  </Link>
+                  <Link
+                    className={`sidebar-link submenu-link ${isActive("/customer-view") ? "active" : ""}`}
+                    to="/customer-view"
+                    title="Customer View"
+                  >
+                    <i className="bi bi-person-vcard"></i>
+                    <span className="link-text">Customer View</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
             
             <div 
               className={`sidebar-link nav-group ${machinesOpen ? "open" : ""}`} 
