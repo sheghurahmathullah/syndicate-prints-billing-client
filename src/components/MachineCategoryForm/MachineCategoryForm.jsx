@@ -55,64 +55,91 @@ const MachineCategoryForm = ({ selectedCategory, onClose, refreshList }) => {
   };
 
   return (
-    <form className="machine-category-form" onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-8">
-          <label htmlFor="name" className="form-label form-label-sm fw-bold mb-1">Category Name *</label>
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            id="name"
-            name="name"
-            placeholder="Enter Category Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        
-        <div className="col-md-4 d-flex align-items-end mb-1">
-          <div className="form-check form-switch mt-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="isActive"
-              name="isActive"
-              checked={formData.isActive}
-              onChange={handleChange}
-            />
-            <label className="form-check-label form-label-sm fw-bold ms-1" htmlFor="isActive">
-              {formData.isActive ? "Active" : "Inactive"}
-            </label>
-          </div>
-        </div>
-      </div>
+    <div className="user-form-wrapper">
+      <div className="user-form-card">
+        <form className="machine-category-form" onSubmit={handleSubmit}>
+          <div className="row g-3">
+            {/* Category Name */}
+            <div className="col-md-8">
+              <div className="rich-form-group">
+                <label htmlFor="name" className="rich-form-label">
+                  Category Name <span className="text-danger">*</span>
+                </label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon">
+                    <i className="bi bi-tag-fill"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="rich-form-control"
+                    id="name"
+                    name="name"
+                    placeholder="Enter Category Name (e.g. Offset Printing)"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
 
-      <div className="d-flex justify-content-end gap-2 mt-4 pt-2 border-top">
-        <button 
-          type="button" 
-          className="btn btn-light btn-sm px-3" 
-          onClick={onClose}
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <button 
-          type="submit" 
-          className="btn btn-primary btn-sm px-4 submit-btn"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              Saving...
-            </>
-          ) : (
-            <><i className="bi bi-check2-circle me-1"></i> Save Category</>
-          )}
-        </button>
+            {/* Status Switch */}
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Account Status</label>
+                <div className="status-switch-card">
+                  <div className="form-check form-switch m-0 d-flex align-items-center gap-2">
+                    <input
+                      className="form-check-input role-switch-check cursor-pointer"
+                      type="checkbox"
+                      id="isActive"
+                      name="isActive"
+                      checked={formData.isActive}
+                      onChange={handleChange}
+                    />
+                    <label className="form-check-label fw-semibold text-dark small mb-0 cursor-pointer" htmlFor="isActive">
+                      {formData.isActive ? (
+                        <span className="text-success"><i className="bi bi-check-circle-fill me-1"></i>Active</span>
+                      ) : (
+                        <span className="text-danger"><i className="bi bi-x-circle-fill me-1"></i>Inactive</span>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Actions Footer */}
+          <div className="form-action-footer">
+            <button 
+              type="button" 
+              className="btn-form-cancel" 
+              onClick={onClose}
+              disabled={loading}
+            >
+              <i className="bi bi-x-circle me-1"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn-form-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-check2-circle me-1"></i> Save Category
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 

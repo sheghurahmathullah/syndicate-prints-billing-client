@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { fetchBranches } from "../../Service/BranchService.js";
 import { fetchExpenseItemsByType, saveDailyExpenses } from "../../Service/DailyExpensesService.js";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 
 const AddDailyExpenses = () => {
   // Basic Info
@@ -43,11 +44,16 @@ const AddDailyExpenses = () => {
   }]);
   
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Fetch branches on mount
   useEffect(() => {
-    loadBranches();
-    loadDailyExpenseItems();
+    const initData = async () => {
+      setInitialLoading(true);
+      await Promise.all([loadBranches(), loadDailyExpenseItems()]);
+      setInitialLoading(false);
+    };
+    initData();
   }, []);
 
   const loadBranches = async () => {
@@ -81,6 +87,16 @@ const AddDailyExpenses = () => {
     }
   };
 
+  const preventNegativeAndExpKeys = (e) => {
+    if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+      e.preventDefault();
+    }
+  };
+
+  const disableWheelScroll = (e) => {
+    e.target.blur();
+  };
+
   // Dynamic row handlers
   const addOtherExpense = () => {
     setOtherExpenses([...otherExpenses, { type: "", amount: "" }]);
@@ -91,6 +107,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateOtherExpense = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
     const updated = [...otherExpenses];
     updated[index][field] = value;
     setOtherExpenses(updated);
@@ -105,6 +122,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateAdvancePayment = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
     const updated = [...advancePayments];
     updated[index][field] = value;
     setAdvancePayments(updated);
@@ -119,6 +137,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateCheckPayment = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
     const updated = [...checkPayments];
     updated[index][field] = value;
     setCheckPayments(updated);
@@ -133,6 +152,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateCashDeposit = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
     const updated = [...cashDeposits];
     updated[index][field] = value;
     setCashDeposits(updated);
@@ -147,6 +167,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateOtherIncome = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
     const updated = [...otherIncomes];
     updated[index][field] = value;
     setOtherIncomes(updated);
@@ -161,6 +182,7 @@ const AddDailyExpenses = () => {
   };
 
   const updateMachineReading = (index, field, value) => {
+    if ((field === "currentReading" || field === "oldReading") && value !== "" && parseFloat(value) < 0) return;
     const updated = [...machineReadings];
     updated[index][field] = value;
     
@@ -168,7 +190,7 @@ const AddDailyExpenses = () => {
     if (field === "currentReading" || field === "oldReading") {
       const current = parseFloat(updated[index].currentReading) || 0;
       const old = parseFloat(updated[index].oldReading) || 0;
-      updated[index].diff = (current - old).toString();
+      updated[index].diff = Math.max(0, current - old).toString();
     }
     
     setMachineReadings(updated);
@@ -287,174 +309,240 @@ const AddDailyExpenses = () => {
     setMachineReadings([{ machine: "", currentReading: "", oldReading: "", diff: "" }]);
   };
 
-  return (
-    <div className="add-daily-expenses-container">
-      <div className="daily-expenses-header">
-        <h2>
-          <i className="bi bi-calendar-check me-2"></i>
-          Add Daily Expenses
-        </h2>
-        <p>Record your daily expenses, payments, and machine readings</p>
+  if (initialLoading) {
+    return (
+      <div className="add-daily-expenses-container p-4">
+        <LoadingSpinner message="Initializing daily expenses ledger & branch metadata..." minHeight="400px" />
       </div>
+    );
+  }
 
-      {/* Total Cash - Top Right Corner */}
-      <div className="total-cash-corner">
-        <label className="total-cash-label">Total Cash</label>
-        <div className="input-group">
-          <span className="input-group-text">₹</span>
-          <input
-            type="number"
-            className="form-control total-cash-input"
-            placeholder="0.00"
-            value={totalCash}
-            onChange={(e) => setTotalCash(e.target.value)}
-          />
+  return (
+    <div className="add-daily-expenses-container fade-in">
+      {/* Header Banner */}
+      <div className="daily-expenses-header">
+        <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div className="d-flex align-items-center gap-3">
+            <div className="banner-icon-box">
+              <i className="bi bi-calendar-check-fill"></i>
+            </div>
+            <div>
+              <h2 className="mb-1">Daily Operations Expense Ledger</h2>
+              <p className="mb-0">Record cash balances, itemized daily expenses, payments & machine counter readings</p>
+            </div>
+          </div>
+          
+          {/* Top Cash Card Widget */}
+          <div className="total-cash-widget">
+            <div className="widget-label">
+              <i className="bi bi-wallet2 me-1"></i> Total Cash Balance
+            </div>
+            <div className="widget-input-group">
+              <span className="currency-prefix">₹</span>
+              <input
+                type="number"
+                min="0"
+                onKeyDown={preventNegativeAndExpKeys}
+                onWheel={disableWheelScroll}
+                className="widget-input"
+                placeholder="0.00"
+                value={totalCash}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val !== "" && parseFloat(val) < 0) return;
+                  setTotalCash(val);
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="daily-expenses-form">
-        {/* Date and Branch Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-info-circle me-2"></i>
-            Basic Information
-          </h3>
+        {/* Date & Branch Card */}
+        <div className="ops-card mb-4">
+          <h4 className="ops-card-title">
+            <i className="bi bi-geo-alt-fill ops-card-icon"></i>
+            Branch & Ledger Date
+          </h4>
           <div className="row g-3">
             <div className="col-md-6">
-              <label className="form-label">Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={currentDate}
-                onChange={(e) => setCurrentDate(e.target.value)}
-                required
-              />
+              <div className="rich-form-group">
+                <label className="rich-form-label">Ledger Date <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-calendar-date-fill rich-input-icon ops-icon"></i>
+                  <input
+                    type="date"
+                    className="rich-form-control"
+                    value={currentDate}
+                    onChange={(e) => setCurrentDate(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Branch</label>
-              <select
-                className="form-select"
-                value={selectedBranch}
-                onChange={(e) => setSelectedBranch(e.target.value)}
-                required
-              >
-                <option value="">Select Branch</option>
-                {branches.length === 0 && (
-                  <option disabled>No branches available</option>
-                )}
-                {branches.map((branch) => (
-                  <option key={branch.branchId || branch.id} value={branch.branchName || branch.name || branch.branchId}>
-                    {branch.branchName || branch.name || branch.branchId}
-                  </option>
-                ))}
-              </select>
-              {branches.length === 0 && (
-                <small className="text-danger mt-1">No branches loaded. Please check console for errors.</small>
-              )}
+              <div className="rich-form-group">
+                <label className="rich-form-label">Operating Branch <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-building-fill rich-input-icon ops-icon"></i>
+                  <select
+                    className="rich-form-control"
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Operating Branch</option>
+                    {branches.map((branch) => (
+                      <option key={branch.branchId || branch.id} value={branch.branchName || branch.name || branch.branchId}>
+                        {branch.branchName || branch.name || branch.branchId}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Cash in Hand and Image Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-cash me-2"></i>
-            Cash Information
-          </h3>
+        {/* Cash in Hand & Image Card */}
+        <div className="ops-card mb-4">
+          <h4 className="ops-card-title">
+            <i className="bi bi-cash-stack ops-card-icon"></i>
+            Cash in Hand & Voucher Receipt Attachment
+          </h4>
           <div className="row g-3">
             <div className="col-md-6">
-              <label className="form-label">Cash in Hand (₹)</label>
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Enter cash in hand..."
-                value={cashInHand}
-                onChange={(e) => setCashInHand(e.target.value)}
-              />
+              <div className="rich-form-group">
+                <label className="rich-form-label">Cash in Hand</label>
+                <div className="ops-amount-group">
+                  <span className="ops-amount-addon">₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    onKeyDown={preventNegativeAndExpKeys}
+                    onWheel={disableWheelScroll}
+                    className="ops-amount-input"
+                    placeholder="0.00"
+                    value={cashInHand}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val !== "" && parseFloat(val) < 0) return;
+                      setCashInHand(val);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label">Upload Image</label>
-              <input
-                type="file"
-                className="form-control"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
+              <div className="rich-form-group">
+                <label className="rich-form-label">Upload Proof Image / Receipt</label>
+                <label className="custom-file-upload-box">
+                  <div className="upload-icon-circle">
+                    <i className="bi bi-cloud-arrow-up-fill"></i>
+                  </div>
+                  <div className="upload-text-box">
+                    <span className="upload-title">
+                      {cashImage ? cashImage.name : "Click to select receipt / voucher photo"}
+                    </span>
+                    <span className="upload-sub">
+                      {cashImage ? "File selected • Click to change" : "Supports JPG, PNG, WEBP files"}
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    className="d-none"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </label>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Daily Type Expense Items Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-list-check me-2"></i>
-            Daily Expense Items
-          </h3>
-          <div className="expense-items-grid">
-            {dailyExpenseItems.map((item) => (
-              <div key={item.expenseItemId} className="expense-item-row">
-                <label className="expense-item-label">{item.name}</label>
-                <div className="input-group">
-                  <span className="input-group-text">₹</span>
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Amount"
-                    value={dailyItemAmounts[item.expenseItemId] || ""}
-                    onChange={(e) =>
-                      setDailyItemAmounts({
-                        ...dailyItemAmounts,
-                        [item.expenseItemId]: e.target.value
-                      })
-                    }
-                  />
+        {dailyExpenseItems.length > 0 && (
+          <div className="ops-card mb-4">
+            <h4 className="ops-card-title">
+              <i className="bi bi-receipt-cutoff ops-card-icon"></i>
+              Itemized Daily Operating Expenses
+            </h4>
+            <div className="expense-items-grid">
+              {dailyExpenseItems.map((item) => (
+                <div key={item.expenseItemId} className="ops-item-box">
+                  <label className="ops-item-label">{item.name}</label>
+                  <div className="ops-amount-group">
+                    <span className="ops-amount-addon">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      onKeyDown={preventNegativeAndExpKeys}
+                      onWheel={disableWheelScroll}
+                      className="ops-amount-input"
+                      placeholder="0.00"
+                      value={dailyItemAmounts[item.expenseItemId] || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val !== "" && parseFloat(val) < 0) return;
+                        setDailyItemAmounts({
+                          ...dailyItemAmounts,
+                          [item.expenseItemId]: val
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Other Expenses and Advance Payments Section */}
-        <div className="form-section">
-          <div className="row">
-            {/* Other Expenses - Left Side */}
-            <div className="col-md-6">
-              <h3 className="section-title">
-                <i className="bi bi-plus-circle me-2"></i>
-                Other Expenses
-              </h3>
+        {/* Other Expenses and Advance Payments Card */}
+        <div className="ops-card mb-4">
+          <div className="row g-4">
+            {/* Other Expenses */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-node-plus-fill me-2 text-emerald"></i>
+                Other Ad-hoc Expenses
+              </h5>
               {otherExpenses.map((expense, index) => (
-                <div key={index} className="dynamic-row">
-                  <div className="row g-2">
-                    <div className="col-md-6">
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-6">
                       <input
                         type="text"
-                        className="form-control"
-                        placeholder="Type"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Expense Purpose / Category"
                         value={expense.type}
                         onChange={(e) => updateOtherExpense(index, "type", e.target.value)}
                       />
                     </div>
-                    <div className="col-md-5">
-                      <div className="input-group">
-                        <span className="input-group-text">₹</span>
+                    <div className="col-5">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
                         <input
                           type="number"
-                          className="form-control"
+                          min="0"
+                          onKeyDown={preventNegativeAndExpKeys}
+                          onWheel={disableWheelScroll}
+                          className="form-control ops-inner-input"
                           placeholder="Amount"
                           value={expense.amount}
                           onChange={(e) => updateOtherExpense(index, "amount", e.target.value)}
                         />
                       </div>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-1 text-end">
                       {otherExpenses.length > 1 && (
                         <button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          className="btn-trash-icon"
                           onClick={() => removeOtherExpense(index)}
+                          title="Remove Row"
                         >
-                          <i className="bi bi-trash"></i>
+                          <i className="bi bi-trash-fill"></i>
                         </button>
                       )}
                     </div>
@@ -463,52 +551,55 @@ const AddDailyExpenses = () => {
               ))}
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm mt-2"
+                className="btn btn-ops-outline mt-2"
                 onClick={addOtherExpense}
               >
-                <i className="bi bi-plus-lg me-1"></i>
-                Add Expense
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Other Expense
               </button>
             </div>
 
-            {/* Advance Payments - Right Side */}
-            <div className="col-md-6">
-              <h3 className="section-title">
-                <i className="bi bi-currency-rupee me-2"></i>
-                Advance Payments
-              </h3>
+            {/* Advance Payments */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-cash-coin me-2 text-emerald"></i>
+                Staff / Vendor Advance Payments
+              </h5>
               {advancePayments.map((payment, index) => (
-                <div key={index} className="dynamic-row">
-                  <div className="row g-2">
-                    <div className="col-md-6">
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-6">
                       <input
                         type="text"
-                        className="form-control"
-                        placeholder="Type"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Advance Beneficiary / Purpose"
                         value={payment.type}
                         onChange={(e) => updateAdvancePayment(index, "type", e.target.value)}
                       />
                     </div>
-                    <div className="col-md-5">
-                      <div className="input-group">
-                        <span className="input-group-text">₹</span>
+                    <div className="col-5">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
                         <input
                           type="number"
-                          className="form-control"
+                          min="0"
+                          onKeyDown={preventNegativeAndExpKeys}
+                          onWheel={disableWheelScroll}
+                          className="form-control ops-inner-input"
                           placeholder="Amount"
                           value={payment.amount}
                           onChange={(e) => updateAdvancePayment(index, "amount", e.target.value)}
                         />
                       </div>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-1 text-end">
                       {advancePayments.length > 1 && (
                         <button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          className="btn-trash-icon"
                           onClick={() => removeAdvancePayment(index)}
+                          title="Remove Row"
                         >
-                          <i className="bi bi-trash"></i>
+                          <i className="bi bi-trash-fill"></i>
                         </button>
                       )}
                     </div>
@@ -517,57 +608,59 @@ const AddDailyExpenses = () => {
               ))}
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm mt-2"
+                className="btn btn-ops-outline mt-2"
                 onClick={addAdvancePayment}
               >
-                <i className="bi bi-plus-lg me-1"></i>
-                Add Advance Payment
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Advance Payment
               </button>
             </div>
           </div>
         </div>
 
-        {/* Check Payments and Cash Deposits Section */}
-        <div className="form-section">
-          <div className="row">
-            {/* Check Payments - Left Side */}
-            <div className="col-md-6">
-              <h3 className="section-title">
-                <i className="bi bi-card-checklist me-2"></i>
-                Check Payments
-              </h3>
+        {/* Check Payments & Cash Deposits */}
+        <div className="ops-card mb-4">
+          <div className="row g-4">
+            {/* Check Payments */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-card-checklist me-2 text-emerald"></i>
+                Cheque Payments Issued
+              </h5>
               {checkPayments.map((payment, index) => (
-                <div key={index} className="dynamic-row">
-                  <div className="row g-2">
-                    <div className="col-md-6">
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-6">
                       <input
                         type="text"
-                        className="form-control"
-                        placeholder="Check Number"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Cheque No."
                         value={payment.checkNo}
                         onChange={(e) => updateCheckPayment(index, "checkNo", e.target.value)}
                       />
                     </div>
-                    <div className="col-md-5">
-                      <div className="input-group">
-                        <span className="input-group-text">₹</span>
+                    <div className="col-5">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
                         <input
                           type="number"
-                          className="form-control"
+                          min="0"
+                          onKeyDown={preventNegativeAndExpKeys}
+                          onWheel={disableWheelScroll}
+                          className="form-control ops-inner-input"
                           placeholder="Amount"
                           value={payment.amount}
                           onChange={(e) => updateCheckPayment(index, "amount", e.target.value)}
                         />
                       </div>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-1 text-end">
                       {checkPayments.length > 1 && (
                         <button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          className="btn-trash-icon"
                           onClick={() => removeCheckPayment(index)}
                         >
-                          <i className="bi bi-trash"></i>
+                          <i className="bi bi-trash-fill"></i>
                         </button>
                       )}
                     </div>
@@ -576,52 +669,54 @@ const AddDailyExpenses = () => {
               ))}
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm mt-2"
+                className="btn btn-ops-outline mt-2"
                 onClick={addCheckPayment}
               >
-                <i className="bi bi-plus-lg me-1"></i>
-                Add Check Payment
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Cheque Payment
               </button>
             </div>
 
-            {/* Cash Deposits - Right Side */}
-            <div className="col-md-6">
-              <h3 className="section-title">
-                <i className="bi bi-bank me-2"></i>
-                Cash Deposits
-              </h3>
+            {/* Cash Deposits */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-bank2 me-2 text-emerald"></i>
+                Bank Cash Deposits
+              </h5>
               {cashDeposits.map((deposit, index) => (
-                <div key={index} className="dynamic-row">
-                  <div className="row g-2">
-                    <div className="col-md-6">
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-6">
                       <input
                         type="text"
-                        className="form-control"
-                        placeholder="Reference Number"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Deposit Ref / Sl. No."
                         value={deposit.refNo}
                         onChange={(e) => updateCashDeposit(index, "refNo", e.target.value)}
                       />
                     </div>
-                    <div className="col-md-5">
-                      <div className="input-group">
-                        <span className="input-group-text">₹</span>
+                    <div className="col-5">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
                         <input
                           type="number"
-                          className="form-control"
+                          min="0"
+                          onKeyDown={preventNegativeAndExpKeys}
+                          onWheel={disableWheelScroll}
+                          className="form-control ops-inner-input"
                           placeholder="Amount"
                           value={deposit.amount}
                           onChange={(e) => updateCashDeposit(index, "amount", e.target.value)}
                         />
                       </div>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-1 text-end">
                       {cashDeposits.length > 1 && (
                         <button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          className="btn-trash-icon"
                           onClick={() => removeCashDeposit(index)}
                         >
-                          <i className="bi bi-trash"></i>
+                          <i className="bi bi-trash-fill"></i>
                         </button>
                       )}
                     </div>
@@ -630,155 +725,170 @@ const AddDailyExpenses = () => {
               ))}
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm mt-2"
+                className="btn btn-ops-outline mt-2"
                 onClick={addCashDeposit}
               >
-                <i className="bi bi-plus-lg me-1"></i>
-                Add Cash Deposit
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Bank Cash Deposit
               </button>
             </div>
           </div>
         </div>
 
-        {/* Other Incomes Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-graph-up-arrow me-2"></i>
-            Other Incomes
-          </h3>
-          {otherIncomes.map((income, index) => (
-            <div key={index} className="dynamic-row">
-              <div className="row g-2">
-                <div className="col-md-6">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Reason"
-                    value={income.reason}
-                    onChange={(e) => updateOtherIncome(index, "reason", e.target.value)}
-                  />
-                </div>
-                <div className="col-md-5">
-                  <div className="input-group">
-                    <span className="input-group-text">₹</span>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Amount"
-                      value={income.amount}
-                      onChange={(e) => updateOtherIncome(index, "amount", e.target.value)}
-                    />
+        {/* Other Incomes & Machine Readings */}
+        <div className="ops-card mb-4">
+          <div className="row g-4">
+            {/* Other Incomes */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-graph-up-arrow me-2 text-emerald"></i>
+                Other Ancillary Incomes
+              </h5>
+              {otherIncomes.map((income, index) => (
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-6">
+                      <input
+                        type="text"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Source / Reason"
+                        value={income.reason}
+                        onChange={(e) => updateOtherIncome(index, "reason", e.target.value)}
+                      />
+                    </div>
+                    <div className="col-5">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          onKeyDown={preventNegativeAndExpKeys}
+                          onWheel={disableWheelScroll}
+                          className="form-control ops-inner-input"
+                          placeholder="Amount"
+                          value={income.amount}
+                          onChange={(e) => updateOtherIncome(index, "amount", e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-1 text-end">
+                      {otherIncomes.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn-trash-icon"
+                          onClick={() => removeOtherIncome(index)}
+                        >
+                          <i className="bi bi-trash-fill"></i>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="col-md-1">
-                  {otherIncomes.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeOtherIncome(index)}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  )}
-                </div>
-              </div>
+              ))}
+              <button
+                type="button"
+                className="btn btn-ops-outline mt-2"
+                onClick={addOtherIncome}
+              >
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Income
+              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm mt-2"
-            onClick={addOtherIncome}
-          >
-            <i className="bi bi-plus-lg me-1"></i>
-            Add Income
-          </button>
+
+            {/* Machine Readings */}
+            <div className="col-lg-6">
+              <h5 className="ops-subcard-title mb-3">
+                <i className="bi bi-speedometer2 me-2 text-emerald"></i>
+                Machine Counter Meter Readings
+              </h5>
+              {machineReadings.map((reading, index) => (
+                <div key={index} className="ops-dynamic-row mb-2">
+                  <div className="row g-2 align-items-center">
+                    <div className="col-4">
+                      <input
+                        type="text"
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Machine Name"
+                        value={reading.machine}
+                        onChange={(e) => updateMachineReading(index, "machine", e.target.value)}
+                      />
+                    </div>
+                    <div className="col-3">
+                      <input
+                        type="number"
+                        min="0"
+                        onKeyDown={preventNegativeAndExpKeys}
+                        onWheel={disableWheelScroll}
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Current"
+                        value={reading.currentReading}
+                        onChange={(e) => updateMachineReading(index, "currentReading", e.target.value)}
+                      />
+                    </div>
+                    <div className="col-2">
+                      <input
+                        type="number"
+                        min="0"
+                        onKeyDown={preventNegativeAndExpKeys}
+                        onWheel={disableWheelScroll}
+                        className="form-control form-control-sm ops-inner-input"
+                        placeholder="Old"
+                        value={reading.oldReading}
+                        onChange={(e) => updateMachineReading(index, "oldReading", e.target.value)}
+                      />
+                    </div>
+                    <div className="col-2">
+                      <span className="badge bg-emerald-badge w-100 py-2">
+                        {reading.diff ? `+${reading.diff}` : '0'}
+                      </span>
+                    </div>
+                    <div className="col-1 text-end">
+                      {machineReadings.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn-trash-icon"
+                          onClick={() => removeMachineReading(index)}
+                        >
+                          <i className="bi bi-trash-fill"></i>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="btn btn-ops-outline mt-2"
+                onClick={addMachineReading}
+              >
+                <i className="bi bi-plus-circle-fill me-1"></i> Add Machine Counter
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Machine Readings Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-gear me-2"></i>
-            Machine Readings
-          </h3>
-          {machineReadings.map((reading, index) => (
-            <div key={index} className="dynamic-row machine-reading-row">
-              <div className="row g-2">
-                <div className="col-md-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Machine"
-                    value={reading.machine}
-                    onChange={(e) => updateMachineReading(index, "machine", e.target.value)}
-                  />
-                </div>
-                <div className="col-md-2">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Current"
-                    value={reading.currentReading}
-                    onChange={(e) => updateMachineReading(index, "currentReading", e.target.value)}
-                  />
-                </div>
-                <div className="col-md-2">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Old"
-                    value={reading.oldReading}
-                    onChange={(e) => updateMachineReading(index, "oldReading", e.target.value)}
-                  />
-                </div>
-                <div className="col-md-2">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Diff"
-                    value={reading.diff}
-                    readOnly
-                  />
-                </div>
-                <div className="col-md-2">
-                  {machineReadings.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeMachineReading(index)}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Submit Actions Footer */}
+        <div className="d-flex align-items-center justify-content-end gap-3 my-4">
           <button
             type="button"
-            className="btn btn-outline-primary btn-sm mt-2"
-            onClick={addMachineReading}
+            className="btn btn-light border px-4 py-2 fw-bold"
+            onClick={resetForm}
+            disabled={loading}
           >
-            <i className="bi bi-plus-lg me-1"></i>
-            Add Machine Reading
+            <i className="bi bi-arrow-counterclockwise me-1"></i> Reset Form
           </button>
-        </div>
-
-        {/* Submit Button */}
-        <div className="form-actions">
           <button
             type="submit"
-            className="btn btn-primary btn-lg"
+            className="btn btn-ops-primary btn-lg px-5 shadow"
             disabled={loading}
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2"></span>
-                Saving...
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving Daily Expenses...
               </>
             ) : (
               <>
-                <i className="bi bi-save me-2"></i>
-                Save Daily Expenses
+                <i className="bi bi-cloud-check-fill me-2"></i>
+                Save Daily Expenses Ledger
               </>
             )}
           </button>

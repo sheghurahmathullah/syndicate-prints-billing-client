@@ -85,14 +85,14 @@ const TodayBills = () => {
       createdAt: bill.createdAt || bill.date,
       username: bill.employee,
       customerName: bill.customerName || "CASH CUSTOMER",
-      grandTotal: bill.totalWithGst || bill.total || 0,
+      grandTotal: bill.total || 0,
       paidAmount: bill.totalPaid || 0,
-      tax: bill.gstAmount || 0,
+      tax: bill.gstAmount || ((bill.total || 0) - (bill.totalWithGst || 0)),
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
       taxPercent: bill.gstPercentage || 0,
-      subtotal: bill.total || 0,
+      subtotal: bill.totalWithGst || bill.total || 0,
       gstin: bill.customerGstNo || "",
     };
 
@@ -134,7 +134,7 @@ const TodayBills = () => {
             <i className="bi bi-currency-rupee"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Total Revenue</div>
+            <div className="kpi-label">TOTAL REVENUE</div>
             <h3 className="kpi-value">₹{summary.todayBillsTotal.toFixed(2)}</h3>
           </div>
         </div>
@@ -144,7 +144,7 @@ const TodayBills = () => {
             <i className="bi bi-receipt"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Total Orders</div>
+            <div className="kpi-label">TOTAL ORDERS</div>
             <h3 className="kpi-value">{summary.todayOrderCount}</h3>
           </div>
         </div>
@@ -154,7 +154,7 @@ const TodayBills = () => {
             <i className="bi bi-cart-dash"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Credit Orders</div>
+            <div className="kpi-label">CREDIT ORDERS</div>
             <h3 className="kpi-value">{summary.todayCreditOrderCount}</h3>
           </div>
         </div>
@@ -164,7 +164,7 @@ const TodayBills = () => {
             <i className="bi bi-wallet2"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Credit Total</div>
+            <div className="kpi-label">CREDIT TOTAL</div>
             <h3 className="kpi-value">₹{summary.todayCreditOrdersAmount.toFixed(2)}</h3>
           </div>
         </div>
@@ -174,7 +174,7 @@ const TodayBills = () => {
             <i className="bi bi-cash-coin"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Credit Paid</div>
+            <div className="kpi-label">CREDIT PAID</div>
             <h3 className="kpi-value">₹{summary.creditPaidAmount.toFixed(2)}</h3>
           </div>
         </div>
@@ -184,7 +184,7 @@ const TodayBills = () => {
             <i className="bi bi-exclamation-circle"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Credit Balance</div>
+            <div className="kpi-label">CREDIT BALANCE</div>
             <h3 className="kpi-value">₹{summary.creditBalanceAmount.toFixed(2)}</h3>
           </div>
         </div>

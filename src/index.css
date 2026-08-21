@@ -12,3 +12,49 @@ html, body, #root {
     background-color: var(--page-bg);
     color: var(--text-color);
 }
+
+/* Table scrolling rules for smooth touch/mouse scrolling */
+.table-wrapper,
+.table-responsive,
+.customer-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+}
+
+.hide-scrollbar {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Custom subtle scrollbars for table containers */
+.table-responsive::-webkit-scrollbar,
+.table-wrapper::-webkit-scrollbar,
+.customer-table-wrapper::-webkit-scrollbar {
+    height: 6px !important;
+}
+
+.table-responsive::-webkit-scrollbar-thumb,
+.table-wrapper::-webkit-scrollbar-thumb,
+.customer-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 4px !important;
+}
+
+/* Hide number input spinbutton arrows globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -moz-appearance: textfield !important;
+}

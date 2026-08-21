@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { fetchEmployees, deleteEmployee } from "../../Service/EmployeeService.js";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.jsx";
 import "./EmployeeList.css";
 
 const EmployeeList = ({ onEdit, onTotalLoaded }) => {
@@ -10,6 +11,7 @@ const EmployeeList = ({ onEdit, onTotalLoaded }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -59,7 +61,6 @@ const EmployeeList = ({ onEdit, onTotalLoaded }) => {
       setShowDeleteModal(false);
       setEmployeeToDelete(null);
       
-      // If we deleted the last item on the current page, go back a page
       if (employees.length === 1 && currentPage > 0) {
         setCurrentPage(currentPage - 1);
       } else {
@@ -72,42 +73,107 @@ const EmployeeList = ({ onEdit, onTotalLoaded }) => {
     }
   };
 
-  const renderBase64File = (base64String, type) => {
-    if (!base64String) return <span className="text-muted">-</span>;
-    if (type === 'image') {
-       return <img src={base64String} alt="Employee" style={{width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover'}} />
-    } else {
-       return (
-         <a href={base64String} download="resume" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-           <i className="bi bi-file-earmark-arrow-down"></i> Download
-         </a>
-       )
+  const renderAvatar = (emp) => {
+    if (emp.photo) {
+      return (
+        <img
+          src={emp.photo}
+          alt={`${emp.firstName} ${emp.lastName}`}
+          className="employee-avatar-img"
+        />
+      );
     }
-  }
+    const initials = `${emp.firstName ? emp.firstName[0] : ""}${emp.lastName ? emp.lastName[0] : ""}`.toUpperCase() || "E";
+    return (
+      <div className="employee-avatar-initials">
+        {initials}
+      </div>
+    );
+  };
+
+  const renderRoleBadge = (role) => {
+    const r = role || "";
+    if (r.includes("ADMIN")) {
+      return <span className="data-badge badge-role-admin"><i className="bi bi-shield-fill-check me-1"></i> Admin</span>;
+    } else if (r.includes("MANAGER")) {
+      return <span className="data-badge badge-role-manager"><i className="bi bi-person-gear me-1"></i> Manager</span>;
+    } else {
+      return <span className="data-badge badge-role-user"><i className="bi bi-person-fill me-1"></i> User</span>;
+    }
+  };
+
+  const renderResumeBtn = (base64String) => {
+    if (!base64String) return <span className="text-muted small">No file</span>;
+    return (
+      <a
+        href={base64String}
+        download="resume"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn-download-resume"
+      >
+        <i className="bi bi-file-earmark-arrow-down-fill me-1"></i> Resume
+      </a>
+    );
+  };
+
+  const filteredEmployees = employees.filter((emp) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`.toLowerCase();
+    const email = (emp.email || "").toLowerCase();
+    const role = (emp.role || "").toLowerCase();
+    const designation = (emp.designation || "").toLowerCase();
+    const branch = (emp.branch || "").toLowerCase();
+    return (
+      fullName.includes(term) ||
+      email.includes(term) ||
+      role.includes(term) ||
+      designation.includes(term) ||
+      branch.includes(term)
+    );
+  });
 
   return (
     <div className="particular-list-container fade-in">
-      <div className="list-header">
-        <h3 className="list-title">Employees List</h3>
+      <div className="list-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div className="d-flex align-items-center gap-2">
+          <h3 className="list-title">Employees Directory</h3>
+          <span className="badge bg-light text-dark border rounded-pill px-2.5 py-1 small fw-semibold">
+            {totalElements} Total
+          </span>
+        </div>
+        <div className="search-input-wrapper">
+          <i className="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            className="form-control form-control-sm search-input"
+            placeholder="Search name, email, role..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button className="btn-search-clear" onClick={() => setSearchTerm("")}>
+              <i className="bi bi-x-circle-fill"></i>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="table-wrapper">
         {loading ? (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Loading employees...</p>
-          </div>
-        ) : employees.length === 0 ? (
+          <LoadingSpinner message="Loading employee directory..." />
+        ) : filteredEmployees.length === 0 ? (
           <div className="empty-state">
             <i className="bi bi-person-x"></i>
-            <p>No employees found.</p>
+            <p>{searchTerm ? "No employees match your search query." : "No employees found."}</p>
           </div>
         ) : (
-          <table className="data-table">
+          <table className="data-table align-middle">
             <thead>
               <tr>
-                <th>Photo</th>
-                <th>Name</th>
+                <th style={{ width: '60px' }}>Avatar</th>
+                <th>Employee Name</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Designation</th>
@@ -117,17 +183,22 @@ const EmployeeList = ({ onEdit, onTotalLoaded }) => {
               </tr>
             </thead>
             <tbody>
-              {employees.map((emp) => (
+              {filteredEmployees.map((emp) => (
                 <tr key={emp.id}>
-                  <td>{renderBase64File(emp.photo, 'image')}</td>
-                  <td className="fw-500">{emp.firstName} {emp.lastName}</td>
-                  <td>{emp.email}</td>
-                  <td>
-                     <span className="data-badge badge-blue">{emp.role}</span>
+                  <td>{renderAvatar(emp)}</td>
+                  <td className="fw-semibold text-dark">
+                    {emp.firstName} {emp.lastName}
                   </td>
-                  <td>{emp.designation}</td>
-                  <td>{emp.branch}</td>
-                  <td>{renderBase64File(emp.resume, 'file')}</td>
+                  <td className="text-muted">{emp.email}</td>
+                  <td>{renderRoleBadge(emp.role)}</td>
+                  <td>{emp.designation || "-"}</td>
+                  <td>
+                    <span className="branch-badge">
+                      <i className="bi bi-building me-1"></i>
+                      {emp.branch}
+                    </span>
+                  </td>
+                  <td>{renderResumeBtn(emp.resume)}</td>
                   <td className="actions-col">
                     <div className="action-buttons">
                       <button

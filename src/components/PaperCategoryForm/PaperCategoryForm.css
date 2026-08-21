@@ -1,18 +1,151 @@
-/* Shared CSS for all paper-related forms */
-.paper-category-form,
-.paper-group-form,
-.paper-form {
-  background: #fff;
+.user-form-wrapper {
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+.user-form-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+  padding: 1.5rem;
+}
+
+.form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.form-header-badge {
+  width: 38px;
+  height: 38px;
   border-radius: 8px;
+  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 8px rgba(0, 41, 82, 0.2);
+  flex-shrink: 0;
 }
 
-.paper-submit-btn {
-  font-weight: 500;
+.form-section-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.form-section-subtitle {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.rich-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.rich-form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.rich-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.rich-input-icon {
+  position: absolute;
+  left: 0.9rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.rich-form-control {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
+  color: #0f172a;
+  background-color: #ffffff;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
 }
 
-.paper-submit-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+.rich-form-control::placeholder {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.rich-form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+  outline: none;
+}
+
+.form-action-footer {
+  border-top: 1px solid #eef4f8;
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-form-cancel {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1.35rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-form-cancel:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.btn-form-submit {
+  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 41, 82, 0.25);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-form-submit:hover {
+  background: linear-gradient(135deg, #003366 0%, #0059b3 100%);
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+@media (max-width: 576px) {
+  .form-action-footer { flex-direction: column-reverse; }
+  .btn-form-cancel, .btn-form-submit { width: 100%; justify-content: center; }
 }

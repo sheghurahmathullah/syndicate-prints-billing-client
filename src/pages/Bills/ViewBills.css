@@ -70,12 +70,16 @@
 /* Table Styling */
 .table-responsive {
   border-radius: 8px;
-  overflow-x: hidden !important;
-  overflow-y: hidden !important;
+  overflow-x: auto !important;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  width: 100%;
 }
 
 .data-table {
   width: 100%;
+  min-width: 850px;
   margin-bottom: 0;
   border-collapse: separate;
   border-spacing: 0;

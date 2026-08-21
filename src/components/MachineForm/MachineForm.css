@@ -1,38 +1,173 @@
-.machine-form {
-  background-color: #ffffff;
-  border-radius: 8px;
+/* Machine Form Styling */
+.user-form-wrapper {
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+.user-form-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
   padding: 1.5rem;
 }
 
-.machine-form .form-label-sm {
+/* Header Banner Inside Form */
+.form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.form-header-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 8px rgba(0, 41, 82, 0.2);
+  flex-shrink: 0;
+}
+
+.form-section-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.form-section-subtitle {
+  color: #64748b;
   font-size: 0.8rem;
-  color: #4b5563;
-  margin-bottom: 0.25rem;
 }
 
-.machine-form .form-control-sm,
-.machine-form .form-select-sm {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  transition: all 0.2s ease;
+/* Form Group & Input Styling */
+.rich-form-group {
+  display: flex;
+  flex-direction: column;
 }
 
-.machine-form .form-control-sm:focus,
-.machine-form .form-select-sm:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+.rich-form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
 }
 
-.machine-form .submit-btn {
-  font-weight: 500;
-  border-radius: 6px;
+.rich-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-.section-title {
-  color: #1e293b;
+.rich-input-icon {
+  position: absolute;
+  left: 0.9rem;
+  color: #94a3b8;
   font-size: 0.95rem;
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.rich-form-control {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
+  color: #0f172a;
+  background-color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rich-form-control::placeholder {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.rich-form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+  outline: none;
+  background-color: #ffffff;
+}
+
+/* Footer Action Buttons */
+.form-action-footer {
+  border-top: 1px solid #eef4f8;
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-form-cancel {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1.35rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
   font-weight: 600;
-  margin-bottom: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-form-cancel:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btn-form-submit {
+  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 41, 82, 0.25);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-form-submit:hover {
+  background: linear-gradient(135deg, #003366 0%, #0059b3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 41, 82, 0.35);
+  color: #ffffff;
+}
+
+.btn-form-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 576px) {
+  .form-action-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn-form-cancel,
+  .btn-form-submit {
+    width: 100%;
+    justify-content: center;
+  }
 }

@@ -104,14 +104,14 @@ const ViewBills = () => {
       createdAt: bill.createdAt || bill.date,
       username: bill.employee,
       customerName: bill.customerName || "CASH CUSTOMER",
-      grandTotal: bill.totalWithGst || bill.total || 0,
+      grandTotal: bill.total || 0,
       paidAmount: bill.totalPaid || 0,
-      tax: bill.gstAmount || 0,
+      tax: bill.gstAmount || ((bill.total || 0) - (bill.totalWithGst || 0)),
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
       taxPercent: bill.gstPercentage || 0,
-      subtotal: bill.total || 0,
+      subtotal: bill.totalWithGst || bill.total || 0,
       gstin: bill.customerGstNo || ""
     };
 

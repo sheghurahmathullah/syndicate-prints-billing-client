@@ -39,7 +39,7 @@ const Menubar = () => {
     <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
         <div className="logo-container">
-           <img src={assets.logo} alt="Logo" className="sidebar-logo" />
+          <img src={assets.logo} alt="Logo" className="sidebar-logo" />
         </div>
         <button className="hamburger-btn" onClick={toggleSidebar}>
           <i className="bi bi-list"></i>
@@ -58,8 +58,8 @@ const Menubar = () => {
 
         {/* Explore hidden as requested */}
 
-        <div 
-          className={`sidebar-link nav-group ${billsOpen ? "open" : ""}`} 
+        <div
+          className={`sidebar-link nav-group ${billsOpen ? "open" : ""}`}
           onClick={() => { setBillsOpen(!billsOpen); if (isCollapsed) setIsCollapsed(false); }}
           title="Bills"
           style={{ cursor: 'pointer' }}
@@ -68,7 +68,7 @@ const Menubar = () => {
           <span className="link-text">Bill</span>
           <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: billsOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
         </div>
-        
+
         <div className={`submenu-wrapper ${billsOpen ? 'open' : ''}`}>
           <div className="submenu">
             <div className="submenu-content">
@@ -133,8 +133,8 @@ const Menubar = () => {
             </Link>
             {/* Products hidden as requested */}
 
-            <div 
-              className={`sidebar-link nav-group ${employeesOpen ? "open" : ""}`} 
+            <div
+              className={`sidebar-link nav-group ${employeesOpen ? "open" : ""}`}
               onClick={() => { setEmployeesOpen(!employeesOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Manage Employees"
               style={{ cursor: 'pointer' }}
@@ -143,7 +143,7 @@ const Menubar = () => {
               <span className="link-text">Manage Employees</span>
               <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: employeesOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
             </div>
-            
+
             <div className={`submenu-wrapper ${employeesOpen ? 'open' : ''}`}>
               <div className="submenu">
                 <div className="submenu-content">
@@ -174,8 +174,8 @@ const Menubar = () => {
                 </div>
               </div>
             </div>
-            <div 
-              className={`sidebar-link nav-group ${customersOpen ? "open" : ""}`} 
+            <div
+              className={`sidebar-link nav-group ${customersOpen ? "open" : ""}`}
               onClick={() => { setCustomersOpen(!customersOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Customers"
               style={{ cursor: 'pointer' }}
@@ -184,7 +184,7 @@ const Menubar = () => {
               <span className="link-text">Customers</span>
               <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: customersOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
             </div>
-            
+
             <div className={`submenu-wrapper ${customersOpen ? 'open' : ''}`}>
               <div className="submenu">
                 <div className="submenu-content">
@@ -207,9 +207,9 @@ const Menubar = () => {
                 </div>
               </div>
             </div>
-            
-            <div 
-              className={`sidebar-link nav-group ${machinesOpen ? "open" : ""}`} 
+
+            <div
+              className={`sidebar-link nav-group ${machinesOpen ? "open" : ""}`}
               onClick={() => { setMachinesOpen(!machinesOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Machines"
               style={{ cursor: 'pointer' }}
@@ -218,7 +218,7 @@ const Menubar = () => {
               <span className="link-text">Machines</span>
               <i className={`bi bi-chevron-down nav-chevron link-text ms-auto`} style={{ fontSize: '0.75rem', minWidth: 'auto', transform: machinesOpen ? 'rotate(180deg)' : 'rotate(0)' }}></i>
             </div>
-            
+
             <div className={`submenu-wrapper ${machinesOpen ? 'open' : ''}`}>
               <div className="submenu">
                 <div className="submenu-content">
@@ -242,8 +242,8 @@ const Menubar = () => {
               </div>
             </div>
 
-            <div 
-              className={`sidebar-link nav-group ${paperOpen ? "open" : ""}`} 
+            <div
+              className={`sidebar-link nav-group ${paperOpen ? "open" : ""}`}
               onClick={() => { setPaperOpen(!paperOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Paper"
               style={{ cursor: 'pointer' }}
@@ -284,8 +284,8 @@ const Menubar = () => {
               </div>
             </div>
 
-            <div 
-              className={`sidebar-link nav-group ${operationsOpen ? "open" : ""}`} 
+            <div
+              className={`sidebar-link nav-group ${operationsOpen ? "open" : ""}`}
               onClick={() => { setOperationsOpen(!operationsOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Operations"
               style={{ cursor: 'pointer' }}
@@ -326,8 +326,8 @@ const Menubar = () => {
               </div>
             </div>
 
-            <div 
-              className={`sidebar-link nav-group ${reportsOpen ? "open" : ""}`} 
+            <div
+              className={`sidebar-link nav-group ${reportsOpen ? "open" : ""}`}
               onClick={() => { setReportsOpen(!reportsOpen); if (isCollapsed) setIsCollapsed(false); }}
               title="Reports"
               style={{ cursor: 'pointer' }}
@@ -387,9 +387,9 @@ const Menubar = () => {
             <span className="link-text">Settings</span>
           </Link>
         )}
-        
-        <div 
-          className="sidebar-profile" 
+
+        <div
+          className="sidebar-profile"
           onClick={() => setShowLogout(!showLogout)}
           title="User Profile"
         >

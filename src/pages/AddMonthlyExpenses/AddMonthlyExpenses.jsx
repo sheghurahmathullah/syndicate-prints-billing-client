@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { fetchBranches } from "../../Service/BranchService.js";
 import { fetchExpenseItemsByType, saveMonthlyExpenses } from "../../Service/DailyExpensesService.js";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
+import "./AddMonthlyExpenses.css";
 
 const AddMonthlyExpenses = () => {
   // Basic Info
@@ -17,11 +19,16 @@ const AddMonthlyExpenses = () => {
   
   // Loading state
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Fetch branches and monthly expense items on mount
   useEffect(() => {
-    loadBranches();
-    loadMonthlyExpenseItems();
+    const initData = async () => {
+      setInitialLoading(true);
+      await Promise.all([loadBranches(), loadMonthlyExpenseItems()]);
+      setInitialLoading(false);
+    };
+    initData();
   }, []);
 
   const loadBranches = async () => {
@@ -56,13 +63,20 @@ const AddMonthlyExpenses = () => {
     }
   };
 
-  const updateExpenseData = (index, field, value) => {
-    const updatedData = [...expenseData];
-    if (field === "isPaid") {
-      updatedData[index][field] = value;
-    } else {
-      updatedData[index][field] = value;
+  const preventNegativeAndExpKeys = (e) => {
+    if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+      e.preventDefault();
     }
+  };
+
+  const disableWheelScroll = (e) => {
+    e.target.blur();
+  };
+
+  const updateExpenseData = (index, field, value) => {
+    if (field === "amount" && value !== "" && parseFloat(value) < 0) return;
+    const updatedData = [...expenseData];
+    updatedData[index][field] = value;
     setExpenseData(updatedData);
   };
 
@@ -136,163 +150,214 @@ const AddMonthlyExpenses = () => {
 
   const paymentTypes = ["Cash", "Bank Transfer", "Online Payment", "Check", "UPI"];
 
+  if (initialLoading) {
+    return (
+      <div className="add-monthly-expenses-container p-4">
+        <LoadingSpinner message="Initializing monthly recurring expense catalog..." minHeight="400px" />
+      </div>
+    );
+  }
+
   return (
-    <div className="add-monthly-expenses-container">
+    <div className="add-monthly-expenses-container fade-in">
+      {/* Header Banner */}
       <div className="monthly-expenses-header">
-        <h2>
-          <i className="bi bi-calendar-month me-2"></i>
-          Add Monthly Expenses
-        </h2>
-        <p>Record your monthly recurring expenses and payments</p>
+        <div className="d-flex align-items-center gap-3">
+          <div className="banner-icon-box">
+            <i className="bi bi-calendar-month-fill"></i>
+          </div>
+          <div>
+            <h2 className="mb-1">Monthly Recurring Expense Ledger</h2>
+            <p className="mb-0">Record and track monthly operational overheads, rent, utilities & bill settlements</p>
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="monthly-expenses-form">
-        {/* Date, Branch, Month, Year Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-info-circle me-2"></i>
-            Basic Information
-          </h3>
+        {/* Basic Information Card */}
+        <div className="ops-card mb-4">
+          <h4 className="ops-card-title">
+            <i className="bi bi-info-circle-fill ops-card-icon"></i>
+            Ledger Period & Branch Selection
+          </h4>
           <div className="row g-3">
             <div className="col-md-3">
-              <label className="form-label">Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={currentDate}
-                onChange={(e) => setCurrentDate(e.target.value)}
-                required
-              />
+              <div className="rich-form-group">
+                <label className="rich-form-label">Ledger Date <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-calendar-date-fill rich-input-icon ops-icon"></i>
+                  <input
+                    type="date"
+                    className="rich-form-control"
+                    value={currentDate}
+                    onChange={(e) => setCurrentDate(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Branch</label>
-              <select
-                className="form-select"
-                value={selectedBranch}
-                onChange={(e) => setSelectedBranch(e.target.value)}
-                required
-              >
-                <option value="">Select Branch</option>
-                {branches.length === 0 && (
-                  <option disabled>No branches available</option>
-                )}
-                {branches.map((branch) => (
-                  <option key={branch.branchId || branch.id} value={branch.branchName || branch.name || branch.branchId}>
-                    {branch.branchName || branch.name || branch.branchId}
-                  </option>
-                ))}
-              </select>
-              {branches.length === 0 && (
-                <small className="text-danger mt-1">No branches loaded. Please check console for errors.</small>
-              )}
+              <div className="rich-form-group">
+                <label className="rich-form-label">Operating Branch <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-building-fill rich-input-icon ops-icon"></i>
+                  <select
+                    className="rich-form-control"
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Branch</option>
+                    {branches.map((branch) => (
+                      <option key={branch.branchId || branch.id} value={branch.branchName || branch.name || branch.branchId}>
+                        {branch.branchName || branch.name || branch.branchId}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Month</label>
-              <select
-                className="form-select"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                required
-              >
-                {months.map(month => (
-                  <option key={month.value} value={month.value}>
-                    {month.label}
-                  </option>
-                ))}
-              </select>
+              <div className="rich-form-group">
+                <label className="rich-form-label">Target Month <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-calendar-event-fill rich-input-icon ops-icon"></i>
+                  <select
+                    className="rich-form-control"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    required
+                  >
+                    {months.map(month => (
+                      <option key={month.value} value={month.value}>
+                        {month.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="col-md-3">
-              <label className="form-label">Year</label>
-              <input
-                type="number"
-                className="form-control"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                min="2020"
-                max="2030"
-                required
-              />
+              <div className="rich-form-group">
+                <label className="rich-form-label">Year <span className="text-danger">*</span></label>
+                <div className="rich-input-group">
+                  <i className="bi bi-calendar2-range-fill rich-input-icon ops-icon"></i>
+                  <input
+                    type="number"
+                    onKeyDown={preventNegativeAndExpKeys}
+                    onWheel={disableWheelScroll}
+                    className="rich-form-control"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    min="2020"
+                    max="2030"
+                    required
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Monthly Expense Items Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="bi bi-list-check me-2"></i>
-            Monthly Expenses
-          </h3>
-          <div className="monthly-expenses-grid">
-            {monthlyExpenseItems.map((item, index) => (
-              <div key={item.expenseItemId || index} className="expense-item-card">
-                <div className="expense-item-header">
-                  <h5 className="expense-item-name">{item.name}</h5>
-                </div>
-                <div className="expense-item-body">
-                  <div className="row g-2">
-                    <div className="col-md-4">
-                      <label className="form-label small">Amount</label>
-                      <div className="input-group">
-                        <span className="input-group-text">₹</span>
-                        <input
-                          type="number"
-                          className="form-control"
-                          placeholder="0.00"
-                          value={expenseData[index]?.amount || ""}
-                          onChange={(e) => updateExpenseData(index, "amount", e.target.value)}
-                        />
+        {/* Monthly Expense Items Grid */}
+        <div className="ops-card mb-4">
+          <h4 className="ops-card-title">
+            <i className="bi bi-list-check ops-card-icon"></i>
+            Monthly Recurring Expense Items
+          </h4>
+          
+          {monthlyExpenseItems.length === 0 ? (
+            <div className="text-center py-5">
+              <i className="bi bi-inbox text-muted display-4 mb-3"></i>
+              <p className="text-muted fw-bold">No Monthly Expense Items Found in Catalog.</p>
+            </div>
+          ) : (
+            <div className="monthly-expenses-grid">
+              {monthlyExpenseItems.map((item, index) => (
+                <div key={item.expenseItemId || index} className="ops-monthly-item-card">
+                  <div className="ops-card-header-bar">
+                    <h6 className="ops-item-title mb-0">
+                      <i className="bi bi-tag-fill me-2 text-emerald"></i>
+                      {item.name}
+                    </h6>
+                    <span className={`status-pill ${expenseData[index]?.isPaid ? 'paid' : 'unpaid'}`}>
+                      {expenseData[index]?.isPaid ? 'Paid' : 'Unpaid'}
+                    </span>
+                  </div>
+                  <div className="ops-card-body-content">
+                    <div className="row g-3 align-items-center">
+                      <div className="col-md-5">
+                        <label className="rich-form-label small mb-1">Amount</label>
+                        <div className="ops-amount-group">
+                          <span className="ops-amount-addon">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            onKeyDown={preventNegativeAndExpKeys}
+                            onWheel={disableWheelScroll}
+                            className="ops-amount-input"
+                            placeholder="0.00"
+                            value={expenseData[index]?.amount || ""}
+                            onChange={(e) => updateExpenseData(index, "amount", e.target.value)}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-4">
-                      <label className="form-label small">Payment Type</label>
-                      <select
-                        className="form-select"
-                        value={expenseData[index]?.paymentType || "Cash"}
-                        onChange={(e) => updateExpenseData(index, "paymentType", e.target.value)}
-                      >
-                        {paymentTypes.map(type => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-4">
-                      <label className="form-label small">Status</label>
-                      <div className="form-check form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={`paid-${index}`}
-                          checked={expenseData[index]?.isPaid || false}
-                          onChange={(e) => updateExpenseData(index, "isPaid", e.target.checked)}
-                        />
-                        <label className="form-check-label" htmlFor={`paid-${index}`}>
-                          {expenseData[index]?.isPaid ? "Paid" : "Unpaid"}
-                        </label>
+                      <div className="col-md-4">
+                        <label className="rich-form-label small mb-1">Payment Method</label>
+                        <select
+                          className="rich-form-control form-control-sm"
+                          value={expenseData[index]?.paymentType || "Cash"}
+                          onChange={(e) => updateExpenseData(index, "paymentType", e.target.value)}
+                        >
+                          {paymentTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-3 text-end">
+                        <label className="rich-form-label small mb-1 d-block">Status Toggle</label>
+                        <div className="form-check form-switch custom-status-switch d-inline-block">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`paid-${index}`}
+                            checked={expenseData[index]?.isPaid || false}
+                            onChange={(e) => updateExpenseData(index, "isPaid", e.target.checked)}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Submit Button */}
-        <div className="form-actions">
+        {/* Submit Actions Footer */}
+        <div className="d-flex align-items-center justify-content-end gap-3 my-4">
+          <button
+            type="button"
+            className="btn btn-light border px-4 py-2 fw-bold"
+            onClick={resetForm}
+            disabled={loading}
+          >
+            <i className="bi bi-arrow-counterclockwise me-1"></i> Reset Form
+          </button>
           <button
             type="submit"
-            className="btn btn-primary btn-lg"
+            className="btn btn-ops-primary btn-lg px-5 shadow"
             disabled={loading}
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2"></span>
-                Saving...
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving Ledger...
               </>
             ) : (
               <>
-                <i className="bi bi-save me-2"></i>
-                Save Monthly Expenses
+                <i className="bi bi-cloud-check-fill me-2"></i>
+                Save Monthly Expenses Ledger
               </>
             )}
           </button>

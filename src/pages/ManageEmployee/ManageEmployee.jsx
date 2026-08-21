@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import EmployeeList from "../../components/EmployeeList/EmployeeList.jsx";
 import EmployeeForm from "../../components/EmployeeForm/EmployeeForm.jsx";
 import { addEmployee, updateEmployee } from "../../Service/EmployeeService.js";
+import "./ManageEmployee.css";
 
 const ManageEmployee = () => {
   const [showForm, setShowForm] = useState(false);
@@ -55,26 +56,33 @@ const ManageEmployee = () => {
 
   return (
     <div className="manage-page fade-in">
-      <div className="page-header mb-3 d-flex justify-content-between align-items-center">
-        <div>
-          <h4 className="mb-0">Manage Employees</h4>
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-people-fill"></i>
+          </div>
+          <div className="header-text">
+            <h4 className="mb-0">Manage Employees</h4>
+            <p className="text-muted small mb-0 d-none d-sm-block">Add, update and oversee your workforce team</p>
+          </div>
         </div>
         {!showForm && (
           <button className="btn-premium-add" onClick={handleAddClick}>
-            <i className="bi bi-person-plus-fill"></i> Add Employee
+            <i className="bi bi-person-plus-fill"></i>
+            <span>Add Employee</span>
           </button>
         )}
       </div>
 
       {showForm ? (
         <div className="form-section fade-in">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="mb-0">
-              <i className="bi bi-person-badge"></i>{" "}
-              {editingEmployee ? "Edit Employee" : "Add New Employee"}
+          <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+              <i className="bi bi-person-badge text-primary"></i>{" "}
+              {editingEmployee ? "Edit Employee Details" : "Add New Employee"}
             </h5>
-            <button className="btn btn-outline-secondary btn-sm" onClick={handleCancelForm}>
-              <i className="bi bi-x-lg"></i> Close
+            <button className="btn btn-outline-secondary btn-sm rounded-2" onClick={handleCancelForm}>
+              <i className="bi bi-x-lg me-1"></i> Close
             </button>
           </div>
           <EmployeeForm
@@ -85,15 +93,14 @@ const ManageEmployee = () => {
         </div>
       ) : (
         <div className="list-section fade-in" ref={listRef}>
-          <div className="machine-banner position-relative text-white mb-3 rounded px-4 py-3 shadow-sm d-flex justify-content-between align-items-center" style={{ backgroundColor: '#002952' }}>
+          <div className="employee-management-banner mb-3">
             <div>
-              <h5 className="fw-bold mb-1 text-uppercase tracking-wider">Employee Management</h5>
-              <p className="mb-0 text-white-50" style={{ fontSize: '0.8rem' }}>Comprehensive oversight and administration of employees</p>
+              <h5 className="banner-title-text">Employee Management</h5>
+              <p className="banner-subtitle-text">Comprehensive oversight and administration of employees</p>
             </div>
-            <div>
-              <span className="badge bg-light text-dark fs-6 rounded-pill px-3 py-2 shadow-sm">
-                Total Employees: <span className="fw-bold text-primary ms-1 fs-5">{totalEmployees}</span>
-              </span>
+            <div className="banner-stat-badge">
+              <span className="banner-stat-label">Total Employees:</span>
+              <span className="banner-stat-value">{totalEmployees}</span>
             </div>
           </div>
           <EmployeeListWrapper onEdit={handleEditClick} onTotalLoaded={setTotalEmployees} />

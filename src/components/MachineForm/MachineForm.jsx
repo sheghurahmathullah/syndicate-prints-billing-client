@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { addMachine, updateMachine } from "../../Service/MachineService.js";
 import { fetchAllMachineCategories } from "../../Service/MachineCategoryService.js";
 import { fetchBranches } from "../../Service/BranchService.js";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.jsx";
 
 const MachineForm = ({ selectedMachine, onClose, refreshList }) => {
   const [formData, setFormData] = useState({
@@ -50,7 +51,7 @@ const MachineForm = ({ selectedMachine, onClose, refreshList }) => {
       setFetchingData(true);
       const [categoryRes, branchRes] = await Promise.all([
         fetchAllMachineCategories(),
-        fetchBranches(0, 1000) // Fetch a large number to act as 'all' since no unpaginated endpoint
+        fetchBranches(0, 1000)
       ]);
       
       setCategories(categoryRes.data || []);
@@ -73,7 +74,7 @@ const MachineForm = ({ selectedMachine, onClose, refreshList }) => {
     }
 
     if (name === "categoryId") {
-      const selectedCat = categories.find(c => c.categoryId === value);
+      const selectedCat = categories.find(c => String(c.categoryId) === String(value));
       setFormData(prev => ({
         ...prev,
         categoryId: value,
@@ -83,7 +84,7 @@ const MachineForm = ({ selectedMachine, onClose, refreshList }) => {
     }
     
     if (name === "branchId") {
-      const selectedBranch = branches.find(b => b.branchId === value);
+      const selectedBranch = branches.find(b => String(b.branchId) === String(value));
       setFormData(prev => ({
         ...prev,
         branchId: value,
@@ -121,171 +122,257 @@ const MachineForm = ({ selectedMachine, onClose, refreshList }) => {
   };
 
   if (fetchingData) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading form...</span>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Preparing machine form..." />;
   }
 
   return (
-    <form className="machine-form" onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-4">
-          <label className="form-label form-label-sm fw-bold mb-1">Machine Name *</label>
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="e.g. Printer A1"
-            required
-          />
-        </div>
-        
-        <div className="col-md-4">
-          <label className="form-label form-label-sm fw-bold mb-1">Machine Category *</label>
-          <select 
-            className="form-select form-select-sm"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map(cat => (
-              <option key={cat.categoryId} value={cat.categoryId}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
+    <div className="user-form-wrapper">
+      <div className="user-form-card">
+        <form className="machine-form" onSubmit={handleSubmit}>
+          {/* Section 1: Basic Machine Info */}
+          <div className="form-section-header mb-3">
+            <div className="form-header-badge">
+              <i className="bi bi-printer-fill"></i>
+            </div>
+            <div>
+              <h6 className="form-section-title mb-0">Machine Specification</h6>
+              <span className="form-section-subtitle">Basic details, category & branch assignment</span>
+            </div>
+          </div>
 
-        <div className="col-md-4">
-          <label className="form-label form-label-sm fw-bold mb-1">Branch *</label>
-          <select 
-            className="form-select form-select-sm"
-            name="branchId"
-            value={formData.branchId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Branch</option>
-            {branches.map(branch => (
-              <option key={branch.branchId} value={branch.branchId}>{branch.name}</option>
-            ))}
-          </select>
-        </div>
+          <div className="row g-3">
+            {/* Machine Name */}
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label">
+                  Machine Name <span className="text-danger">*</span>
+                </label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-printer-fill"></i></span>
+                  <input
+                    type="text"
+                    className="rich-form-control"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g. Heidelberg Offset 01"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Machine Category */}
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label">
+                  Category <span className="text-danger">*</span>
+                </label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-diagram-3-fill"></i></span>
+                  <select 
+                    className="rich-form-control"
+                    name="categoryId"
+                    value={formData.categoryId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat.categoryId} value={cat.categoryId}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Serial Number</label>
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            name="serialNumber"
-            value={formData.serialNumber}
-            onChange={handleChange}
-            placeholder="SN-12345"
-          />
-        </div>
+            {/* Branch */}
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label">
+                  Branch <span className="text-danger">*</span>
+                </label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-geo-alt-fill"></i></span>
+                  <select 
+                    className="rich-form-control"
+                    name="branchId"
+                    value={formData.branchId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Branch</option>
+                    {branches.map(branch => (
+                      <option key={branch.branchId} value={branch.branchId}>{branch.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Initial Reading</label>
-          <input
-            type="number"
-            className="form-control form-control-sm"
-            name="reading"
-            value={formData.reading}
-            onChange={handleChange}
-            placeholder="0"
-          />
-        </div>
+            {/* Serial Number */}
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Serial Number</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-hash"></i></span>
+                  <input
+                    type="text"
+                    className="rich-form-control font-monospace"
+                    name="serialNumber"
+                    value={formData.serialNumber}
+                    onChange={handleChange}
+                    placeholder="e.g. SN-9874521"
+                  />
+                </div>
+              </div>
+            </div>
 
-        <div className="col-12 mt-4 mb-2">
-          <h6 className="border-bottom pb-2 section-title">Contact Information</h6>
-        </div>
+            {/* Initial Reading */}
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Initial Reading</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-speedometer2"></i></span>
+                  <input
+                    type="number"
+                    className="rich-form-control"
+                    name="reading"
+                    value={formData.reading}
+                    onChange={handleChange}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Contact Mobile</label>
-          <input
-            type="tel"
-            className="form-control form-control-sm"
-            name="mobile"
-            value={formData.mobile}
-            onChange={handleChange}
-            maxLength="15"
-            placeholder="Phone Number"
-          />
-        </div>
+          {/* Section 2: Contact Information */}
+          <div className="form-section-header mt-4 mb-3">
+            <div className="form-header-badge">
+              <i className="bi bi-telephone-fill"></i>
+            </div>
+            <div>
+              <h6 className="form-section-title mb-0">General Contact Information</h6>
+              <span className="form-section-subtitle">Support & operational contact details</span>
+            </div>
+          </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Contact Email</label>
-          <input
-            type="email"
-            className="form-control form-control-sm"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="email@example.com"
-          />
-        </div>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Contact Mobile</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-telephone-fill"></i></span>
+                  <input
+                    type="tel"
+                    className="rich-form-control"
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleChange}
+                    maxLength="15"
+                    placeholder="e.g. 9876543210"
+                  />
+                </div>
+              </div>
+            </div>
 
-        <div className="col-12 mt-4 mb-2">
-          <h6 className="border-bottom pb-2 section-title">Toner Request Details</h6>
-        </div>
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Contact Email</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-envelope-fill"></i></span>
+                  <input
+                    type="email"
+                    className="rich-form-control"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="support@company.com"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Toner Request Mobile</label>
-          <input
-            type="tel"
-            className="form-control form-control-sm"
-            name="tonerRequestMobile"
-            value={formData.tonerRequestMobile}
-            onChange={handleChange}
-            maxLength="15"
-            placeholder="Toner Contact Phone"
-          />
-        </div>
+          {/* Section 3: Toner Request Details */}
+          <div className="form-section-header mt-4 mb-3">
+            <div className="form-header-badge">
+              <i className="bi bi-droplet-fill"></i>
+            </div>
+            <div>
+              <h6 className="form-section-title mb-0">Toner Request Details</h6>
+              <span className="form-section-subtitle">Specific contacts for toner & consumable refills</span>
+            </div>
+          </div>
 
-        <div className="col-md-6">
-          <label className="form-label form-label-sm fw-bold mb-1">Toner Request Email</label>
-          <input
-            type="email"
-            className="form-control form-control-sm"
-            name="tonerRequestEmail"
-            value={formData.tonerRequestEmail}
-            onChange={handleChange}
-            placeholder="toner@example.com"
-          />
-        </div>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Toner Request Mobile</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-phone-fill"></i></span>
+                  <input
+                    type="tel"
+                    className="rich-form-control"
+                    name="tonerRequestMobile"
+                    value={formData.tonerRequestMobile}
+                    onChange={handleChange}
+                    maxLength="15"
+                    placeholder="e.g. 9123456789"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Toner Request Email</label>
+                <div className="rich-input-group">
+                  <span className="rich-input-icon"><i className="bi bi-send-fill"></i></span>
+                  <input
+                    type="email"
+                    className="rich-form-control"
+                    name="tonerRequestEmail"
+                    value={formData.tonerRequestEmail}
+                    onChange={handleChange}
+                    placeholder="toner-request@company.com"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Actions Footer */}
+          <div className="form-action-footer">
+            <button 
+              type="button" 
+              className="btn-form-cancel" 
+              onClick={onClose}
+              disabled={loading}
+            >
+              <i className="bi bi-x-circle me-1"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn-form-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-check2-circle me-1"></i> Save Machine
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-        <button 
-          type="button" 
-          className="btn btn-light btn-sm px-4" 
-          onClick={onClose}
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <button 
-          type="submit" 
-          className="btn btn-primary btn-sm px-5 submit-btn"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              Saving...
-            </>
-          ) : (
-            <><i className="bi bi-check2-circle me-1"></i> Save Machine</>
-          )}
-        </button>
-      </div>
-    </form>
+    </div>
   );
 };
 

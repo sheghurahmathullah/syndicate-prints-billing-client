@@ -22,15 +22,26 @@ const ManagePaper = () => {
       setLoading(true);
       const response = await fetchPapers(page, size);
 
-      const pageData = response.data.page || response.data;
-      const content = response.data.content || pageData.content || [];
-      const totalPages = pageData.totalPages || 0;
-      const totalElements = pageData.totalElements || 0;
+      const data = response.data;
+      let content = [];
+      let totalPagesVal = 1;
+      let totalElementsVal = 0;
+
+      if (Array.isArray(data)) {
+        content = data;
+        totalElementsVal = data.length;
+      } else if (data) {
+        const pageData = data.page || data;
+        content = data.content || pageData.content || [];
+        totalPagesVal = pageData.totalPages !== undefined ? pageData.totalPages : 1;
+        totalElementsVal = pageData.totalElements !== undefined && pageData.totalElements !== null ? pageData.totalElements : content.length;
+      }
 
       setPapers(content);
-      setTotalPages(totalPages);
-      setTotalElements(totalElements);
-    } catch {
+      setTotalPages(totalPagesVal);
+      setTotalElements(totalElementsVal);
+    } catch (err) {
+      console.error(err);
       toast.error("Unable to fetch papers");
     } finally {
       setLoading(false);
@@ -43,38 +54,54 @@ const ManagePaper = () => {
 
   return (
     <div className="paper-page text-dark">
-      <div className="paper-page-header mb-3">
-        <div>
-          <h4 className="mb-0">Papers</h4>
+      {/* Premium Header Card */}
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-file-earmark-text-fill"></i>
+          </div>
+          <div>
+            <h4 className="mb-0 fw-bold text-dark">Paper Management</h4>
+            <p className="mb-0 text-muted small">
+              Comprehensive oversight and administration of paper stock
+            </p>
+          </div>
         </div>
+
         {!isFormOpen && (
-          <button className="btn btn-primary btn-sm paper-add-btn" onClick={onAddClick}>
-            <i className="bi bi-plus-lg" /> Add Paper
+          <button className="btn-premium-add" onClick={onAddClick}>
+            <i className="bi bi-plus-lg"></i>
+            <span>Add Paper</span>
           </button>
         )}
       </div>
 
       {isFormOpen ? (
         <div className="paper-form-section fade-in">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="mb-0">
-              <i className="bi bi-file-earmark-text me-1" />
-              {selectedPaper ? "Edit Paper" : "Add New Paper"}
+          <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+              <i className="bi bi-file-earmark-text text-primary"></i>
+              {selectedPaper ? "Edit Paper Details" : "Add New Paper"}
             </h5>
-            <button className="btn btn-outline-secondary btn-sm" onClick={onCloseForm}>
-              <i className="bi bi-x-lg" /> Close
+            <button className="btn btn-outline-secondary btn-sm rounded-2" onClick={onCloseForm}>
+              <i className="bi bi-x-lg me-1"></i> Close
             </button>
           </div>
           <PaperForm selectedPaper={selectedPaper} onClose={onCloseForm} refreshList={loadPapers} />
         </div>
       ) : (
         <div className="paper-list-section fade-in">
-          <div className="paper-banner position-relative text-center text-white mb-3 rounded px-3 py-3" style={{ backgroundColor: "#1a3a5c" }}>
-            <div className="position-absolute top-0 end-0 m-2 px-2 py-1 badge bg-light text-dark shadow-sm fw-bold small">
-              Total: {totalElements}
+          {/* Responsive Banner */}
+          <div className="paper-management-banner mb-3">
+            <div className="banner-content">
+              <h5 className="banner-title">PAPER INVENTORY MANAGEMENT</h5>
+              <p className="banner-subtitle">
+                Comprehensive oversight and administration of all paper stock
+              </p>
             </div>
-            <h5 className="fw-bold mb-1 text-uppercase tracking-wider">Paper Management</h5>
-            <p className="mb-0 text-white-50" style={{ fontSize: "0.8rem" }}>Comprehensive oversight and administration of all paper stock</p>
+            <div className="banner-stat-badge">
+              TOTAL PAPERS: {totalElements || papers.length}
+            </div>
           </div>
           <PaperList
             papers={papers}

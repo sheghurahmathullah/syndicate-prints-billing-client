@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { fetchExpenseItems, deleteExpenseItem } from "../../Service/ExpenseService.js";
 import toast from "react-hot-toast";
 import ConfirmModal from "../ConfirmModal/ConfirmModal.jsx";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.jsx";
 
 const ExpenseItemList = ({ 
   onEdit, 
@@ -57,11 +58,7 @@ const ExpenseItemList = ({
   return (
     <div className="expense-item-list-container">
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+        <LoadingSpinner message="Loading expense items..." />
       ) : expenseItems.length > 0 ? (
         <>
           <div className="table-responsive expense-table-wrapper">
@@ -79,34 +76,46 @@ const ExpenseItemList = ({
                 {expenseItems.map((item, index) => (
                   <tr key={item.expenseItemId}>
                     <td>
-                      <span className="row-number fw-bold text-muted">{page * size + index + 1}</span>
+                      <span className="ops-row-number">{page * size + index + 1}</span>
                     </td>
                     <td>
                       <div className="fw-bold text-dark">{item.name}</div>
                     </td>
                     <td>
-                      <span className={`badge ${item.type === 'DAILY' ? 'bg-primary' : 'bg-success'}`}>
-                        {item.type}
-                      </span>
+                      {item.type === 'DAILY' ? (
+                        <span className="data-badge badge-ops-daily">
+                          <i className="bi bi-calendar-event me-1"></i> Daily
+                        </span>
+                      ) : (
+                        <span className="data-badge badge-ops-monthly">
+                          <i className="bi bi-calendar-range me-1"></i> Monthly
+                        </span>
+                      )}
                     </td>
                     <td>
-                      <span className={`badge ${item.addInAccount ? 'bg-success' : 'bg-secondary'}`}>
-                        {item.addInAccount ? 'Yes' : 'No'}
-                      </span>
+                      {item.addInAccount ? (
+                        <span className="data-badge badge-ops-included">
+                          <i className="bi bi-check-circle-fill me-1"></i> Add in Account
+                        </span>
+                      ) : (
+                        <span className="data-badge badge-ops-excluded">
+                          <i className="bi bi-dash-circle me-1"></i> Excluded
+                        </span>
+                      )}
                     </td>
                     <td className="text-end">
-                      <div className="action-btn-group">
+                      <div className="action-buttons justify-content-end">
                         <button
-                          className="action-btn action-btn-edit"
+                          className="btn-icon btn-edit"
                           onClick={() => onEdit(item)}
-                          title="Edit"
+                          title="Edit Item"
                         >
                           <i className="bi bi-pencil-square"></i>
                         </button>
                         <button
-                          className="action-btn action-btn-delete"
+                          className="btn-icon btn-delete"
                           onClick={() => confirmDelete(item)}
-                          title="Delete"
+                          title="Delete Item"
                         >
                           <i className="bi bi-trash"></i>
                         </button>

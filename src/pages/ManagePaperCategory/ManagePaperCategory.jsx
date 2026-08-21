@@ -22,15 +22,26 @@ const ManagePaperCategory = () => {
       setLoading(true);
       const response = await fetchPaperCategories(page, size);
 
-      const pageData = response.data.page || response.data;
-      const content = response.data.content || pageData.content || [];
-      const totalPages = pageData.totalPages || 0;
-      const totalElements = pageData.totalElements || 0;
+      const data = response.data;
+      let content = [];
+      let totalPagesVal = 1;
+      let totalElementsVal = 0;
+
+      if (Array.isArray(data)) {
+        content = data;
+        totalElementsVal = data.length;
+      } else if (data) {
+        const pageData = data.page || data;
+        content = data.content || pageData.content || [];
+        totalPagesVal = pageData.totalPages !== undefined ? pageData.totalPages : 1;
+        totalElementsVal = pageData.totalElements !== undefined && pageData.totalElements !== null ? pageData.totalElements : content.length;
+      }
 
       setCategories(content);
-      setTotalPages(totalPages);
-      setTotalElements(totalElements);
-    } catch {
+      setTotalPages(totalPagesVal);
+      setTotalElements(totalElementsVal);
+    } catch (err) {
+      console.error(err);
       toast.error("Unable to fetch paper categories");
     } finally {
       setLoading(false);
@@ -43,38 +54,54 @@ const ManagePaperCategory = () => {
 
   return (
     <div className="paper-category-page text-dark">
-      <div className="paper-page-header mb-3">
-        <div>
-          <h4 className="mb-0">Paper Category</h4>
+      {/* Premium Header Card */}
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-layers-fill"></i>
+          </div>
+          <div>
+            <h4 className="mb-0 fw-bold text-dark">Paper Category</h4>
+            <p className="mb-0 text-muted small">
+              Manage and organize all paper categories
+            </p>
+          </div>
         </div>
+
         {!isFormOpen && (
-          <button className="btn btn-primary btn-sm paper-add-btn" onClick={onAddClick}>
-            <i className="bi bi-plus-lg" /> Add Category
+          <button className="btn-premium-add" onClick={onAddClick}>
+            <i className="bi bi-plus-lg"></i>
+            <span>Add Category</span>
           </button>
         )}
       </div>
 
       {isFormOpen ? (
         <div className="paper-form-section fade-in">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="mb-0">
-              <i className="bi bi-layers me-1" />
-              {selectedCategory ? "Edit Category" : "Add New Category"}
+          <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+              <i className="bi bi-layers text-primary"></i>
+              {selectedCategory ? "Edit Category Details" : "Add New Category"}
             </h5>
-            <button className="btn btn-outline-secondary btn-sm" onClick={onCloseForm}>
-              <i className="bi bi-x-lg" /> Close
+            <button className="btn btn-outline-secondary btn-sm rounded-2" onClick={onCloseForm}>
+              <i className="bi bi-x-lg me-1"></i> Close
             </button>
           </div>
           <PaperCategoryForm selectedCategory={selectedCategory} onClose={onCloseForm} refreshList={loadCategories} />
         </div>
       ) : (
         <div className="paper-list-section fade-in">
-          <div className="paper-banner position-relative text-center text-white mb-3 rounded px-3 py-3" style={{ backgroundColor: "#1a3a5c" }}>
-            <div className="position-absolute top-0 end-0 m-2 px-2 py-1 badge bg-light text-dark shadow-sm fw-bold small">
-              Total: {totalElements}
+          {/* Responsive Banner */}
+          <div className="paper-management-banner mb-3">
+            <div className="banner-content">
+              <h5 className="banner-title">PAPER CATEGORY MANAGEMENT</h5>
+              <p className="banner-subtitle">
+                Manage and organize all paper categories
+              </p>
             </div>
-            <h5 className="fw-bold mb-1 text-uppercase tracking-wider">Paper Category Management</h5>
-            <p className="mb-0 text-white-50" style={{ fontSize: "0.8rem" }}>Manage and organise all paper categories</p>
+            <div className="banner-stat-badge">
+              TOTAL CATEGORIES: {totalElements || categories.length}
+            </div>
           </div>
           <PaperCategoryList
             categories={categories}

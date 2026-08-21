@@ -35,28 +35,29 @@ import TodayBills from "./pages/Bills/TodayBills.jsx";
 import DailyExpenseReport from "./pages/Reports/DailyExpenseReport.jsx";
 
 
+const LoginRoute = ({ element }) => {
+  const { auth } = useContext(AppContext);
+  if (auth.token) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return element;
+};
+
+const ProtectedRoute = ({ element, allowedRoles }) => {
+  const { auth } = useContext(AppContext);
+  if (!auth.token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(auth.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return element;
+};
+
 const App = () => {
   const location = useLocation();
-  const { auth } = useContext(AppContext);
-
-  const LoginRoute = ({ element }) => {
-    if (auth.token) {
-      return <Navigate to="/dashboard" replace />;
-    }
-    return element;
-  };
-
-  const ProtectedRoute = ({ element, allowedRoles }) => {
-    if (!auth.token) {
-      return <Navigate to="/login" replace />;
-    }
-
-    if (allowedRoles && !allowedRoles.includes(auth.role)) {
-      return <Navigate to="/dashboard" replace />;
-    }
-
-    return element;
-  };
 
   return (
     <div className="app-container">

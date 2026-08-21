@@ -40,56 +40,100 @@ const PaperGroupForm = ({ selectedGroup, onClose, refreshList }) => {
   };
 
   return (
-    <form className="paper-group-form" onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-12">
-          <label htmlFor="pg-name" className="form-label form-label-sm fw-bold mb-1">
-            Group Name <span className="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            id="pg-name"
-            name="name"
-            placeholder="e.g. A4 Group"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+    <div className="user-form-wrapper">
+      <div className="user-form-card">
+        {/* Form Header Banner */}
+        <div className="form-section-header mb-4">
+          <div className="form-header-badge">
+            <i className="bi bi-collection-fill"></i>
+          </div>
+          <div>
+            <h6 className="form-section-title mb-0">
+              {selectedGroup ? "Edit Paper Group" : "Create New Paper Group"}
+            </h6>
+            <p className="form-section-subtitle mb-0">
+              Fill in the group details below
+            </p>
+          </div>
         </div>
 
-        <div className="col-md-12">
-          <label htmlFor="pg-description" className="form-label form-label-sm fw-bold mb-1">
-            Description
-          </label>
-          <textarea
-            className="form-control form-control-sm"
-            id="pg-description"
-            name="description"
-            placeholder="Optional description for this group"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-          />
-        </div>
-      </div>
+        <form onSubmit={handleSubmit}>
+          <div className="row g-3">
+            {/* Group Name */}
+            <div className="col-md-12">
+              <div className="rich-form-group">
+                <label htmlFor="pg-name" className="rich-form-label">
+                  Group Name <span className="text-danger">*</span>
+                </label>
+                <div className="rich-input-group">
+                  <i className="bi bi-collection rich-input-icon"></i>
+                  <input
+                    type="text"
+                    className="rich-form-control"
+                    id="pg-name"
+                    name="name"
+                    placeholder="e.g. A4 Group, Standard Offset"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
 
-      <div className="d-flex justify-content-end gap-2 mt-4 pt-2 border-top">
-        <button type="button" className="btn btn-light btn-sm px-3" onClick={onClose} disabled={loading}>
-          Cancel
-        </button>
-        <button type="submit" className="btn btn-primary btn-sm px-4 paper-submit-btn" disabled={loading}>
-          {loading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" />
-              Saving...
-            </>
-          ) : (
-            <><i className="bi bi-check2-circle me-1" />{selectedGroup ? "Update" : "Save"} Group</>
-          )}
-        </button>
+            {/* Description */}
+            <div className="col-md-12">
+              <div className="rich-form-group">
+                <label htmlFor="pg-description" className="rich-form-label">
+                  Description
+                </label>
+                <div className="rich-input-group">
+                  <i className="bi bi-card-text rich-input-icon" style={{ top: "1.1rem" }}></i>
+                  <textarea
+                    className="rich-form-control"
+                    id="pg-description"
+                    name="description"
+                    placeholder="Optional description for this paper group"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Action Buttons */}
+          <div className="form-action-footer">
+            <button
+              type="button"
+              className="btn-form-cancel"
+              onClick={onClose}
+              disabled={loading}
+            >
+              <i className="bi bi-x-lg me-1"></i> Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-form-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-check2-circle me-1"></i>
+                  {selectedGroup ? "Update Group" : "Save Group"}
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 

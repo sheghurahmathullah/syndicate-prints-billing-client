@@ -44,8 +44,8 @@ const BillDetailsModal = ({ bill, onClose }) => {
     console.error("Error parsing particulars:", error);
   }
 
-  const totalAmount = bill.total || 0;
-  const netAmount = bill.totalWithGst || totalAmount;
+  const totalAmount = bill.totalWithGst || bill.total || 0;
+  const netAmount = bill.total || totalAmount;
   const totalPaid = bill.totalPaid || 0;
 
   return (

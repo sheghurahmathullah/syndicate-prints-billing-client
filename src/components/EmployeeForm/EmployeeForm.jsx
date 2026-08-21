@@ -260,7 +260,7 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
           <div className="col-md-6">
             <div className="form-group">
               <label className="form-label">Employee Photo</label>
-              <div className="file-upload-wrapper">
+              <div className="file-upload-card">
                  <input
                    type="file"
                    id="photoUpload"
@@ -268,12 +268,12 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
                    accept="image/*"
                    onChange={(e) => handleFileChange(e, 'photo')}
                  />
-                 <label htmlFor="photoUpload" className="btn btn-outline-primary btn-sm w-100 mb-2">
-                    <i className="bi bi-image"></i> Upload Photo (Base64)
+                 <label htmlFor="photoUpload" className="file-upload-label btn btn-sm btn-outline-primary w-100">
+                    <i className="bi bi-image me-1"></i> Choose Photo
                  </label>
                  {photoPreview && (
                     <div className="mt-2 text-center">
-                       <img src={photoPreview} alt="Preview" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} className="shadow-sm border" />
+                       <img src={photoPreview} alt="Preview" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover' }} className="shadow-sm border" />
                     </div>
                  )}
               </div>
@@ -283,7 +283,7 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
           <div className="col-md-6">
             <div className="form-group">
               <label className="form-label">Employee Resume (PDF/Word)</label>
-              <div className="file-upload-wrapper">
+              <div className="file-upload-card">
                  <input
                    type="file"
                    id="resumeUpload"
@@ -291,12 +291,12 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                    onChange={(e) => handleFileChange(e, 'resume')}
                  />
-                 <label htmlFor="resumeUpload" className="btn btn-outline-info btn-sm w-100 mb-2">
-                    <i className="bi bi-file-earmark-text"></i> Upload Resume (Base64)
+                 <label htmlFor="resumeUpload" className="file-upload-label btn btn-sm btn-outline-info w-100">
+                    <i className="bi bi-file-earmark-text me-1"></i> Choose Resume File
                  </label>
                  {resumePreviewName && (
-                    <div className="mt-2 small text-success">
-                       <i className="bi bi-check-circle"></i> {resumePreviewName}
+                    <div className="mt-2 small text-success fw-semibold">
+                       <i className="bi bi-check-circle-fill me-1"></i> {resumePreviewName}
                     </div>
                  )}
               </div>

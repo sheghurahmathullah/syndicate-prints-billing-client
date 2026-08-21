@@ -1,230 +1,158 @@
-/* Add Monthly Expenses Container */
+/* Add Monthly Expenses Container - Operations Emerald Palette */
 .add-monthly-expenses-container {
-  min-height: calc(100vh - 5rem);
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 2rem;
+  min-height: calc(100vh - 4.5rem);
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #f1f5f9 100%);
+  padding: 1.5rem;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.add-monthly-expenses-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #e64051 0%, #002142 50%, #e64051 100%);
-  z-index: 1;
+.add-monthly-expenses-container::-webkit-scrollbar {
+  display: none;
 }
 
-/* Header */
+/* Executive Floating Glass Banner */
 .monthly-expenses-header {
-  background: linear-gradient(135deg, #002142 0%, #003366 100%);
+  background: radial-gradient(circle at 90% 10%, rgba(52, 211, 153, 0.3) 0%, transparent 55%),
+              linear-gradient(135deg, #0f172a 0%, #064e3b 55%, #047857 100%);
   color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 33, 66, 0.15);
+  padding: 26px 36px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 12px 35px -5px rgba(6, 78, 59, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   position: relative;
   z-index: 2;
 }
 
 .monthly-expenses-header h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .monthly-expenses-header p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 1rem;
-}
-
-/* Form */
-.monthly-expenses-form {
-  position: relative;
-  z-index: 2;
-}
-
-/* Form Sections */
-.form-section {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.section-title {
-  color: #002142;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.form-label {
-  color: #495057;
+  color: #a7f3d0;
+  font-size: 0.95rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
 }
 
-.form-label.small {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #6c757d;
-}
-
-.form-control,
-.form-select {
-  border: 1px solid #dee2e6;
+/* Attached Addon Amount Input (Matching Image 3) */
+.ops-amount-group {
+  display: flex;
+  align-items: stretch;
   border-radius: 8px;
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1.5px solid #cbd5e1;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #002142;
-  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
-  outline: none;
+.ops-amount-group:focus-within {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }
 
-/* Monthly Expenses Grid */
+.ops-amount-addon {
+  background-color: #0d9488;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.ops-amount-input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #0f172a;
+  width: 100%;
+  background: transparent;
+}
+
+/* Monthly Items Grid & Cards */
 .monthly-expenses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
 }
 
-.expense-item-card {
-  border: 1px solid #e9ecef;
-  border-radius: 10px;
+.ops-monthly-item-card {
+  background: #ffffff;
+  border: 1.5px solid #ccfbf1;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.05);
+  transition: all 0.25s ease;
 }
 
-.expense-item-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+.ops-monthly-item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
+  border-color: #99f6e4;
 }
 
-.expense-item-header {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.expense-item-name {
-  color: #002142;
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.expense-item-body {
-  padding: 1rem;
-}
-
-/* Form Switch */
-.form-check-input {
-  width: 2.5rem;
-  height: 1.25rem;
-  cursor: pointer;
-}
-
-.form-check-input:checked {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.form-check-label {
-  cursor: pointer;
-  font-weight: 500;
-  color: #495057;
-}
-
-/* Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, #002142 0%, #003366 100%);
-  border: none;
-  border-radius: 8px;
-  padding: 1rem 2.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #003366 0%, #002142 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.3);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Form Actions */
-.form-actions {
+.ops-card-header-bar {
+  background: #f0fdf4;
+  padding: 14px 20px;
+  border-bottom: 1px solid #dcfce7;
   display: flex;
-  justify-content: center;
-  padding: 2rem 0;
-  margin-top: 1rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.btn-lg {
-  padding: 1rem 2.5rem;
-  font-size: 1.1rem;
+.ops-item-title {
+  font-weight: 700;
+  color: #044e3a;
+  font-size: 0.98rem;
 }
 
-/* Responsive Design */
+.status-pill {
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-pill.paid {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.status-pill.unpaid {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.ops-card-body-content {
+  padding: 18px;
+}
+
 @media (max-width: 768px) {
   .add-monthly-expenses-container {
     padding: 1rem;
   }
-
   .monthly-expenses-header {
-    padding: 1.5rem;
+    padding: 20px;
   }
-
-  .monthly-expenses-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .form-section {
-    padding: 1rem;
-  }
-
-  .monthly-expenses-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    padding: 1.5rem 0;
-  }
-
-  .btn-lg {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .monthly-expenses-header h2 {
-    font-size: 1.25rem;
-  }
-
-  .section-title {
-    font-size: 1.1rem;
-  }
-
   .monthly-expenses-grid {
     grid-template-columns: 1fr;
   }

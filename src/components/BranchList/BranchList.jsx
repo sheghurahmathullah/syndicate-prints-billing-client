@@ -3,6 +3,7 @@ import { useState } from "react";
 import { deleteBranch } from "../../Service/BranchService.js";
 import toast from "react-hot-toast";
 import ConfirmModal from "../ConfirmModal/ConfirmModal.jsx";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.jsx";
 
 const BranchList = ({ 
   branches, 
@@ -41,11 +42,7 @@ const BranchList = ({
   return (
     <div className="branch-list-container">
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+        <LoadingSpinner message="Loading branch locations..." />
       ) : branches.length > 0 ? (
         <>
           <div className="table-responsive branch-table-wrapper">

@@ -1,14 +1,14 @@
 .today-bills-container {
   padding: 1.5rem;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #f8fafc;
 }
 
 .today-banner {
   background: linear-gradient(135deg, #004e92, #000428);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
@@ -28,88 +28,185 @@
   letter-spacing: 1px;
 }
 
+/* KPI Cards Grid - Desktop Default 4 Columns */
 .kpi-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
+/* KPI Card Layout: Icon on LEFT, Data directly beside it (tight small gap, flex-start) */
 .kpi-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(0,0,0,0.02);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.85rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #edf2f7;
+  min-width: 0;
 }
 
 .kpi-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Icon Wrapper on the Left */
 .kpi-icon-wrapper {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  margin-right: 1.2rem;
-  flex-shrink: 0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.25rem;
+  flex-shrink: 0 !important;
 }
 
+/* Content directly beside the icon */
 .kpi-content {
-  flex-grow: 1;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  min-width: 0;
 }
 
 .kpi-label {
-  font-size: 0.85rem;
-  color: #6c757d;
-  font-weight: 600;
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 0.3rem;
   letter-spacing: 0.5px;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
 }
 
 .kpi-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2b2b2b;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
   margin: 0;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
-.icon-blue { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
-.icon-green { background: rgba(25, 135, 84, 0.1); color: #198754; }
-.icon-purple { background: rgba(111, 66, 193, 0.1); color: #6f42c1; }
-.icon-orange { background: rgba(253, 126, 20, 0.1); color: #fd7e14; }
-.icon-cyan { background: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
-.icon-red { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+/* Icon Palette matching reference image */
+.icon-green {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
 
-/* Table enhancements inheriting from ViewBills.css but with local scope if needed */
+.icon-blue {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.icon-purple {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.icon-orange {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.icon-cyan {
+  background-color: #e0f7fa;
+  color: #00838f;
+}
+
+.icon-red {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Search & Filter Card */
+.filter-card {
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+/* Table container & responsive scrollbar */
+.today-bills-container .table-responsive {
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x pan-y !important;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+/* Custom Scrollbar for Table */
+.today-bills-container .table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.today-bills-container .table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.today-bills-container .table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.today-bills-container .table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Minimum width to preserve full table readability */
+.today-bills-container .bills-table {
+  min-width: 900px;
+}
+
 .today-bills-container .bills-table th {
-  background-color: #f1f3f5;
-  color: #495057;
-  font-weight: 600;
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.5px;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .today-bills-container .bills-table td {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   vertical-align: middle;
+  font-size: 0.9rem;
 }
 
 .today-bills-container .table-row-hover:hover {
-  background-color: rgba(13, 110, 253, 0.02);
+  background-color: #f8fafc;
 }
 
+/* Modern Action Buttons */
+.modern-action-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.modern-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Loader */
 .premium-loader-container {
   display: flex;
   flex-direction: column;
@@ -132,10 +229,73 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.4s ease-in-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Grid Breakpoints */
+@media (min-width: 992px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .today-bills-container {
+    padding: 0.85rem;
+  }
+
+  .today-banner {
+    padding: 1rem !important;
+  }
+
+  .today-banner h4 {
+    font-size: 1.15rem;
+  }
+
+  .filter-card .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+
+  .filter-card input {
+    max-width: 100% !important;
+  }
+
+  .custom-pagination-container {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch !important;
+  }
+
+  .custom-pagination {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 575px) {
+  .kpi-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .kpi-card {
+    padding: 1rem;
+  }
+
+  .kpi-value {
+    font-size: 1.3rem;
+  }
 }

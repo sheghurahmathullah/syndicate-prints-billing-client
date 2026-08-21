@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useMemo } from "react";
 import { fetchItems } from "../Service/ItemService.js";
 import { fetchUsers } from "../Service/UserService.js";
 
@@ -26,10 +26,10 @@ export const AppContextProvider = (props) => {
         cartItems.map((cartItem) =>
           cartItem.itemId === item.itemId
             ? {
-                ...cartItem,
-                quantity: cartItem.quantity + 1,
-                price: item.price,
-              }
+              ...cartItem,
+              quantity: cartItem.quantity + 1,
+              price: item.price,
+            }
             : cartItem
         )
       );
@@ -55,16 +55,16 @@ export const AppContextProvider = (props) => {
       cartItems.map((item) =>
         item.itemId === itemId
           ? {
-              ...item,
-              customPrice:
-                customPrice !== "" &&
+            ...item,
+            customPrice:
+              customPrice !== "" &&
                 customPrice !== null &&
                 customPrice !== undefined &&
                 !isNaN(parseFloat(customPrice)) &&
                 parseFloat(customPrice) >= 0
-                  ? parseFloat(customPrice)
-                  : null,
-            }
+                ? parseFloat(customPrice)
+                : null,
+          }
           : item
       )
     );
@@ -76,7 +76,7 @@ export const AppContextProvider = (props) => {
   // This runs in the background and doesn't block navigation
   useEffect(() => {
     let cancelled = false;
-    
+
     async function loadProtectedData() {
       if (!auth || !auth.token) {
         // clear sensitive data when not authenticated
@@ -86,32 +86,33 @@ export const AppContextProvider = (props) => {
         return;
       }
 
-      // Load items (non-blocking)
-      fetchItems()
-        .then((itemResponse) => {
-          if (!cancelled) setItemsData(itemResponse.data || []);
-        })
-        .catch(err => {
-          console.error("Failed to load items", err);
-          if (!cancelled) setItemsData([]);
-        });
+      try {
+        const promises = [fetchItems()];
+        if (auth.role === "ROLE_ADMIN") {
+          promises.push(fetchUsers());
+        }
 
-      // Only fetch users if admin role (non-blocking)
-      if (auth.role === "ROLE_ADMIN") {
-        fetchUsers()
-          .then((userResponse) => {
-            if (!cancelled) {
-              setUsers(userResponse.data || []);
-              console.log("users loaded:", userResponse.data);
-            }
-          })
-          .catch((userErr) => {
-            console.error("Failed to load users", userErr);
-            // Don't block other data if users fail
-          });
-      } else {
-        // Clear users for non-admin users
-        setUsers([]);
+        const results = await Promise.allSettled(promises);
+        if (cancelled) return;
+
+        if (results[0].status === "fulfilled") {
+          setItemsData(results[0].value?.data || []);
+        } else {
+          console.error("Failed to load items", results[0].reason);
+          setItemsData([]);
+        }
+
+        if (auth.role === "ROLE_ADMIN") {
+          if (results[1] && results[1].status === "fulfilled") {
+            setUsers(results[1].value?.data || []);
+          } else {
+            console.error("Failed to load users", results[1]?.reason);
+          }
+        } else {
+          setUsers([]);
+        }
+      } catch (err) {
+        console.error("Error loading protected data:", err);
       }
     }
 
@@ -131,7 +132,7 @@ export const AppContextProvider = (props) => {
     setCartItems([]);
   };
 
-  const contextValue = {
+  const contextValue = useMemo(() => ({
     categories,
     setCategories,
     auth,
@@ -146,7 +147,7 @@ export const AppContextProvider = (props) => {
     updateQuantity,
     updateCustomPrice,
     clearCart,
-  };
+  }), [categories, auth, users, itemsData, cartItems]);
 
   return (
     <AppContext.Provider value={contextValue}>

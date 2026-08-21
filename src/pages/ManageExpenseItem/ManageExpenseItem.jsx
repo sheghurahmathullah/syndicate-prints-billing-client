@@ -84,28 +84,30 @@ const ManageExpenseItem = () => {
   };
 
   return (
-    <div className="expense-item-container">
-      {/* Banner */}
+    <div className="expense-item-container fade-in">
+      {/* Banner Card */}
       <div className="expense-item-banner">
-        <div className="banner-content">
-          <h2>
-            <i className="bi bi-receipt"></i>
-            Expense Item Management
-          </h2>
-          <p>Manage your expense items - add, edit, and organize daily and monthly expenses</p>
+        <div className="banner-content d-flex align-items-center gap-3">
+          <div className="banner-icon-box">
+            <i className="bi bi-tags-fill"></i>
+          </div>
+          <div>
+            <h2 className="mb-1">Expense Item Catalog</h2>
+            <p className="mb-0">Configure operational expense categories for daily and monthly accounting</p>
+          </div>
         </div>
         {!showForm && (
-          <div className="d-flex align-items-center gap-3">
-            <span className="total-items-count">
-              <i className="bi bi-list-check me-2"></i>
-              Total: {totalElements}
+          <div className="d-flex align-items-center gap-3 mt-3 mt-md-0">
+            <span className="total-items-badge">
+              <i className="bi bi-collection-fill me-2"></i>
+              {totalElements} Items Total
             </span>
             <button
-              className="btn btn-primary add-item-btn"
+              className="btn btn-ops-primary add-item-btn"
               onClick={handleAddItem}
             >
-              <i className="bi bi-plus-circle"></i>
-              Add Item
+              <i className="bi bi-plus-lg me-1"></i>
+              Add Expense Item
             </button>
           </div>
         )}
@@ -113,32 +115,43 @@ const ManageExpenseItem = () => {
 
       <div className="expense-item-content">
         {!showForm && (
-          <div className="filter-card mb-4">
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label htmlFor="filterName" className="form-label fw-bold">Search by Name</label>
-                <input
-                  type="text"
-                  id="filterName"
-                  className="form-control"
-                  placeholder="Enter expense item name..."
-                  value={filterName}
-                  onChange={(e) => setFilterName(e.target.value)}
-                  onKeyDown={handleNameSearch}
-                />
+          <div className="ops-filter-card mb-4">
+            <div className="row g-3 align-items-center">
+              <div className="col-md-7">
+                <label htmlFor="filterName" className="ops-filter-label">Search Item Name</label>
+                <div className="ops-input-wrapper">
+                  <i className="bi bi-search ops-input-icon"></i>
+                  <input
+                    type="text"
+                    id="filterName"
+                    className="form-control ops-input"
+                    placeholder="Search by name (press Enter)..."
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                    onKeyDown={handleNameSearch}
+                  />
+                  {filterName && (
+                    <button className="btn-clear-search" onClick={() => { setFilterName(""); loadExpenseItems(null, ""); }}>
+                      <i className="bi bi-x-circle-fill"></i>
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="col-md-6">
-                <label htmlFor="filterType" className="form-label fw-bold">Filter by Type</label>
-                <select
-                  id="filterType"
-                  className="form-select"
-                  value={filterType}
-                  onChange={handleTypeChange}
-                >
-                  <option value="">All Types</option>
-                  <option value="DAILY">Daily</option>
-                  <option value="MONTHLY">Monthly</option>
-                </select>
+              <div className="col-md-5">
+                <label htmlFor="filterType" className="ops-filter-label">Expense Category</label>
+                <div className="ops-input-wrapper">
+                  <i className="bi bi-funnel-fill ops-input-icon"></i>
+                  <select
+                    id="filterType"
+                    className="form-select ops-select"
+                    value={filterType}
+                    onChange={handleTypeChange}
+                  >
+                    <option value="">All Expense Types</option>
+                    <option value="DAILY">Daily Expense</option>
+                    <option value="MONTHLY">Monthly Expense</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>

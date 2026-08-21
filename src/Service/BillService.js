@@ -29,6 +29,14 @@ export const updateBill = (id, billData) => {
   });
 };
 
+export const checkCustomerCredit = (customerName) => {
+  return axios.get(`${API_URL}api/v1.0/bills/check-credit`, {
+    headers: getAuthHeaders(),
+    params: { customerName },
+  });
+};
+
+
 export const getAllBills = (page, size, dateFilter, startDate, endDate, paymentMode, customerName) => {
   return axios.get(`${API_URL}api/v1.0/bills/get-all-bills`, {
     headers: getAuthHeaders(),

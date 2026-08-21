@@ -142,12 +142,8 @@ const Dashboard = () => {
     }, 500);
   }, []);
 
-  // Special handler for initial load - show UI immediately, load data in background
+  // Special handler for initial load - load data in background
   const loadDashboardDataInitial = async () => {
-    // Show UI immediately without waiting for data
-    setInitialLoading(false);
-    
-    // Load data in background
     try {
       setInitialLoading(true);
       setPresetRange("last_30_days");

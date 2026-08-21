@@ -1,169 +1,58 @@
-.expense-item-form-wrapper {
-  width: 100%;
+.ops-badge {
+  background: linear-gradient(135deg, #0d9488 0%, #047857 100%) !important;
+  color: white !important;
 }
 
-.expense-item-form-wrapper .form-container {
-  border: none;
-  box-shadow: none;
-  background: transparent;
+.ops-icon {
+  color: #0d9488 !important;
 }
 
-.expense-item-form-wrapper .card-body {
-  padding: 0;
+.ops-switch-card {
+  background: #f0fdf4;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 16px 20px;
 }
 
-.expense-item-form-wrapper .form-title {
-  color: #002142;
-  font-weight: 700;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 3px solid #e64051;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 1.3rem;
+.ops-switch-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #dcfce7;
+  color: #047857;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  font-size: 1.25rem;
 }
 
-.expense-item-form-wrapper .form-title i {
-  color: #e64051;
-  font-size: 1.5rem;
-  animation: icon-pulse 2s ease-in-out infinite;
+.text-emerald-active {
+  color: #047857;
 }
 
-@keyframes icon-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-.expense-item-form-wrapper .form-label {
-  color: #002142;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.expense-item-form-wrapper .form-control,
-.expense-item-form-wrapper .form-select {
-  border: 2px solid #e0e7ef;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: #f8f9fa;
-}
-
-.expense-item-form-wrapper .form-control:focus,
-.expense-item-form-wrapper .form-select:focus {
-  border-color: #002142;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 33, 66, 0.1);
-}
-
-.expense-item-form-wrapper .form-check-input {
-  width: 3em;
-  height: 1.5em;
+.btn-form-submit-ops {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
   cursor: pointer;
 }
 
-.expense-item-form-wrapper .form-check-input:checked {
-  background-color: #e64051;
-  border-color: #e64051;
-}
-
-.expense-item-form-wrapper .form-check-label {
-  color: #002142;
-  font-weight: 600;
-  margin-left: 12px;
-  cursor: pointer;
-}
-
-.expense-item-form-wrapper .text-muted {
-  color: #6c757d !important;
-  font-size: 0.85rem;
-  margin-left: 12px;
-}
-
-.expense-item-form-wrapper .form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #e9ecef;
-}
-
-.expense-item-form-wrapper .form-actions .btn {
-  min-width: 100px;
-  font-weight: 600;
-  padding: 12px 24px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.expense-item-form-wrapper .btn-primary {
-  background: linear-gradient(135deg, #002142 0%, #003366 100%);
-  border: none;
-}
-
-.expense-item-form-wrapper .btn-primary:hover {
-  background: linear-gradient(135deg, #003366 0%, #004488 100%);
+.btn-form-submit-ops:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.3);
+  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.5);
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
 }
 
-.expense-item-form-wrapper .btn-secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-  border: none;
-}
-
-.expense-item-form-wrapper .btn-secondary:hover {
-  background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
-
-.expense-item-form-wrapper .btn:disabled {
+.btn-form-submit-ops:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .expense-item-form-wrapper .form-title {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-  }
-
-  .expense-item-form-wrapper .form-control,
-  .expense-item-form-wrapper .form-select {
-    padding: 10px 14px;
-    font-size: 0.9rem;
-  }
-
-  .expense-item-form-wrapper .form-actions {
-    flex-direction: column;
-  }
-
-  .expense-item-form-wrapper .form-actions .btn {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .expense-item-form-wrapper .form-title {
-    font-size: 1rem;
-  }
-
-  .expense-item-form-wrapper .form-control,
-  .expense-item-form-wrapper .form-select {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
 }

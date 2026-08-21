@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import './CreateBill.css';
 import { AppContext } from '../../context/AppContext';
-import { getNextBillNumber, createBill, updateBill } from '../../Service/BillService';
+import { getNextBillNumber, createBill, updateBill, checkCustomerCredit } from '../../Service/BillService';
 import { fetchCustomers } from '../../Service/CustomerService';
 import { fetchEmployeeNames } from '../../Service/EmployeeService';
 import { getParticularDetailsById } from '../../Service/ParticularService';
@@ -65,6 +65,11 @@ const CreateBill = () => {
   const [priceDiscount, setPriceDiscount] = useState('');
   const [tdsAmount, setTdsAmount] = useState('');
 
+  // Credit Check State
+  const [showCreditModal, setShowCreditModal] = useState(false);
+  const [creditInfo, setCreditInfo] = useState(null);
+  const [isCheckingCredit, setIsCheckingCredit] = useState(false);
+
   // Derived State (Calculations)
   const [totals, setTotals] = useState({
     totalItems: 0,
@@ -80,7 +85,7 @@ const CreateBill = () => {
 
   useEffect(() => {
     fetchInitialData();
-  }, [isEditMode, editingBill]);
+  }, [isEditMode, editingBill?.id]);
 
   const fetchInitialData = async () => {
     try {
@@ -99,7 +104,7 @@ const CreateBill = () => {
         setBillNumber(editingBill.billNumber);
         setSelectedEmployee(editingBill.employee || '');
         setEmployeeSearch(editingBill.employee || '');
-        
+
         setCustomerSearch(editingBill.customerName || '');
         setSelectedCustomer({
           customerName: editingBill.customerName || '',
@@ -111,11 +116,11 @@ const CreateBill = () => {
         setPaymentType(editingBill.payment || 'Cash');
         setAmountPaid(editingBill.totalPaid || '');
         setEnableCredit(editingBill.creditAmount > 0);
-        
+
         // Handle specifics if they have extra fields like discount, tds (Not in original model, default to 0)
-        setPriceDiscount(''); 
+        setPriceDiscount('');
         setTdsAmount('');
-        
+
         let parsedParticulars = [];
         try {
           if (typeof editingBill.particulars === 'string') {
@@ -143,7 +148,7 @@ const CreateBill = () => {
         while (newParticularsList.length < 5 || newParticularsList.filter(p => !p.isFilled).length < 2) {
           newParticularsList.push(getEmptyParticularRow());
         }
-        
+
         setParticularsList(newParticularsList);
 
       } else {
@@ -184,13 +189,35 @@ const CreateBill = () => {
   });
 
   const handleCustomerSelect = (customer) => {
+    const custName = customer.name || '';
     setSelectedCustomer({
-      customerName: customer.name || '',
+      customerName: custName,
       customerGstNo: customer.taxNumber || '',
       customerMobileNo: customer.phoneNumber || '',
       customerEmail: customer.email || ''
     });
-    setCustomerSearch(customer.name);
+    setCustomerSearch(custName);
+    if (custName) {
+      handleCheckCredit(custName);
+    }
+  };
+
+  const handleCheckCredit = async (name) => {
+    if (!name) {
+      toast.error("Please enter/select a customer name first");
+      return;
+    }
+    setIsCheckingCredit(true);
+    try {
+      const res = await checkCustomerCredit(name);
+      setCreditInfo(res.data);
+      setShowCreditModal(true);
+    } catch (error) {
+      console.error("Error checking credit", error);
+      toast.error("Failed to check credit info");
+    } finally {
+      setIsCheckingCredit(false);
+    }
   };
 
   const handleCustomerSearchChange = (e) => {
@@ -344,14 +371,14 @@ const CreateBill = () => {
       createdAt: bill.createdAt || bill.date,
       username: bill.employee,
       customerName: bill.customerName || "CASH CUSTOMER",
-      grandTotal: bill.totalWithGst || bill.total || 0,
+      grandTotal: bill.total || 0,
       paidAmount: bill.totalPaid || 0,
-      tax: (bill.totalWithGst || 0) - (bill.total || 0),
+      tax: (bill.total || 0) - (bill.totalWithGst || 0),
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
       taxPercent: totals.gstPercentage || 0,
-      subtotal: bill.total || 0,
+      subtotal: bill.totalWithGst || bill.total || 0,
       gstin: bill.customerGstNo || ""
     };
 
@@ -386,7 +413,7 @@ const CreateBill = () => {
         totalPaid: amountPaid ? Number(Number(amountPaid).toFixed(2)) : Number(totals.totalToPay.toFixed(2)),
         total: Number(totals.totalToPay.toFixed(2)),
         creditAmount: Number(totals.totalCredits.toFixed(2)),
-        totalWithGst: Number(totals.totalToPay.toFixed(2)),
+        totalWithGst: Number(totals.totalBillsWithoutGst.toFixed(2)),
         totalItems: totals.totalItems,
         discount: Number(totals.discount.toFixed(2)),
         tdsAmount: Number(totals.tdsAmount.toFixed(2)),
@@ -768,6 +795,99 @@ const CreateBill = () => {
           orderDetails={printBill}
           onClose={handleCloseReceipt}
         />
+      )}
+
+      {/* Rich UX/UI Customer Credit Info Modal */}
+      {(showCreditModal || isCheckingCredit) && (
+        <div className="credit-modal-overlay">
+          <div className="credit-modal-card">
+            <button 
+              type="button" 
+              className="credit-modal-close-btn"
+              onClick={() => setShowCreditModal(false)}
+              aria-label="Close"
+            >
+              <i className="bi bi-x-lg"></i>
+            </button>
+
+            {isCheckingCredit ? (
+              <div className="credit-modal-body text-center py-5">
+                <div className="credit-loader-wrapper mb-3">
+                  <div className="credit-spinner"></div>
+                  <i className="bi bi-shield-check credit-loader-icon"></i>
+                </div>
+                <h5 className="credit-modal-title fw-bold mt-3">Checking Credit Status...</h5>
+                <p className="credit-modal-subtitle text-muted">Retrieving record for <strong className="text-dark">{customerSearch}</strong></p>
+              </div>
+            ) : creditInfo ? (
+              <div className="credit-modal-body text-center">
+                {creditInfo.iscustomerHasCredit ? (
+                  <div className="fade-in-content">
+                    <div className="credit-icon-badge badge-danger">
+                      <i className="bi bi-exclamation-lg"></i>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="credit-status-pill pill-danger">
+                        <i className="bi bi-exclamation-circle-fill me-1"></i> Outstanding Credit Found
+                      </span>
+                    </div>
+
+                    <h4 className="credit-modal-heading">Customer Credit Notice</h4>
+                    <p className="credit-modal-subtext">
+                      Customer <span className="customer-highlight">{customerSearch}</span> has pending credit orders.
+                    </p>
+
+                    <div className="credit-kpi-grid">
+                      <div className="credit-kpi-card kpi-orders">
+                        <div className="kpi-icon icon-orders"><i className="bi bi-receipt"></i></div>
+                        <div className="kpi-info">
+                          <span className="kpi-label">Credit Orders</span>
+                          <span className="kpi-value">{creditInfo.creditOrdersCount}</span>
+                        </div>
+                      </div>
+
+                      <div className="credit-kpi-card kpi-balance">
+                        <div className="kpi-icon icon-balance"><i className="bi bi-wallet2"></i></div>
+                        <div className="kpi-info">
+                          <span className="kpi-label">Balance Due</span>
+                          <span className="kpi-value text-danger">₹{Math.abs(Number(creditInfo.balanceToPay || 0)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="fade-in-content py-2">
+                    <div className="credit-icon-badge badge-success">
+                      <i className="bi bi-check-lg"></i>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="credit-status-pill pill-success">
+                        <i className="bi bi-check-circle-fill me-1"></i> Account Clear
+                      </span>
+                    </div>
+
+                    <h4 className="credit-modal-heading">No Outstanding Credit</h4>
+                    <p className="credit-modal-subtext">
+                      Customer <span className="customer-highlight">{customerSearch}</span> has no pending credits to pay.
+                    </p>
+                  </div>
+                )}
+
+                <div className="credit-modal-actions mt-4">
+                  <button 
+                    className="credit-btn-primary"
+                    onClick={() => setShowCreditModal(false)}
+                  >
+                    <span>Continue to Bill Creation</span>
+                    <i className="bi bi-arrow-right ms-2 fs-5"></i>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
       )}
     </div>
   );

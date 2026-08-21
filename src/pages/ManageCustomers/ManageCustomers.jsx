@@ -26,8 +26,8 @@ const ManageCustomers = () => {
       const response = await fetchPaginatedCustomers(currentPage, pageSize);
       if (response?.data?.content) {
         setCustomers(response.data.content);
-        setTotalPages(response.data.totalPages);
-        setTotalElements(response.data.totalElements || 0);
+        setTotalPages(response.data.totalPages || 1);
+        setTotalElements(response.data.totalElements || response.data.content.length);
       } else {
         const allCustomers = Array.isArray(response?.data) ? response.data : [];
         setCustomers(allCustomers);
@@ -76,26 +76,37 @@ const ManageCustomers = () => {
 
   return (
     <div className="customers-page text-dark">
-      <div className="customers-header mb-3">
-        <div>
-          <h4 className="mb-0">Manage Customers</h4>
+      {/* Premium Header Card */}
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <h4 className="mb-0 fw-bold text-dark">Manage Customers</h4>
+            <p className="mb-0 text-muted small">
+              Comprehensive oversight and administration of customer directory
+            </p>
+          </div>
         </div>
+
         {!isFormOpen && (
-          <button className="btn btn-primary btn-sm add-customer-btn" onClick={onAddClick}>
-            <i className="bi bi-person-plus-fill"></i> Add Customer
+          <button className="btn-premium-add" onClick={onAddClick}>
+            <i className="bi bi-person-plus-fill"></i>
+            <span>Add Customer</span>
           </button>
         )}
       </div>
 
       {isFormOpen ? (
         <div className="customer-form-section fade-in">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="mb-0">
-              <i className="bi bi-person-lines-fill"></i>{" "}
-              {selectedCustomer ? "Edit Customer" : "Add New Customer"}
+          <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+              <i className="bi bi-person-bounding-box text-primary"></i>{" "}
+              {selectedCustomer ? "Edit Customer Details" : "Add New Customer"}
             </h5>
-            <button className="btn btn-outline-secondary btn-sm" onClick={onCloseForm}>
-              <i className="bi bi-x-lg"></i> Close
+            <button className="btn btn-outline-secondary btn-sm rounded-2" onClick={onCloseForm}>
+              <i className="bi bi-x-lg me-1"></i> Close
             </button>
           </div>
           <CustomerForm
@@ -103,17 +114,25 @@ const ManageCustomers = () => {
             selectedCustomer={selectedCustomer}
             onUpdateCustomer={onUpdateCustomer}
             onCustomerAdded={onCustomerAdded}
+            onSuccess={onCloseForm}
+            onCancel={onCloseForm}
           />
         </div>
       ) : (
         <div className="customer-list-section fade-in">
-          <div className="customer-banner position-relative text-center text-white mb-3 rounded px-3 py-3" style={{ backgroundColor: '#002952' }}>
-            <div className="position-absolute top-0 end-0 m-2 px-2 py-1 badge bg-light text-dark shadow-sm fw-bold small">
-              Total Customers: {totalElements}
+          {/* Responsive Banner */}
+          <div className="customer-management-banner mb-3">
+            <div className="banner-content">
+              <h5 className="banner-title">CUSTOMER MANAGEMENT</h5>
+              <p className="banner-subtitle">
+                Comprehensive oversight and administration of all system customers
+              </p>
             </div>
-            <h5 className="fw-bold mb-1 text-uppercase tracking-wider">Customer Management</h5>
-            <p className="mb-0 text-white-50" style={{ fontSize: '0.8rem' }}>Comprehensive oversight and administration of customers</p>
+            <div className="banner-stat-badge">
+              TOTAL CUSTOMERS: {totalElements || customers.length}
+            </div>
           </div>
+
           <CustomersList 
             customers={customers} 
             setCustomers={setCustomers} 
@@ -132,4 +151,3 @@ const ManageCustomers = () => {
 };
 
 export default ManageCustomers;
-
