@@ -22,10 +22,14 @@
   overflow-y: auto;
   border: 1px solid #000;
   text-transform: uppercase !important;
+  font-weight: 700 !important;
 }
 
-.receipt-popup * {
+.receipt-popup *,
+#receipt-print-area,
+#receipt-print-area * {
   text-transform: uppercase !important;
+  font-weight: 700 !important;
 }
 
 /* Company Header */
@@ -295,22 +299,13 @@
     box-sizing: border-box;
     overflow: hidden;
     text-transform: uppercase !important;
+    font-weight: 700 !important;
   }
 
   #receipt-print-area * {
     box-sizing: border-box;
-    font-weight: 400;
-    text-transform: uppercase !important;
-  }
-
-  #receipt-print-area strong,
-  #receipt-print-area th,
-  #receipt-print-area h1,
-  #receipt-print-area .company-name,
-  #receipt-print-area .bill-estimate-title,
-  #receipt-print-area .receipt-total-amount-row,
-  #receipt-print-area .non-gst-total-amount-row {
     font-weight: 700 !important;
+    text-transform: uppercase !important;
   }
 
   .receipt-popup-overlay {
@@ -329,6 +324,7 @@
     max-width: 70mm;
     padding: 0;
     border: 0;
+    font-weight: 700 !important;
   }
 
   .no-print {
@@ -365,11 +361,6 @@
     font-size: 8px;
     margin-bottom: 2px;
     line-height: 1.1;
-    font-weight: 400 !important;
-  }
-
-  .company-gstin strong,
-  .customer-gstin strong {
     font-weight: 700 !important;
   }
 
@@ -384,10 +375,6 @@
   .transaction-row-two-columns {
     font-size: 8px;
     margin: 3px 0;
-    font-weight: 400 !important;
-  }
-
-  .transaction-row-two-columns strong {
     font-weight: 700 !important;
   }
 
@@ -407,6 +394,7 @@
     width: 100% !important;
     max-width: 100% !important;
     table-layout: fixed;
+    font-weight: 700 !important;
   }
 
   .receipt-table thead,
@@ -425,7 +413,7 @@
     padding: 2px 3px;
     overflow-wrap: anywhere;
     word-break: break-word;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
   }
 
   .receipt-summary {
@@ -437,11 +425,6 @@
   .non-gst-summary-row {
     font-size: 9px;
     padding: 2px 0;
-    font-weight: 400 !important;
-  }
-
-  .receipt-summary-row strong,
-  .non-gst-summary-row strong {
     font-weight: 700 !important;
   }
 
@@ -459,7 +442,7 @@
   .footer-message {
     font-size: 9px;
     letter-spacing: 0.3px;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
   }
 
   .non-gst-receipt {
@@ -485,10 +468,6 @@
     white-space: nowrap;
     font-size: 9px;
     margin: 1px 0;
-    font-weight: 400 !important;
-  }
-
-  .non-gst-transaction-details .non-gst-transaction-row strong {
     font-weight: 700 !important;
   }
 
@@ -504,7 +483,7 @@
   .non-gst-transaction-row {
     font-size: 9px;
     margin: 1px 0;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
   }
 
   .non-gst-summary {
@@ -527,7 +506,7 @@
 
   .non-gst-footer-message {
     font-size: 9px;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
   }
 
   /* Ensure Non-GST table cells are smaller to match GST */
@@ -535,6 +514,7 @@
   .non-gst-table td {
     font-size: 9px !important;
     padding: 1px 2px !important;
+    font-weight: 700 !important;
   }
 
   .non-gst-table th {
@@ -542,14 +522,10 @@
     font-weight: 700 !important;
   }
 
-  .non-gst-table td {
-    font-weight: 400 !important;
-  }
-
   .non-gst-summary-row {
     font-size: 10px !important;
     padding: 1px 0 !important;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
   }
 
   .non-gst-summary-row strong {
