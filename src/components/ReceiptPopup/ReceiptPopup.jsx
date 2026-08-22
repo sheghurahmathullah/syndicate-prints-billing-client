@@ -273,9 +273,6 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
           {/* Company Header */}
           <div className="receipt-company-header">
             <div className="company-logo-name">
-              {assets.logo && (
-                <img src={assets.logo} alt="Syndicate Printers Logo" className="company-logo" />
-              )}
               <h1 className="company-name">{SHOP_NAME.toUpperCase()}</h1>
             </div>
             <p className="company-address">{SHOP_ADDRESS_LINE1}</p>
