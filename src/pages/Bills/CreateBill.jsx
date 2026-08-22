@@ -120,33 +120,42 @@ const CreateBill = () => {
     return eventKey === keyPart || eventCode === `key${keyPart}` || eventCode === keyPart;
   };
 
+  const handleSaveRef = React.useRef();
+
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
-      let targetKeys = 'Ctrl + Enter';
-      let isEnabled = true;
-
-      const savedShortcuts = localStorage.getItem("shortcutConfig");
-      if (savedShortcuts) {
-        try {
-          const shortcuts = JSON.parse(savedShortcuts);
-          const nonGstSc = shortcuts.find(s => s.id === "non_gst_bill");
-          if (nonGstSc) {
-            isEnabled = nonGstSc.enabled !== false;
-            if (nonGstSc.keys) {
-              targetKeys = nonGstSc.keys;
-            }
-          }
-        } catch (err) {
-          console.error(err);
+      // 1) Ctrl + Enter => GST Bill (18% GST) -> Auto Save & Print
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (handleSaveRef.current) {
+          handleSaveRef.current(true, 18);
         }
+        return;
       }
 
-      if (!isEnabled) return;
+      // 2) Plain Enter => Non-GST Bill (0% GST) -> Auto Save & Print
+      if (e.key === 'Enter' && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
+        const targetTag = e.target?.tagName?.toLowerCase();
+        const isParticularInput = e.target?.classList?.contains('particular-add-input') ||
+                                  e.target?.classList?.contains('particular-input') ||
+                                  e.target?.placeholder?.includes('Item ID') ||
+                                  e.target?.placeholder?.includes('Particular ID');
 
-      if (matchShortcutEvent(e, targetKeys)) {
+        // If user is actively typing an Item ID into a particular input, let handleParticularAdd handle it
+        if (isParticularInput && e.target?.value?.trim() !== '') {
+          return;
+        }
+
+        if (targetTag === 'textarea' || targetTag === 'button') {
+          return;
+        }
+
         e.preventDefault();
-        setTotals(prev => ({ ...prev, gstPercentage: 0 }));
-        toast.success(`Non-GST Bill selected (${targetKeys}) - GST set to 0%`);
+        e.stopPropagation();
+        if (handleSaveRef.current) {
+          handleSaveRef.current(true, 0);
+        }
       }
     };
 
@@ -167,7 +176,6 @@ const CreateBill = () => {
       }
 
       if (isEditMode && editingBill) {
-        // Populate form with existing bill data
         setBillNumber(editingBill.billNumber);
         setSelectedEmployee(editingBill.employee || '');
         setEmployeeSearch(editingBill.employee || '');
@@ -184,7 +192,6 @@ const CreateBill = () => {
         setAmountPaid(editingBill.totalPaid || '');
         setEnableCredit(editingBill.creditAmount > 0);
 
-        // Handle specifics if they have extra fields like discount, tds (Not in original model, default to 0)
         setPriceDiscount('');
         setTdsAmount('');
 
@@ -203,7 +210,7 @@ const CreateBill = () => {
           id: Date.now().toString() + Math.random().toString(),
           particularId: p.particularId || p.particularName || '',
           particularName: p.name || p.particularName || '',
-          type: 'Single Side', // Since type is not saved in backend, assume default
+          type: 'Single Side',
           qty: p.qty || 1,
           basePrice: p.price || 0,
           priceBack: p.price || 0,
@@ -242,7 +249,7 @@ const CreateBill = () => {
   const handleEmployeeSearchChange = (e) => {
     const val = e.target.value;
     setEmployeeSearch(val);
-    setSelectedEmployee(val); // Allow manual typing too
+    setSelectedEmployee(val);
     if (val.trim()) {
       setShowEmployeeDropdown(true);
     } else {
@@ -256,40 +263,38 @@ const CreateBill = () => {
   });
 
   const handleCustomerSelect = (customer) => {
-    const custName = customer.name || '';
+    setCustomerSearch(customer.name);
     setSelectedCustomer({
-      customerName: custName,
-      customerGstNo: customer.taxNumber || '',
-      customerMobileNo: customer.phoneNumber || '',
-      customerEmail: customer.email || ''
+      customerName: customer.name,
+      customerGstNo: customer.taxNumber || customer.gstin || customer.customerGstNo || customer.gstNo || '',
+      customerMobileNo: customer.phoneNumber || customer.customerMobileNo || customer.mobileNo || '',
+      customerEmail: customer.email || customer.customerEmail || ''
     });
-    setCustomerSearch(custName);
-    if (custName) {
-      handleCheckCredit(custName);
-    }
-  };
 
-  const handleCheckCredit = async (name) => {
-    if (!name) {
-      toast.error("Please enter/select a customer name first");
-      return;
-    }
-    setIsCheckingCredit(true);
-    try {
-      const res = await checkCustomerCredit(name);
-      setCreditInfo(res.data);
-      setShowCreditModal(true);
-    } catch (error) {
-      console.error("Error checking credit", error);
-      toast.error("Failed to check credit info");
-    } finally {
-      setIsCheckingCredit(false);
+    if (customer.name) {
+      setIsCheckingCredit(true);
+      checkCustomerCredit(customer.name)
+        .then((res) => {
+          if (res.data) {
+            setCreditInfo(res.data);
+            if (res.data.iscustomerHasCredit) {
+              setShowCreditModal(true);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to check customer credit", err);
+        })
+        .finally(() => {
+          setIsCheckingCredit(false);
+        });
     }
   };
 
   const handleCustomerSearchChange = (e) => {
     const val = e.target.value;
     setCustomerSearch(val);
+    setSelectedCustomer(prev => ({ ...prev, customerName: val }));
     if (val.trim()) {
       setShowCustomerDropdown(true);
     } else {
@@ -298,13 +303,17 @@ const CreateBill = () => {
   };
 
   const filteredCustomers = customers.filter(c =>
-    c.name && c.name.toLowerCase().startsWith(customerSearch.toLowerCase())
+    c.name?.toLowerCase().includes(customerSearch.toLowerCase()) ||
+    c.phoneNumber?.includes(customerSearch)
   );
 
   const handleParticularAdd = async (e, id) => {
     const item = particularsList.find(p => p.id === id);
-    if (e.key === 'Enter' && item && item.particularId.trim()) {
-      const searchId = item.particularId.trim().toLowerCase();
+    if (e.key === 'Enter') {
+      if (item && item.particularId && item.particularId.trim() !== '') {
+        e.preventDefault();
+        e.stopPropagation();
+        const searchId = item.particularId.trim().toLowerCase();
       const isDuplicate = particularsList.some(p => p.id !== id && p.isFilled && p.particularName && p.particularName.toLowerCase() === searchId);
 
       if (isDuplicate) {
@@ -321,7 +330,7 @@ const CreateBill = () => {
               if (p.id === id) {
                 return {
                   ...p,
-                  particularName: data.particularName || data.name || data.particularId,
+                  particularName: (data.particularName || data.name || data.particularId || '').toUpperCase(),
                   type: 'Single Side',
                   qty: 1,
                   basePrice: data.price || 0,
@@ -334,7 +343,6 @@ const CreateBill = () => {
               return p;
             });
 
-            // Check empty rows count
             const emptyCount = newList.filter(p => !p.isFilled).length;
             if (emptyCount < 2) {
               newList.push(getEmptyParticularRow());
@@ -346,7 +354,8 @@ const CreateBill = () => {
         toast.error("Particular not found or error fetching details");
       }
     }
-  };
+  }
+};
 
   const updateParticularRow = (id, field, value) => {
     setParticularsList(prevList =>
@@ -355,7 +364,6 @@ const CreateBill = () => {
           let updatedItem = { ...item, [field]: value };
 
           if (field === 'type') {
-            // Switch price based on type
             updatedItem.individualPrice = value === 'Single Side' ? updatedItem.basePrice : updatedItem.priceBack;
             updatedItem.totalPrice = updatedItem.qty * updatedItem.individualPrice;
           }
@@ -373,8 +381,6 @@ const CreateBill = () => {
   const removeParticular = (id) => {
     setParticularsList(prevList => {
       let newList = prevList.filter(item => item.id !== id);
-      const emptyCount = newList.filter(p => !p.isFilled).length;
-      // Ensure we always have at least 5 rows visually if possible, or at least 2 empty ones
       while (newList.length < 5 || newList.filter(p => !p.isFilled).length < 2) {
         newList.push(getEmptyParticularRow());
       }
@@ -382,71 +388,78 @@ const CreateBill = () => {
     });
   };
 
-  // Recalculate totals whenever particularsList or enableCredit/paidCreditAmount changes
   useEffect(() => {
-    const filledItems = particularsList.filter(p => p.isFilled);
-    const totalItems = filledItems.length;
-    const totalBillsWithoutGst = filledItems.reduce((acc, curr) => acc + curr.totalPrice, 0);
-    const gstAmount = (totalBillsWithoutGst * totals.gstPercentage) / 100;
+    let itemsCount = 0;
+    let subtotalWithoutGst = 0;
 
-    const discount = Number(priceDiscount) || 0;
+    particularsList.forEach(item => {
+      if (item.isFilled) {
+        itemsCount += 1;
+        subtotalWithoutGst += Number(item.totalPrice) || 0;
+      }
+    });
+
+    const disc = Number(priceDiscount) || 0;
     const tds = Number(tdsAmount) || 0;
-    const totalToPay = totalBillsWithoutGst + gstAmount - discount;
 
-    let totalCredits = 0;
-    let paid = Number(amountPaid) || 0;
-    if (enableCredit) {
-      totalCredits = totalToPay - paid;
-    } else {
-      totalCredits = 0;
-    }
+    const netSubtotal = Math.max(0, subtotalWithoutGst - disc - tds);
+    const gstAmt = (netSubtotal * totals.gstPercentage) / 100;
+    const finalToPay = netSubtotal + gstAmt;
+    const displayTotalPaid = enableCredit ? (Number(amountPaid) || 0) : finalToPay;
 
     setTotals(prev => ({
       ...prev,
-      totalItems,
-      totalBillsWithoutGst,
-      gstAmount,
-      discount,
+      totalItems: itemsCount,
+      totalBillsWithoutGst: subtotalWithoutGst,
+      gstAmount: gstAmt,
+      discount: disc,
       tdsAmount: tds,
-      totalToPay,
-      totalPaidCredits: paid,
-      totalCredits
+      totalPaidCredits: displayTotalPaid,
+      totalCredits: enableCredit ? Math.max(0, finalToPay - (Number(amountPaid) || 0)) : 0,
+      totalToPay: finalToPay
     }));
-  }, [particularsList, totals.gstPercentage, enableCredit, amountPaid, priceDiscount, tdsAmount]);
+  }, [particularsList, totals.gstPercentage, priceDiscount, tdsAmount, amountPaid, enableCredit]);
 
-  const handleShowReceipt = (bill, autoPrint = false) => {
-    let particulars = [];
-    try {
-      if (typeof bill.particulars === "string") {
-        particulars = JSON.parse(bill.particulars);
-      } else if (Array.isArray(bill.particulars)) {
-        particulars = bill.particulars;
+  const handleShowReceipt = (bill, autoPrint = false, activeGstPct = null) => {
+    let items = [];
+    const filledParticulars = (particularsList || []).filter(p => p.isFilled);
+
+    if (filledParticulars.length > 0) {
+      items = filledParticulars.map(p => ({
+        name: (p.particularName || p.name || "ITEM").toUpperCase(),
+        quantity: p.qty || 1,
+        price: Number(p.individualPrice !== undefined && p.individualPrice !== null ? p.individualPrice : p.price) || 0
+      }));
+    } else if (bill && bill.particulars) {
+      try {
+        const parsed = typeof bill.particulars === 'string' ? JSON.parse(bill.particulars) : bill.particulars;
+        items = (parsed || []).map(p => ({
+          name: (p.particularName || p.name || p.particularId || "ITEM").toUpperCase(),
+          quantity: p.qty || 1,
+          price: Number(p.price !== undefined && p.price !== null ? p.price : p.individualPrice) || 0
+        }));
+      } catch (e) {
+        console.error("Failed to parse bill particulars", e);
       }
-    } catch (error) {
-      console.error("Error parsing particulars:", error);
     }
 
-    const items = particulars.map(p => ({
-      name: p.name || p.particularName,
-      quantity: p.qty || 1,
-      price: p.price || 0
-    }));
+    const effectiveTaxPct = activeGstPct !== null ? activeGstPct : totals.gstPercentage;
 
     const orderDetails = {
       invoiceNumber: bill.billNumber,
       orderId: bill.id,
       createdAt: bill.createdAt || bill.date,
-      username: bill.employee,
-      customerName: bill.customerName || "CASH CUSTOMER",
+      username: (bill.employee || "").toUpperCase(),
+      customerName: (bill.customerName || "CASH CUSTOMER").toUpperCase(),
       grandTotal: bill.total || 0,
       paidAmount: bill.totalPaid || 0,
       tax: (bill.total || 0) - (bill.totalWithGst || 0),
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
-      taxPercent: totals.gstPercentage || 0,
+      taxPercent: effectiveTaxPct,
       subtotal: bill.totalWithGst || bill.total || 0,
-      gstin: bill.customerGstNo || ""
+      gstin: (bill.customerGstNo || "").toUpperCase()
     };
 
     setPrintBill(orderDetails);
@@ -457,17 +470,21 @@ const CreateBill = () => {
     }
   };
 
-  const getFormattedBillNumber = () => {
+  const getFormattedBillNumberWithGst = (gstPct) => {
     let num = billNumber?.billNumber || billNumber || '';
     if (!num) return '';
-    if (totals.gstPercentage === 0) {
+    if (gstPct === 0) {
       return num.endsWith('-E') ? num : `${num}-E`;
     } else {
       return num.endsWith('-E') ? num.slice(0, -2) : num;
     }
   };
 
-  const handleSave = async (printAfter = false) => {
+  const getFormattedBillNumber = () => {
+    return getFormattedBillNumberWithGst(totals.gstPercentage);
+  };
+
+  const handleSave = async (printAfter = false, overrideGstPercent = null) => {
     try {
       const filledItems = particularsList.filter(p => p.isFilled);
       if (filledItems.length === 0) {
@@ -475,29 +492,49 @@ const CreateBill = () => {
         return;
       }
 
-      if (!selectedCustomer.customerName) {
-        toast.error("Please select a customer.");
-        return;
-      }
+      const finalCustomerName = (selectedCustomer.customerName || customerSearch.trim() || "CASH CUSTOMER").toUpperCase();
+
+      const activeGstPct = overrideGstPercent !== null ? overrideGstPercent : totals.gstPercentage;
+
+      // Calculate subtotal and GST dynamically to prevent stale state issues
+      const subtotalWithoutGst = filledItems.reduce((acc, curr) => acc + (Number(curr.totalPrice) || 0), 0);
+      const disc = Number(priceDiscount) || 0;
+      const tds = Number(tdsAmount) || 0;
+      const netSubtotal = Math.max(0, subtotalWithoutGst - disc - tds);
+      const gstAmt = activeGstPct > 0 ? (netSubtotal * activeGstPct) / 100 : 0;
+      const finalTotalToPay = Number((netSubtotal + gstAmt).toFixed(2));
+
+      // Always update totals state for UI rendering
+      setTotals(prev => ({
+        ...prev,
+        gstPercentage: activeGstPct,
+        gstAmount: gstAmt,
+        totalToPay: finalTotalToPay,
+        totalBillsWithoutGst: subtotalWithoutGst
+      }));
+
+      const billNoToUse = getFormattedBillNumberWithGst(activeGstPct);
+
+      const calculatedTotalPaid = enableCredit
+        ? (amountPaid !== '' && amountPaid !== null ? Number(Number(amountPaid).toFixed(2)) : 0)
+        : finalTotalToPay;
 
       const payload = {
-        billNumber: getFormattedBillNumber(),
-        employee: selectedEmployee || employeeSearch,
-        customerName: selectedCustomer.customerName,
-        customerEmail: selectedCustomer.customerEmail,
-        customerMobileNo: selectedCustomer.customerMobileNo,
-        customerGstNo: selectedCustomer.customerGstNo,
-        payment: paymentType,
-        totalPaid: enableCredit
-          ? (amountPaid ? Number(Number(amountPaid).toFixed(2)) : 0)
-          : (amountPaid ? Number(Number(amountPaid).toFixed(2)) : Number(totals.totalToPay.toFixed(2))),
-        total: Number(totals.totalToPay.toFixed(2)),
-        creditAmount: Number(totals.totalCredits.toFixed(2)),
-        totalWithGst: Number(totals.totalBillsWithoutGst.toFixed(2)),
-        totalItems: totals.totalItems,
-        discount: Number(totals.discount.toFixed(2)),
-        tdsAmount: Number(totals.tdsAmount.toFixed(2)),
-        creditPaidAmount: enableCredit ? Number(Number(amountPaid).toFixed(2)) : 0,
+        billNumber: billNoToUse,
+        employee: (selectedEmployee || employeeSearch || "").toUpperCase(),
+        customerName: finalCustomerName,
+        customerEmail: (selectedCustomer.customerEmail || '').toUpperCase(),
+        customerMobileNo: selectedCustomer.customerMobileNo || '',
+        customerGstNo: activeGstPct > 0 ? ((selectedCustomer.customerGstNo || '').toUpperCase()) : '',
+        payment: paymentType.toUpperCase(),
+        totalPaid: calculatedTotalPaid,
+        total: finalTotalToPay,
+        creditAmount: enableCredit ? Number((finalTotalToPay - calculatedTotalPaid).toFixed(2)) : 0,
+        totalWithGst: Number(subtotalWithoutGst.toFixed(2)),
+        totalItems: filledItems.length,
+        discount: Number(disc.toFixed(2)),
+        tdsAmount: Number(tds.toFixed(2)),
+        creditPaidAmount: enableCredit ? calculatedTotalPaid : 0,
         particulars: JSON.stringify(filledItems.map(p => ({
           particularId: p.particularId,
           qty: p.qty,
@@ -508,14 +545,15 @@ const CreateBill = () => {
       if (isEditMode) {
         const res = await updateBill(id, payload);
         if (res.data) {
-          toast.success("Bill updated successfully!");
-          handleShowReceipt(res.data, printAfter);
+          toast.success(`Bill updated successfully (${activeGstPct}% GST)!`);
+          handleShowReceipt(res.data, printAfter, activeGstPct);
         }
       } else {
         const res = await createBill(payload);
         if (res.data) {
-          toast.success("Bill saved successfully!");
-          // Reset form
+          toast.success(`Bill saved successfully (${activeGstPct}% GST)!`);
+          handleShowReceipt(res.data, printAfter, activeGstPct);
+
           setCustomerSearch('');
           setSelectedCustomer({ customerName: '', customerGstNo: '', customerMobileNo: '', customerEmail: '' });
           setParticularsList(Array(5).fill(null).map(() => getEmptyParticularRow()));
@@ -525,15 +563,15 @@ const CreateBill = () => {
           setPriceDiscount('');
           setTdsAmount('');
           setShowExtra(false);
-          fetchInitialData(); // get next bill number
-
-          handleShowReceipt(res.data, printAfter);
+          fetchInitialData();
         }
       }
     } catch (error) {
       toast.error(`Failed to ${isEditMode ? 'update' : 'save'} bill`);
     }
   };
+
+  handleSaveRef.current = handleSave;
 
   const handleCloseReceipt = () => {
     setPrintBill(null);
@@ -613,10 +651,12 @@ const CreateBill = () => {
             <label>Customer Name</label>
             <input type="text" value={selectedCustomer.customerName} onChange={(e) => setSelectedCustomer({ ...selectedCustomer, customerName: e.target.value })} className="form-control" />
           </div>
-          <div className="form-group">
-            <label>GST No</label>
-            <input type="text" value={selectedCustomer.customerGstNo} onChange={(e) => setSelectedCustomer({ ...selectedCustomer, customerGstNo: e.target.value })} className="form-control" />
-          </div>
+          {totals.gstPercentage > 0 && (
+            <div className="form-group">
+              <label>GST No</label>
+              <input type="text" value={selectedCustomer.customerGstNo} onChange={(e) => setSelectedCustomer({ ...selectedCustomer, customerGstNo: e.target.value })} className="form-control" placeholder="Enter GSTIN" />
+            </div>
+          )}
           <div className="form-group">
             <label>Mobile Number</label>
             <input type="text" value={selectedCustomer.customerMobileNo} onChange={(e) => setSelectedCustomer({ ...selectedCustomer, customerMobileNo: e.target.value })} className="form-control" />
@@ -720,7 +760,7 @@ const CreateBill = () => {
               </div>
               <div className="summary-item">
                 <span>Total Paid:</span>
-                <span className="fw-bold">₹{totals.totalPaidCredits.toFixed(2)}</span>
+                <span className="fw-bold">₹{(totals.totalPaidCredits || 0).toFixed(2)}</span>
               </div>
               <div className="summary-item">
                 <span>Total Credits:</span>
@@ -793,7 +833,8 @@ const CreateBill = () => {
             <span className="fw-bold me-2 text-nowrap">Total Paid:</span>
             <input
               type="number"
-              value={amountPaid}
+              value={enableCredit ? amountPaid : totals.totalToPay > 0 ? totals.totalToPay.toFixed(2) : ''}
+              disabled={!enableCredit}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val && Number(val) > totals.totalToPay) {
@@ -803,8 +844,8 @@ const CreateBill = () => {
                   setAmountPaid(val);
                 }
               }}
-              className="form-control paid-input"
-              placeholder="Amount"
+              className={`form-control paid-input ${!enableCredit ? 'bg-light text-muted fw-bold' : ''}`}
+              placeholder={enableCredit ? "Down Payment (₹0)" : `Full (₹${totals.totalToPay.toFixed(2)})`}
               onWheel={(e) => e.target.blur()}
             />
           </div>

@@ -55,8 +55,16 @@ const Settings = () => {
   const defaultShortcuts = [
     {
       id: "non_gst_bill",
-      action: "Non-GST Bill Mode",
-      description: "Sets GST tax percentage to 0% and appends '-E' suffix to the bill number",
+      action: "Save & Print Non-GST Bill",
+      description: "Sets tax to 0%, appends '-E' suffix to bill number, saves bill and triggers auto-print",
+      keys: "Enter",
+      category: "Bill Creation",
+      enabled: true
+    },
+    {
+      id: "gst_bill",
+      action: "Save & Print GST Bill",
+      description: "Sets tax to 18%, removes '-E' suffix from bill number, saves bill and triggers auto-print",
       keys: "Ctrl + Enter",
       category: "Bill Creation",
       enabled: true

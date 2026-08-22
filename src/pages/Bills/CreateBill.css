@@ -5,8 +5,8 @@
 }
 
 .page-header h2 {
-  color: #1e3a8a;
-  /* Deep blue */
+  color: #002142;
+  /* Company Navy Blue */
   margin-bottom: 20px;
   font-weight: 700;
 }
@@ -286,7 +286,7 @@
   padding: 15px 20px;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  border-left: 4px solid #1e3a8a;
+  border-left: 4px solid #002142;
   margin-top: 20px;
 }
 
@@ -510,7 +510,7 @@
 }
 
 .customer-highlight {
-  color: #1e3a8a;
+  color: #002142;
   font-weight: 700;
 }
 
@@ -589,7 +589,7 @@
 /* Primary Button */
 .credit-btn-primary {
   width: 100%;
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #002142 0%, #003870 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -600,14 +600,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 10px 20px -5px rgba(0, 33, 66, 0.35);
   transition: all 0.25s ease;
 }
 
 .credit-btn-primary:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #001730 0%, #002142 100%);
   transform: translateY(-2px);
-  box-shadow: 0 14px 24px -4px rgba(37, 99, 235, 0.45);
+  box-shadow: 0 14px 24px -4px rgba(0, 33, 66, 0.45);
 }
 
 .credit-btn-primary:active {
