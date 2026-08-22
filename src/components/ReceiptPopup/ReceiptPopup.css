@@ -48,6 +48,8 @@
   width: 60px;
   height: 60px;
   object-fit: contain;
+  filter: grayscale(100%) contrast(150%) !important;
+  -webkit-filter: grayscale(100%) contrast(150%) !important;
 }
 
 .company-name {
@@ -341,6 +343,8 @@
   .company-logo {
     width: 22px;
     height: 22px;
+    filter: grayscale(100%) contrast(150%) !important;
+    -webkit-filter: grayscale(100%) contrast(150%) !important;
   }
 
   .company-logo-name {
