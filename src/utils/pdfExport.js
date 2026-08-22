@@ -23,10 +23,10 @@ export const exportSingleDailyExpenseToPdf = (row) => {
     : "N/A";
   const branchStr = row.branch || "Branch";
 
-  // Primary Royal Blue Palette Colors
-  const primaryColor = [0, 41, 82]; // #002952
-  const secondaryColor = [0, 77, 153]; // #004d99
-  const accentRed = [220, 38, 38]; // #dc2626
+  // Primary Royal Navy & Crimson Palette Colors
+  const primaryColor = [0, 33, 66]; // #002142
+  const secondaryColor = [0, 33, 66]; // #002142
+  const accentRed = [230, 64, 81]; // #e64051
   const textColor = [15, 23, 42]; // #0f172a
 
   let currentY = 15;
@@ -64,34 +64,47 @@ export const exportSingleDailyExpenseToPdf = (row) => {
   // 3. KPI Summary Box
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, currentY, 182, 22, 3, 3, "FD");
+  doc.roundedRect(14, currentY, 182, 34, 3, 3, "FD");
 
-  // Total Sales (Earned)
-  doc.setFontSize(8);
+  // Row 1: Total Sales (Earned) & Cash In Hand & Total Daily Expenses
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(100, 116, 139);
-  doc.text("TOTAL SALES (EARNED)", 20, currentY + 8);
-  doc.setFontSize(11);
+  doc.text("TOTAL SALES (EARNED)", 18, currentY + 7);
+  doc.setFontSize(10);
   doc.setTextColor(...secondaryColor);
-  doc.text(`INR ${(row.totalSales || 0).toFixed(2)}`, 20, currentY + 16);
+  doc.text(`INR ${(row.totalSales || 0).toFixed(2)}`, 18, currentY + 14);
 
-  // Cash In Hand
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
-  doc.text("CASH IN HAND", 80, currentY + 8);
-  doc.setFontSize(11);
+  doc.text("CASH IN HAND", 80, currentY + 7);
+  doc.setFontSize(10);
   doc.setTextColor(2, 132, 199);
-  doc.text(`INR ${(row.cashInHand || 0).toFixed(2)}`, 80, currentY + 16);
+  doc.text(`INR ${(row.cashInHand || 0).toFixed(2)}`, 80, currentY + 14);
 
-  // Total Daily Expenses
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
-  doc.text("TOTAL DAILY EXPENSES", 140, currentY + 8);
-  doc.setFontSize(11);
+  doc.text("TOTAL EXPENSES", 140, currentY + 7);
+  doc.setFontSize(10);
   doc.setTextColor(...accentRed);
-  doc.text(`INR ${totalExpenses.toFixed(2)}`, 140, currentY + 16);
+  doc.text(`INR ${totalExpenses.toFixed(2)}`, 140, currentY + 14);
 
-  currentY += 28;
+  // Row 2: Last Closed & Shortage
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text("LAST CLOSED", 18, currentY + 22);
+  doc.setFontSize(10);
+  doc.setTextColor(71, 85, 105);
+  doc.text(`INR ${(row.lastClosed || 0).toFixed(2)}`, 18, currentY + 29);
+
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text("SHORTAGE", 80, currentY + 22);
+  doc.setFontSize(10);
+  doc.setTextColor(217, 119, 6);
+  doc.text(`INR ${(row.shortage || 0).toFixed(2)}`, 80, currentY + 29);
+
+  currentY += 40;
 
   // Helper to add autoTable sections
   const addSectionTable = (title, headers, rowsData, titleColor = accentRed) => {

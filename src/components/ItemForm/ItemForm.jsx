@@ -127,7 +127,7 @@ const ItemForm = () => {
 
                   <div style={{ flex: "1 1 48%" }}>
                     <label htmlFor="priceBack" className="form-label">
-                      Price Back
+                      Back To Back Price
                     </label>
                     <input
                       type="number"

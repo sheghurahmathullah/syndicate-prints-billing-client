@@ -10,7 +10,7 @@ const ParticularList = ({ onEdit }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
-  
+
   // Modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [particularToDelete, setParticularToDelete] = useState(null);
@@ -55,7 +55,7 @@ const ParticularList = ({ onEdit }) => {
       toast.success("Particular deleted successfully");
       setShowDeleteModal(false);
       setParticularToDelete(null);
-      
+
       // If we deleted the last item on the current page, go back a page
       if (particulars.length === 1 && currentPage > 0) {
         setCurrentPage(currentPage - 1);
@@ -107,7 +107,7 @@ const ParticularList = ({ onEdit }) => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Price (₹)</th>
-                <th>Price Back (₹)</th>
+                <th>Back to Back Price (₹)</th>
                 <th>Comm. Rate (%)</th>
                 <th>Machine Category</th>
                 <th>Paper Group</th>

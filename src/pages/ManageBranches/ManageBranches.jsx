@@ -91,7 +91,7 @@ const ManageBranches = () => {
         </div>
       ) : (
         <div className="branch-list-section fade-in">
-          <div className="branch-banner position-relative text-center text-white mb-4 rounded px-4 py-4" style={{ backgroundColor: '#002952' }}>
+          <div className="branch-banner position-relative text-center text-white mb-4 rounded px-4 py-4" style={{ backgroundColor: '#002142' }}>
             <div className="position-absolute top-0 end-0 m-3 px-3 py-2 badge bg-light text-dark shadow-sm fw-bold">
               Total Branches: {totalElements}
             </div>

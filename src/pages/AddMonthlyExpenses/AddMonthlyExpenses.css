@@ -1,7 +1,7 @@
-/* Add Monthly Expenses Container - Operations Emerald Palette */
+/* Add Monthly Expenses Container - Company Navy Theme */
 .add-monthly-expenses-container {
   min-height: calc(100vh - 4.5rem);
-  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #f1f5f9 100%);
+  background: #f8fafc;
   padding: 1.5rem;
   position: relative;
   overflow-y: auto;
@@ -14,15 +14,14 @@
   display: none;
 }
 
-/* Executive Floating Glass Banner */
+/* Executive Floating Banner */
 .monthly-expenses-header {
-  background: radial-gradient(circle at 90% 10%, rgba(52, 211, 153, 0.3) 0%, transparent 55%),
-              linear-gradient(135deg, #0f172a 0%, #064e3b 55%, #047857 100%);
+  background: #002142;
   color: white;
   padding: 26px 36px;
   border-radius: 20px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 12px 35px -5px rgba(6, 78, 59, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 35px -5px rgba(0, 33, 66, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
   position: relative;
   z-index: 2;
@@ -38,12 +37,12 @@
 }
 
 .monthly-expenses-header p {
-  color: #a7f3d0;
+  color: #93c5fd;
   font-size: 0.95rem;
   font-weight: 500;
 }
 
-/* Attached Addon Amount Input (Matching Image 3) */
+/* Attached Addon Amount Input */
 .ops-amount-group {
   display: flex;
   align-items: stretch;
@@ -55,12 +54,12 @@
 }
 
 .ops-amount-group:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  border-color: #002142;
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.15);
 }
 
 .ops-amount-addon {
-  background-color: #0d9488;
+  background-color: #002142;
   color: #ffffff;
   font-weight: 800;
   font-size: 0.88rem;
@@ -93,23 +92,23 @@
 
 .ops-monthly-item-card {
   background: #ffffff;
-  border: 1.5px solid #ccfbf1;
+  border: 1.5px solid #e2e8f0;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 33, 66, 0.05);
   transition: all 0.25s ease;
 }
 
 .ops-monthly-item-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
-  border-color: #99f6e4;
+  box-shadow: 0 8px 24px rgba(0, 33, 66, 0.12);
+  border-color: #cbd5e1;
 }
 
 .ops-card-header-bar {
-  background: #f0fdf4;
+  background: #f0f4f8;
   padding: 14px 20px;
-  border-bottom: 1px solid #dcfce7;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -117,7 +116,7 @@
 
 .ops-item-title {
   font-weight: 700;
-  color: #044e3a;
+  color: #002142;
   font-size: 0.98rem;
 }
 
@@ -131,9 +130,9 @@
 }
 
 .status-pill.paid {
-  background-color: #dcfce7;
-  color: #15803d;
-  border: 1px solid #86efac;
+  background-color: #f0f4f8;
+  color: #002142;
+  border: 1px solid #cbd5e1;
 }
 
 .status-pill.unpaid {

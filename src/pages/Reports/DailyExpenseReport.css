@@ -16,12 +16,11 @@
 
 /* Executive Royal Blue Banner */
 .daily-report-banner {
-  background: radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.25) 0%, transparent 60%),
-              linear-gradient(135deg, #001e3d 0%, #002952 50%, #004d99 100%);
+  background: #002142;
   color: #ffffff;
   padding: 24px 32px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px -5px rgba(0, 41, 82, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px -5px rgba(0, 33, 66, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
   position: relative;
   z-index: 2;
@@ -240,7 +239,7 @@
 }
 
 .btn-search-royal {
-  background: linear-gradient(135deg, #002952 0%, #0059b3 100%);
+  background: #002142;
   color: #ffffff !important;
   border: none;
   height: 42px;
@@ -249,7 +248,7 @@
   font-weight: 800;
   font-size: 0.9rem;
   letter-spacing: 0.02em;
-  box-shadow: 0 4px 14px rgba(0, 41, 82, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.25);
   transition: all 0.25s ease;
   display: inline-flex;
   align-items: center;
@@ -260,10 +259,10 @@
 }
 
 .btn-search-royal:hover {
-  background: linear-gradient(135deg, #001e3d 0%, #004d99 100%);
+  background: #001730;
   color: #ffffff !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 41, 82, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 33, 66, 0.35);
 }
 
 .btn-reset-royal {
@@ -310,10 +309,10 @@
 
 .pill-filter-btn:hover,
 .pill-filter-btn.active {
-  background: #004d99;
+  background: #002142;
   color: #ffffff;
-  border-color: #004d99;
-  box-shadow: 0 2px 8px rgba(0, 77, 153, 0.25);
+  border-color: #002142;
+  box-shadow: 0 2px 8px rgba(0, 33, 66, 0.25);
 }
 
 /* Data Table Container */
@@ -331,7 +330,7 @@
 }
 
 .daily-ledger-table th {
-  background: linear-gradient(135deg, #001e3d 0%, #002952 100%) !important;
+  background: #002142 !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 0.82rem !important;
@@ -362,7 +361,7 @@
 /* Redesigned Table Action Buttons */
 .btn-view-details {
   background: #eff6ff;
-  color: #004d99;
+  color: #002142;
   border: 1.5px solid #bfdbfe;
   font-size: 0.82rem;
   font-weight: 700;
@@ -376,10 +375,10 @@
 }
 
 .btn-view-details:hover {
-  background: #004d99;
+  background: #002142;
   color: #ffffff;
-  border-color: #004d99;
-  box-shadow: 0 4px 12px rgba(0, 77, 153, 0.25);
+  border-color: #002142;
+  box-shadow: 0 4px 12px rgba(0, 33, 66, 0.25);
 }
 
 .btn-excel-row-redesigned {
@@ -406,7 +405,7 @@
 
 .btn-pdf-red-redesigned {
   background: #fef2f2;
-  color: #dc2626;
+  color: #e64051;
   border: 1.5px solid #fca5a5;
   font-size: 0.82rem;
   font-weight: 700;
@@ -420,10 +419,10 @@
 }
 
 .btn-pdf-red-redesigned:hover {
-  background: #dc2626;
+  background: #e64051;
   color: #ffffff;
-  border-color: #dc2626;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  border-color: #e64051;
+  box-shadow: 0 4px 12px rgba(230, 64, 81, 0.25);
 }
 
 .totals-row-blue td {
@@ -454,11 +453,11 @@
 
 /* Full Page Header Banner */
 .fullpage-view-header {
-  background: linear-gradient(135deg, #001e3d 0%, #002952 50%, #004d99 100%);
+  background: #002142;
   color: #ffffff;
   padding: 24px 32px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px -5px rgba(0, 41, 82, 0.35);
+  box-shadow: 0 10px 30px -5px rgba(0, 33, 66, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.18);
   margin-bottom: 1.5rem;
   display: flex;

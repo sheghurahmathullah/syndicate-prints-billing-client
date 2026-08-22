@@ -119,6 +119,15 @@ const App = () => {
               />
             }
           />
+          <Route
+            path="/credit-management"
+            element={
+              <ProtectedRoute
+                element={<CreditManagement />}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
 
           {/*Admin only routes*/}
           <Route

@@ -175,7 +175,7 @@ const ParticularForm = ({ onSubmit, initialData = null, onCancel }) => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Price Back</label>
+                <label>Back To Back Price</label>
                 <div className="input-with-icon">
                   <i className="bi bi-currency-rupee"></i>
                   <input
@@ -240,7 +240,7 @@ const ParticularForm = ({ onSubmit, initialData = null, onCancel }) => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label>Paper</label>
                 <div className="input-with-icon">

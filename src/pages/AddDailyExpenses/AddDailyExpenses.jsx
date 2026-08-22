@@ -1,7 +1,7 @@
 import "./AddDailyExpenses.css";
 import { useState, useEffect } from "react";
 import { fetchBranches } from "../../Service/BranchService.js";
-import { fetchExpenseItemsByType, saveDailyExpenses } from "../../Service/DailyExpensesService.js";
+import { fetchExpenseItemsByType, saveDailyExpenses, fetchLastClosedAmount } from "../../Service/DailyExpensesService.js";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 
@@ -13,6 +13,8 @@ const AddDailyExpenses = () => {
   
   // Cash & Image
   const [cashInHand, setCashInHand] = useState("");
+  const [lastClosed, setLastClosed] = useState("");
+  const [shortage, setShortage] = useState("");
   const [cashImage, setCashImage] = useState(null);
   const [totalCash, setTotalCash] = useState("");
   
@@ -55,6 +57,22 @@ const AddDailyExpenses = () => {
     };
     initData();
   }, []);
+
+  // Auto-fetch Last Closed whenever currentDate or selectedBranch changes
+  useEffect(() => {
+    const loadLastClosed = async () => {
+      if (!currentDate) return;
+      try {
+        const response = await fetchLastClosedAmount(selectedBranch, currentDate);
+        if (response.data && response.data.lastClosed !== undefined) {
+          setLastClosed(response.data.lastClosed || 0);
+        }
+      } catch (error) {
+        console.error("Error auto-fetching last closed amount:", error);
+      }
+    };
+    loadLastClosed();
+  }, [currentDate, selectedBranch]);
 
   const loadBranches = async () => {
     try {
@@ -227,6 +245,8 @@ const AddDailyExpenses = () => {
         date: currentDate,
         branch: selectedBranch || null,
         cashInHand: parseFloat(cashInHand) || 0,
+        lastClosed: parseFloat(lastClosed) || 0,
+        shortage: parseFloat(shortage) || 0,
         image: imageData,
         totalCash: parseFloat(totalCash) || 0,
         expensive: expensiveData,
@@ -298,6 +318,8 @@ const AddDailyExpenses = () => {
     setCurrentDate(new Date().toISOString().split('T')[0]);
     setSelectedBranch("");
     setCashInHand("");
+    setLastClosed("");
+    setShortage("");
     setCashImage(null);
     setTotalCash("");
     setDailyItemAmounts({});
@@ -405,14 +427,14 @@ const AddDailyExpenses = () => {
           </div>
         </div>
 
-        {/* Cash in Hand & Image Card */}
+        {/* Cash in Hand, Last Closed, Shortage & Image Card */}
         <div className="ops-card mb-4">
           <h4 className="ops-card-title">
             <i className="bi bi-cash-stack ops-card-icon"></i>
-            Cash in Hand & Voucher Receipt Attachment
+            Cash Balances, Last Closed, Shortage & Voucher Receipt
           </h4>
           <div className="row g-3">
-            <div className="col-md-6">
+            <div className="col-md-4">
               <div className="rich-form-group">
                 <label className="rich-form-label">Cash in Hand</label>
                 <div className="ops-amount-group">
@@ -434,7 +456,53 @@ const AddDailyExpenses = () => {
                 </div>
               </div>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label d-flex align-items-center justify-content-between">
+                  <span>Last Closed</span>
+                  <span className="badge bg-light text-primary border me-1 fw-semibold" style={{ fontSize: "11px" }}>
+                    <i className="bi bi-magic me-1"></i>Auto-calculated
+                  </span>
+                </label>
+                <div className="ops-amount-group">
+                  <span className="ops-amount-addon">₹</span>
+                  <input
+                    type="number"
+                    className="ops-amount-input bg-light text-secondary fw-bold"
+                    placeholder="0.00"
+                    value={lastClosed !== "" ? lastClosed : 0}
+                    readOnly
+                    tabIndex="-1"
+                  />
+                </div>
+                <small className="text-muted fs-7 mt-1 d-block">
+                  Previous day's Cash in Hand
+                </small>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="rich-form-group">
+                <label className="rich-form-label">Shortage</label>
+                <div className="ops-amount-group">
+                  <span className="ops-amount-addon">₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    onKeyDown={preventNegativeAndExpKeys}
+                    onWheel={disableWheelScroll}
+                    className="ops-amount-input"
+                    placeholder="0.00"
+                    value={shortage}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val !== "" && parseFloat(val) < 0) return;
+                      setShortage(val);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-12 mt-2">
               <div className="rich-form-group">
                 <label className="rich-form-label">Upload Proof Image / Receipt</label>
                 <label className="custom-file-upload-box">

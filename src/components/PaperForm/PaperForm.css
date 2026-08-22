@@ -23,13 +23,13 @@
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  background: #002142;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
-  box-shadow: 0 3px 8px rgba(0, 41, 82, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 33, 66, 0.2);
   flex-shrink: 0;
 }
 
@@ -93,8 +93,8 @@
 }
 
 .rich-form-control:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+  border-color: #002142;
+  box-shadow: 0 0 0 4px rgba(0, 33, 66, 0.12);
   outline: none;
 }
 
@@ -126,7 +126,7 @@
 }
 
 .btn-form-submit {
-  background: linear-gradient(135deg, #002952 0%, #004d99 100%);
+  background: #002142;
   color: #ffffff;
   border: none;
   padding: 0.65rem 1.6rem;
@@ -134,13 +134,13 @@
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 41, 82, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.25);
   display: inline-flex;
   align-items: center;
 }
 
 .btn-form-submit:hover {
-  background: linear-gradient(135deg, #003366 0%, #0059b3 100%);
+  background: #001730;
   transform: translateY(-2px);
   color: #ffffff;
 }

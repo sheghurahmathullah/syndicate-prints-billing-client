@@ -75,3 +75,25 @@ export const getEmployeeWiseData = (page, size, dateFilter, startDate, endDate, 
     },
   });
 };
+
+export const getCreditBills = (page, size, dateFilter, startDate, endDate, customerName, status) => {
+  return axios.get(`${API_URL}api/v1.0/bills/credit-bills`, {
+    headers: getAuthHeaders(),
+    params: {
+      page,
+      size,
+      dateFilter,
+      startDate,
+      endDate,
+      customerName,
+      status,
+    },
+  });
+};
+
+export const updateCreditBillStatus = (id, requestData) => {
+  return axios.put(`${API_URL}api/v1.0/bills/credit-bills/${id}/status`, requestData, {
+    headers: getAuthHeaders(),
+  });
+};
+

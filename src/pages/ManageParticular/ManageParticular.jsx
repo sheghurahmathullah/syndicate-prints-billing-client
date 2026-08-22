@@ -90,7 +90,7 @@ const ManageParticular = () => {
         </div>
       ) : (
         <div className="list-section fade-in" ref={listRef}>
-          <div className="machine-banner position-relative text-center text-white mb-3 rounded px-3 py-3" style={{ backgroundColor: '#002952' }}>
+          <div className="machine-banner position-relative text-center text-white mb-3 rounded px-3 py-3" style={{ backgroundColor: '#002142' }}>
             <h5 className="fw-bold mb-1 text-uppercase tracking-wider">Particular Management</h5>
             <p className="mb-0 text-white-50" style={{ fontSize: '0.8rem' }}>Comprehensive oversight and administration of billing particulars</p>
           </div>

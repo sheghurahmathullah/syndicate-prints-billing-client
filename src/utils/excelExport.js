@@ -38,6 +38,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
     "Branch",
     "Total Sales (₹)",
     "Cash In Hand (₹)",
+    "Last Closed (₹)",
+    "Shortage (₹)",
     ...expenseKeys.map((k) => `Expense: ${k} (₹)`),
     "Total Expenses (₹)",
     "Net Operating Cash (₹)"
@@ -45,6 +47,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
 
   let grandTotalSales = 0;
   let grandCashInHand = 0;
+  let grandLastClosed = 0;
+  let grandShortage = 0;
   let grandTotalExpenses = 0;
   const keyTotals = {};
   expenseKeys.forEach((k) => (keyTotals[k] = 0));
@@ -56,6 +60,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
     const branch = row.branch || "-";
     const sales = row.totalSales || 0;
     const cash = row.cashInHand || 0;
+    const lastClosed = row.lastClosed || 0;
+    const shortage = row.shortage || 0;
 
     let rowExpTotal = 0;
     const expCells = expenseKeys.map((k) => {
@@ -67,6 +73,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
 
     grandTotalSales += sales;
     grandCashInHand += cash;
+    grandLastClosed += lastClosed;
+    grandShortage += shortage;
     grandTotalExpenses += rowExpTotal;
 
     const netCash = sales - rowExpTotal;
@@ -76,6 +84,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
       branch,
       sales.toFixed(2),
       cash.toFixed(2),
+      lastClosed.toFixed(2),
+      shortage.toFixed(2),
       ...expCells,
       rowExpTotal.toFixed(2),
       netCash.toFixed(2)
@@ -89,6 +99,8 @@ export const exportDailyExpensesToExcel = (dataList, fileName = "Daily_Expenses_
     "-",
     grandTotalSales.toFixed(2),
     grandCashInHand.toFixed(2),
+    grandLastClosed.toFixed(2),
+    grandShortage.toFixed(2),
     ...totalExpCells,
     grandTotalExpenses.toFixed(2),
     (grandTotalSales - grandTotalExpenses).toFixed(2)
@@ -116,6 +128,8 @@ export const exportSingleDailyExpenseToExcel = (row) => {
   rows.push(["Date", dateStr]);
   rows.push(["Total Daily Sales (Earned)", `₹ ${(row.totalSales || 0).toFixed(2)}`]);
   rows.push(["Cash In Hand", `₹ ${(row.cashInHand || 0).toFixed(2)}`]);
+  rows.push(["Last Closed", `₹ ${(row.lastClosed || 0).toFixed(2)}`]);
+  rows.push(["Shortage", `₹ ${(row.shortage || 0).toFixed(2)}`]);
   rows.push([]);
 
   // Itemized Operating Expenses (Skip if empty or total = 0)

@@ -113,6 +113,17 @@ const Menubar = () => {
         )}
 
         {isAdmin && (
+          <Link
+            className={`sidebar-link ${isActive("/credits") || isActive("/credit-management") ? "active" : ""}`}
+            to="/credits"
+            title="Credit Management"
+          >
+            <i className="bi bi-credit-card-2-front"></i>
+            <span className="link-text">Credit Management</span>
+          </Link>
+        )}
+
+        {isAdmin && (
           <>
             <div className="sidebar-heading">Manage</div>
             <Link
@@ -364,16 +375,7 @@ const Menubar = () => {
           <span className="link-text">Order History</span>
         </Link>
 
-        {isAdmin && (
-          <Link
-            className={`sidebar-link ${isActive("/credits") ? "active" : ""}`}
-            to="/credits"
-            title="Credit Management"
-          >
-            <i className="bi bi-credit-card"></i>
-            <span className="link-text">Credit Management</span>
-          </Link>
-        )}
+
       </div>
 
       <div className="sidebar-footer">

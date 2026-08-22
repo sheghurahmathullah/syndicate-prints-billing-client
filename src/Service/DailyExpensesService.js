@@ -39,3 +39,13 @@ export const updateMonthlyExpenses = async (monthlyExpenseId, monthlyExpensesDat
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
 };
+
+export const fetchLastClosedAmount = async (branch, date) => {
+  let url = `${API_URL}api/v1.0/admin/expense/daily-expenses/last-closed?date=${date}`;
+  if (branch) {
+    url += `&branch=${encodeURIComponent(branch)}`;
+  }
+  return await axios.get(url, {
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+  });
+};

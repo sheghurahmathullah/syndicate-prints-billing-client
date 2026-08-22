@@ -169,6 +169,8 @@ const DailyExpenseReport = () => {
     (acc, row) => {
       acc.totalSales += row.totalSales || 0;
       acc.cashInHand += row.cashInHand || 0;
+      acc.lastClosed += row.lastClosed || 0;
+      acc.shortage += row.shortage || 0;
 
       let rowExpTotal = 0;
       expenseKeys.forEach((key) => {
@@ -189,6 +191,8 @@ const DailyExpenseReport = () => {
     {
       totalSales: 0,
       cashInHand: 0,
+      lastClosed: 0,
+      shortage: 0,
       totalExpenses: 0,
       expenseTotals: {},
     }
@@ -294,6 +298,30 @@ const DailyExpenseReport = () => {
               <div className="fp-stat-title">Cash In Hand</div>
               <div className="fp-stat-value text-info">
                 ₹{(selectedRecord.cashInHand || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+
+          <div className="fp-stat-card cash">
+            <div className="fp-stat-icon blue">
+              <i className="bi bi-door-closed-fill"></i>
+            </div>
+            <div>
+              <div className="fp-stat-title">Last Closed</div>
+              <div className="fp-stat-value text-secondary">
+                ₹{(selectedRecord.lastClosed || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+
+          <div className="fp-stat-card spent">
+            <div className="fp-stat-icon red">
+              <i className="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+              <div className="fp-stat-title">Shortage</div>
+              <div className="fp-stat-value text-warning">
+                ₹{(selectedRecord.shortage || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -671,6 +699,8 @@ const DailyExpenseReport = () => {
                 <th className="py-3">Branch</th>
                 <th className="py-3">Total Sales (Earned)</th>
                 <th className="py-3">Cash In Hand</th>
+                <th className="py-3">Last Closed</th>
+                <th className="py-3">Shortage</th>
                 {expenseKeys.map((key) => (
                   <th key={key} className="py-3 text-uppercase">
                     {key}
@@ -684,7 +714,7 @@ const DailyExpenseReport = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5 + expenseKeys.length} className="p-0">
+                  <td colSpan={7 + expenseKeys.length} className="p-0">
                     <LoadingSpinner message="Fetching daily expense ledgers..." minHeight="240px" />
                   </td>
                 </tr>
@@ -706,6 +736,12 @@ const DailyExpenseReport = () => {
                       </td>
                       <td className="text-info fw-bold">
                         ₹{(row.cashInHand || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="text-secondary fw-bold">
+                        ₹{(row.lastClosed || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="text-warning fw-bold">
+                        ₹{(row.shortage || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                       </td>
                       {expenseKeys.map((key) => {
                         const val = (row.expenses && row.expenses[key]) || 0;
@@ -762,6 +798,12 @@ const DailyExpenseReport = () => {
                     <td className="text-info py-3">
                       ₹{totals.cashInHand.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                     </td>
+                    <td className="text-secondary py-3">
+                      ₹{totals.lastClosed.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="text-warning py-3">
+                      ₹{totals.shortage.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    </td>
                     {expenseKeys.map((key) => (
                       <td key={key} className="text-danger py-3">
                         ₹{(totals.expenseTotals[key] || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
@@ -772,7 +814,7 @@ const DailyExpenseReport = () => {
                 </>
               ) : (
                 <tr>
-                  <td colSpan={5 + expenseKeys.length} className="text-center py-5 text-muted">
+                  <td colSpan={7 + expenseKeys.length} className="text-center py-5 text-muted">
                     <i className="bi bi-inbox text-secondary display-4 d-block mb-3"></i>
                     <h6 className="fw-bold text-dark">No Daily Expense Records Found</h6>
                     <p className="mb-0 text-muted small">

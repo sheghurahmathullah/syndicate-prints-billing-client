@@ -147,9 +147,9 @@
 }
 
 .sidebar-link.active {
-  color: #2563eb;
-  background-color: #eff6ff;
-  border-right-color: #2563eb;
+  color: #002142;
+  background-color: #f0f4f8;
+  border-right-color: #002142;
 }
 
 .sidebar-footer {
@@ -226,13 +226,13 @@
 
 .submenu-link:hover {
   background-color: transparent;
-  color: #2563eb;
+  color: #002142;
 }
 
 .submenu-link.active {
   background-color: transparent;
-  color: #2563eb;
-  font-weight: 600;
+  color: #002142;
+  font-weight: 700;
 }
 
 .sidebar.collapsed .submenu {

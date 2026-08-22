@@ -6,8 +6,8 @@
 
 /* Banner Styling */
 .machine-banner {
-  background: linear-gradient(135deg, #002952 0%, #004b96 100%);
-  border-left: 4px solid #f39c12;
+  background: #002142;
+  border-left: 4px solid #e64051;
 }
 
 .tracking-wider {
@@ -86,14 +86,14 @@
 }
 
 .data-table th {
-  background-color: #002952; /* Match particulars color */
+  background-color: #002142; /* Match company color */
   color: white;
   padding: 14px 16px;
   font-weight: 600;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid #001933;
+  border-bottom: 2px solid #001730;
 }
 
 .data-table td {
@@ -185,7 +185,7 @@
 .premium-loader::after {
   inset: 8px;
   transform: rotate3d(90, 90, 0, 180deg);
-  border-color: #002952;
+  border-color: #002142;
 }
 
 .loader-text {
@@ -239,13 +239,13 @@
 }
 
 .page-numbers .btn-primary {
-  background-color: #002952;
-  border-color: #002952;
+  background-color: #002142;
+  border-color: #002142;
 }
 
 .page-numbers .btn-primary:hover {
-  background-color: #001933;
-  border-color: #001933;
+  background-color: #001730;
+  border-color: #001730;
 }
 
 /* Customer Search Dropdown Styling */

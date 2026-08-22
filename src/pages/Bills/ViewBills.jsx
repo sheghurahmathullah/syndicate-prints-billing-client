@@ -139,7 +139,7 @@ const ViewBills = () => {
 
   return (
     <div className="view-bills-container fade-in">
-      <div className="machine-banner position-relative text-center text-white mb-4 rounded px-3 py-4 shadow-sm" style={{ backgroundColor: '#002952' }}>
+      <div className="machine-banner position-relative text-center text-white mb-4 rounded px-3 py-4 shadow-sm" style={{ backgroundColor: '#002142' }}>
         <h4 className="fw-bold mb-2 text-uppercase tracking-wider">All Bills Management</h4>
         <p className="mb-0 text-white-50" style={{ fontSize: '0.9rem' }}>Comprehensive oversight, filtering, and administration of all your generated bills</p>
       </div>
@@ -281,8 +281,8 @@ const ViewBills = () => {
                       >
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button 
-                        className="btn btn-sm btn-outline-danger modern-action-btn" 
+                      <button
+                        className="btn btn-sm btn-outline-danger modern-action-btn"
                         title="Edit"
                         onClick={() => navigate(`/bills/edit/${bill.id}`, { state: { bill } })}
                       >

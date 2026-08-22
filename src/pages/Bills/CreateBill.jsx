@@ -87,6 +87,73 @@ const CreateBill = () => {
     fetchInitialData();
   }, [isEditMode, editingBill?.id]);
 
+  const matchShortcutEvent = (e, keyString) => {
+    if (!keyString) return false;
+    const parts = keyString.toLowerCase().split('+').map(s => s.trim());
+    
+    const requiresCtrl = parts.includes('ctrl') || parts.includes('control');
+    const requiresShift = parts.includes('shift');
+    const requiresAlt = parts.includes('alt');
+    const requiresMeta = parts.includes('cmd') || parts.includes('command') || parts.includes('meta') || parts.includes('win');
+
+    if (requiresCtrl !== e.ctrlKey) return false;
+    if (requiresShift !== e.shiftKey) return false;
+    if (requiresAlt !== e.altKey) return false;
+    if (requiresMeta !== e.metaKey) return false;
+
+    const keyPart = parts.find(p => !['ctrl', 'control', 'shift', 'alt', 'cmd', 'command', 'meta', 'win'].includes(p));
+    if (!keyPart) return true;
+
+    const eventKey = e.key ? e.key.toLowerCase() : '';
+    const eventCode = e.code ? e.code.toLowerCase() : '';
+
+    if (keyPart === 'enter' || keyPart === 'return') {
+      return eventKey === 'enter';
+    }
+    if (keyPart === 'space') {
+      return eventKey === ' ' || eventCode === 'space';
+    }
+    if (keyPart === 'esc' || keyPart === 'escape') {
+      return eventKey === 'escape';
+    }
+
+    return eventKey === keyPart || eventCode === `key${keyPart}` || eventCode === keyPart;
+  };
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      let targetKeys = 'Ctrl + Enter';
+      let isEnabled = true;
+
+      const savedShortcuts = localStorage.getItem("shortcutConfig");
+      if (savedShortcuts) {
+        try {
+          const shortcuts = JSON.parse(savedShortcuts);
+          const nonGstSc = shortcuts.find(s => s.id === "non_gst_bill");
+          if (nonGstSc) {
+            isEnabled = nonGstSc.enabled !== false;
+            if (nonGstSc.keys) {
+              targetKeys = nonGstSc.keys;
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      if (!isEnabled) return;
+
+      if (matchShortcutEvent(e, targetKeys)) {
+        e.preventDefault();
+        setTotals(prev => ({ ...prev, gstPercentage: 0 }));
+        toast.success(`Non-GST Bill selected (${targetKeys}) - GST set to 0%`);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   const fetchInitialData = async () => {
     try {
       const custRes = await fetchCustomers();
@@ -390,6 +457,16 @@ const CreateBill = () => {
     }
   };
 
+  const getFormattedBillNumber = () => {
+    let num = billNumber?.billNumber || billNumber || '';
+    if (!num) return '';
+    if (totals.gstPercentage === 0) {
+      return num.endsWith('-E') ? num : `${num}-E`;
+    } else {
+      return num.endsWith('-E') ? num.slice(0, -2) : num;
+    }
+  };
+
   const handleSave = async (printAfter = false) => {
     try {
       const filledItems = particularsList.filter(p => p.isFilled);
@@ -404,13 +481,16 @@ const CreateBill = () => {
       }
 
       const payload = {
+        billNumber: getFormattedBillNumber(),
         employee: selectedEmployee || employeeSearch,
         customerName: selectedCustomer.customerName,
         customerEmail: selectedCustomer.customerEmail,
         customerMobileNo: selectedCustomer.customerMobileNo,
         customerGstNo: selectedCustomer.customerGstNo,
         payment: paymentType,
-        totalPaid: amountPaid ? Number(Number(amountPaid).toFixed(2)) : Number(totals.totalToPay.toFixed(2)),
+        totalPaid: enableCredit
+          ? (amountPaid ? Number(Number(amountPaid).toFixed(2)) : 0)
+          : (amountPaid ? Number(Number(amountPaid).toFixed(2)) : Number(totals.totalToPay.toFixed(2))),
         total: Number(totals.totalToPay.toFixed(2)),
         creditAmount: Number(totals.totalCredits.toFixed(2)),
         totalWithGst: Number(totals.totalBillsWithoutGst.toFixed(2)),
@@ -473,7 +553,7 @@ const CreateBill = () => {
         <div className="bill-row row-1">
           <div className="form-group">
             <label>Bill Number</label>
-            <input type="text" value={billNumber?.billNumber || billNumber || ''} disabled className="form-control disabled-input bill-number-text" />
+            <input type="text" value={getFormattedBillNumber()} disabled className="form-control disabled-input bill-number-text" />
           </div>
           <div className="form-group customer-search-wrapper">
             <label>Employee Name</label>
@@ -801,8 +881,8 @@ const CreateBill = () => {
       {(showCreditModal || isCheckingCredit) && (
         <div className="credit-modal-overlay">
           <div className="credit-modal-card">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="credit-modal-close-btn"
               onClick={() => setShowCreditModal(false)}
               aria-label="Close"
@@ -826,7 +906,7 @@ const CreateBill = () => {
                     <div className="credit-icon-badge badge-danger">
                       <i className="bi bi-exclamation-lg"></i>
                     </div>
-                    
+
                     <div className="mb-2">
                       <span className="credit-status-pill pill-danger">
                         <i className="bi bi-exclamation-circle-fill me-1"></i> Outstanding Credit Found
@@ -861,7 +941,7 @@ const CreateBill = () => {
                     <div className="credit-icon-badge badge-success">
                       <i className="bi bi-check-lg"></i>
                     </div>
-                    
+
                     <div className="mb-2">
                       <span className="credit-status-pill pill-success">
                         <i className="bi bi-check-circle-fill me-1"></i> Account Clear
@@ -876,7 +956,7 @@ const CreateBill = () => {
                 )}
 
                 <div className="credit-modal-actions mt-4">
-                  <button 
+                  <button
                     className="credit-btn-primary"
                     onClick={() => setShowCreditModal(false)}
                   >

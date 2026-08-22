@@ -87,23 +87,23 @@ const ManageExpenseItem = () => {
     <div className="expense-item-container fade-in">
       {/* Banner Card */}
       <div className="expense-item-banner">
-        <div className="banner-content d-flex align-items-center gap-3">
+        <div className="banner-content">
           <div className="banner-icon-box">
             <i className="bi bi-tags-fill"></i>
           </div>
-          <div>
-            <h2 className="mb-1">Expense Item Catalog</h2>
-            <p className="mb-0">Configure operational expense categories for daily and monthly accounting</p>
+          <div className="banner-text-box">
+            <h2>Expense Item Catalog</h2>
+            <p>Configure operational expense categories for daily and monthly accounting</p>
           </div>
         </div>
         {!showForm && (
-          <div className="d-flex align-items-center gap-3 mt-3 mt-md-0">
+          <div className="banner-actions">
             <span className="total-items-badge">
               <i className="bi bi-collection-fill me-2"></i>
               {totalElements} Items Total
             </span>
             <button
-              className="btn btn-ops-primary add-item-btn"
+              className="btn add-item-btn"
               onClick={handleAddItem}
             >
               <i className="bi bi-plus-lg me-1"></i>

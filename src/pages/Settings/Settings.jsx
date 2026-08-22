@@ -51,6 +51,52 @@ const Settings = () => {
     enableSMSReceipts: false,
   });
 
+  // Shortcut Configurations State
+  const defaultShortcuts = [
+    {
+      id: "non_gst_bill",
+      action: "Non-GST Bill Mode",
+      description: "Sets GST tax percentage to 0% and appends '-E' suffix to the bill number",
+      keys: "Ctrl + Enter",
+      category: "Bill Creation",
+      enabled: true
+    },
+    {
+      id: "add_particular_item",
+      action: "Add Particular Item",
+      description: "Fetches item details and adds a row when typing Particular ID and pressing Enter",
+      keys: "Enter",
+      category: "Bill Creation",
+      enabled: true
+    },
+    {
+      id: "quick_save_bill",
+      action: "Quick Save Bill",
+      description: "Saves the current bill draft from the creation form",
+      keys: "Ctrl + S",
+      category: "Bill Creation",
+      enabled: true
+    },
+    {
+      id: "print_receipt",
+      action: "Print Bill Receipt",
+      description: "Opens print receipt dialog for active bill or after saving",
+      keys: "Ctrl + P",
+      category: "Receipts & Printing",
+      enabled: true
+    },
+    {
+      id: "close_modal",
+      action: "Close Popups & Modals",
+      description: "Dismisses active modal dialogs, credit popups, and dropdown menus",
+      keys: "Escape",
+      category: "Navigation & Modals",
+      enabled: true
+    }
+  ];
+
+  const [shortcutConfig, setShortcutConfig] = useState(defaultShortcuts);
+
   const [users, setUsers] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   // const [loading, setLoading] = useState(false);
@@ -140,6 +186,14 @@ const Settings = () => {
     }
     if (savedSystemPrefs) {
       setSystemPrefs(JSON.parse(savedSystemPrefs));
+    }
+    const savedShortcuts = localStorage.getItem("shortcutConfig");
+    if (savedShortcuts) {
+      try {
+        setShortcutConfig(JSON.parse(savedShortcuts));
+      } catch (err) {
+        console.error("Failed to load shortcutConfig", err);
+      }
     }
 
   }, []);
@@ -240,6 +294,34 @@ const Settings = () => {
     }, 1000);
   };
 
+  const handleShortcutToggle = (id) => {
+    setShortcutConfig((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, enabled: !item.enabled } : item))
+    );
+  };
+
+  const handleShortcutKeyChange = (id, newKeys) => {
+    setShortcutConfig((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, keys: newKeys } : item))
+    );
+  };
+
+  const handleSaveShortcuts = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      localStorage.setItem("shortcutConfig", JSON.stringify(shortcutConfig));
+      setLoading(false);
+      toast.success("Shortcut configurations updated successfully!");
+    }, 800);
+  };
+
+  const handleResetShortcuts = () => {
+    setShortcutConfig(defaultShortcuts);
+    localStorage.setItem("shortcutConfig", JSON.stringify(defaultShortcuts));
+    toast.success("Shortcuts reset to system defaults!");
+  };
+
   // Handle Logo Upload
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
@@ -309,6 +391,13 @@ const Settings = () => {
           >
             <i className="bi bi-sliders"></i>
             <span>System Preferences</span>
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "shortcuts" ? "active" : ""}`}
+            onClick={() => setActiveTab("shortcuts")}
+          >
+            <i className="bi bi-command"></i>
+            <span>Shortcut Config</span>
           </button>
         </div>
 
@@ -1200,6 +1289,92 @@ const Settings = () => {
                       <>
                         <i className="bi bi-check-circle"></i>
                         Update Preferences
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Shortcut Configurations Tab */}
+          {activeTab === "shortcuts" && (
+            <div className="tab-content">
+              <div className="section-header">
+                <h2>
+                  <i className="bi bi-command"></i>
+                  Shortcut Configurations
+                </h2>
+                <p>View, configure, and toggle system keyboard shortcuts for fast billing operations</p>
+              </div>
+
+              <form onSubmit={handleSaveShortcuts} className="settings-form">
+                <div className="shortcut-cards-container">
+                  {shortcutConfig.map((sc) => (
+                    <div key={sc.id} className={`shortcut-card ${!sc.enabled ? "disabled" : ""}`}>
+                      <div className="shortcut-card-header">
+                        <div className="shortcut-info">
+                          <span className="shortcut-category-badge">{sc.category}</span>
+                          <h4>{sc.action}</h4>
+                          <p>{sc.description}</p>
+                        </div>
+                        <label className="toggle-switch">
+                          <input
+                            type="checkbox"
+                            checked={sc.enabled}
+                            onChange={() => handleShortcutToggle(sc.id)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="shortcut-card-body">
+                        <div className="shortcut-key-display">
+                          <label><i className="bi bi-keyboard"></i> Shortcut Key</label>
+                          <div className="key-input-wrapper">
+                            <input
+                              type="text"
+                              value={sc.keys}
+                              onChange={(e) => handleShortcutKeyChange(sc.id, e.target.value)}
+                              placeholder="e.g. Ctrl + Enter"
+                              className="shortcut-key-input"
+                              disabled={!sc.enabled}
+                            />
+                            <div className="kbd-preview">
+                              {sc.keys.split("+").map((k, i) => (
+                                <span key={i}>
+                                  <kbd className="kbd-badge">{k.trim()}</kbd>
+                                  {i < sc.keys.split("+").length - 1 && <span className="kbd-plus">+</span>}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="form-actions" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                  <button
+                    type="button"
+                    onClick={handleResetShortcuts}
+                    className="btn-reset-shortcuts"
+                  >
+                    <i className="bi bi-arrow-counterclockwise"></i>
+                    Reset Defaults
+                  </button>
+
+                  <button type="submit" className="btn-save" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <i className="bi bi-arrow-repeat rotating"></i>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-check-circle"></i>
+                        Save Shortcut Settings
                       </>
                     )}
                   </button>

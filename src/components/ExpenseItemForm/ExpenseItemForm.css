@@ -1,15 +1,15 @@
 .ops-badge {
-  background: linear-gradient(135deg, #0d9488 0%, #047857 100%) !important;
+  background: #002142 !important;
   color: white !important;
 }
 
 .ops-icon {
-  color: #0d9488 !important;
+  color: #002142 !important;
 }
 
 .ops-switch-card {
-  background: #f0fdf4;
-  border: 1.5px solid #a7f3d0;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px 20px;
 }
@@ -18,8 +18,8 @@
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: #dcfce7;
-  color: #047857;
+  background: #f0f4f8;
+  color: #002142;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,11 +27,11 @@
 }
 
 .text-emerald-active {
-  color: #047857;
+  color: #002142;
 }
 
 .btn-form-submit-ops {
-  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  background: #002142;
   color: white;
   border: none;
   padding: 10px 24px;
@@ -42,14 +42,15 @@
   align-items: center;
   justify-content: center;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.35);
   cursor: pointer;
 }
 
 .btn-form-submit-ops:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.5);
-  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  box-shadow: 0 6px 18px rgba(0, 33, 66, 0.5);
+  background: #001730;
+  color: white;
 }
 
 .btn-form-submit-ops:disabled {
