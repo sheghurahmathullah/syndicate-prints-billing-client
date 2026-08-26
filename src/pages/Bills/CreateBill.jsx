@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext';
 import { getNextBillNumber, createBill, updateBill, checkCustomerCredit } from '../../Service/BillService';
 import { fetchCustomers } from '../../Service/CustomerService';
 import { fetchEmployeeNames } from '../../Service/EmployeeService';
-import { getParticularDetailsById } from '../../Service/ParticularService';
+import { getParticularDetailsById, getAllParticularsForBill } from '../../Service/ParticularService';
 import toast from 'react-hot-toast';
 import ReceiptPopup from '../../components/ReceiptPopup/ReceiptPopup.jsx';
 
@@ -19,6 +19,8 @@ const CreateBill = () => {
   const editingBill = location.state?.bill;
 
   const [printBill, setPrintBill] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savingType, setSavingType] = useState(null); // 'save' | 'print' | null
 
   // State
   const [billNumber, setBillNumber] = useState('');
@@ -70,16 +72,20 @@ const CreateBill = () => {
   const [creditInfo, setCreditInfo] = useState(null);
   const [isCheckingCredit, setIsCheckingCredit] = useState(false);
 
+  // Particulars Preload & Search State
+  const [allParticulars, setAllParticulars] = useState([]);
+  const [activeParticularDropdownRowId, setActiveParticularDropdownRowId] = useState(null);
+
   // Derived State (Calculations)
   const [totals, setTotals] = useState({
     totalItems: 0,
     totalBillsWithoutGst: 0,
-    gstPercentage: 18,
+    gstPercentage: 0, // Default to Non-GST (0%) on initial load
     gstAmount: 0,
     discount: 0,
     tdsAmount: 0,
-    totalPaidCredits: 0, // Not sure how this is calculated, maybe from previous? Or just user input
-    totalCredits: 0, // Total - Paid?
+    totalPaidCredits: 0,
+    totalCredits: 0,
     totalToPay: 0
   });
 
@@ -163,17 +169,46 @@ const CreateBill = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
+  const fetchNextBillNumber = async () => {
+    try {
+      const billRes = await getNextBillNumber();
+      if (billRes?.data) {
+        setBillNumber(billRes.data.nextBillNumber || billRes.data);
+      }
+    } catch (err) {
+      console.error("Error loading bill number", err);
+    }
+  };
+
   const fetchInitialData = async () => {
     try {
-      const custRes = await fetchCustomers();
-      if (custRes.data) {
-        setCustomers(custRes.data.content || custRes.data);
+      const isCreate = !(isEditMode && editingBill);
+
+      // 1. Fetch Customers and update state immediately upon response
+      fetchCustomers().then(custRes => {
+        if (custRes?.data) {
+          setCustomers(custRes.data.content || custRes.data);
+        }
+      }).catch(err => console.error("Error loading customers", err));
+
+      // 2. Fetch Employee Names and update state immediately upon response
+      fetchEmployeeNames().then(empRes => {
+        if (empRes?.data) {
+          setEmployeeNames(empRes.data);
+        }
+      }).catch(err => console.error("Error loading employee names", err));
+
+      // 3. Fetch Next Bill Number and update state IMMEDIATELY upon response (~600ms)
+      if (isCreate) {
+        fetchNextBillNumber();
       }
 
-      const empRes = await fetchEmployeeNames();
-      if (empRes.data) {
-        setEmployeeNames(empRes.data);
-      }
+      // 4. Fetch All Particulars for Fast Lookup on Page Load
+      getAllParticularsForBill().then(particularsRes => {
+        if (particularsRes?.data) {
+          setAllParticulars(Array.isArray(particularsRes.data) ? particularsRes.data : []);
+        }
+      }).catch(err => console.error("Error loading particulars for bill", err));
 
       if (isEditMode && editingBill) {
         setBillNumber(editingBill.billNumber);
@@ -226,9 +261,6 @@ const CreateBill = () => {
         setParticularsList(newParticularsList);
 
       } else {
-        const billRes = await getNextBillNumber();
-        setBillNumber(billRes.data.nextBillNumber || billRes.data);
-
         if (auth?.username) {
           setSelectedEmployee(auth.username);
           setEmployeeSearch(auth.username);
@@ -307,6 +339,48 @@ const CreateBill = () => {
     c.phoneNumber?.includes(customerSearch)
   );
 
+  const selectParticularForItem = (rowId, data) => {
+    if (!data) return;
+    const pId = data.particularId || data.id || '';
+    const rawName = data.particularName || data.name || pId;
+    const displayName = String(rawName).toUpperCase();
+
+    const searchKey = String(pId).trim().toLowerCase();
+    const isDuplicate = particularsList.some(p => p.id !== rowId && p.isFilled && (String(p.particularId || '').trim().toLowerCase() === searchKey || String(p.particularName || '').toLowerCase() === displayName.toLowerCase()));
+
+    if (isDuplicate) {
+      toast.error("This particular is already added to the bill.");
+      return;
+    }
+
+    setParticularsList(prevList => {
+      let newList = prevList.map(p => {
+        if (p.id === rowId) {
+          return {
+            ...p,
+            particularId: pId,
+            particularName: displayName,
+            type: 'Single Side',
+            qty: 1,
+            basePrice: data.price || data.basePrice || 0,
+            priceBack: data.priceBack || data.price || 0,
+            individualPrice: data.price || data.basePrice || 0,
+            totalPrice: data.price || data.basePrice || 0,
+            isFilled: true
+          };
+        }
+        return p;
+      });
+
+      const emptyCount = newList.filter(p => !p.isFilled).length;
+      if (emptyCount < 2) {
+        newList.push(getEmptyParticularRow());
+      }
+      return newList;
+    });
+    setActiveParticularDropdownRowId(null);
+  };
+
   const handleParticularAdd = async (e, id) => {
     const item = particularsList.find(p => p.id === id);
     if (e.key === 'Enter') {
@@ -314,48 +388,32 @@ const CreateBill = () => {
         e.preventDefault();
         e.stopPropagation();
         const searchId = item.particularId.trim().toLowerCase();
-      const isDuplicate = particularsList.some(p => p.id !== id && p.isFilled && p.particularName && p.particularName.toLowerCase() === searchId);
 
-      if (isDuplicate) {
-        toast.error("This particular is already added to the bill.");
-        return;
-      }
+        // 1. Fast Lookup from preloaded allParticulars
+        const matched = allParticulars.find(p =>
+          String(p.particularId || '').toLowerCase() === searchId ||
+          String(p.particularName || p.name || '').toLowerCase() === searchId
+        );
 
-      try {
-        const res = await getParticularDetailsById(item.particularId.trim());
-        const data = res.data;
-        if (data) {
-          setParticularsList(prevList => {
-            let newList = prevList.map(p => {
-              if (p.id === id) {
-                return {
-                  ...p,
-                  particularName: (data.particularName || data.name || data.particularId || '').toUpperCase(),
-                  type: 'Single Side',
-                  qty: 1,
-                  basePrice: data.price || 0,
-                  priceBack: data.priceBack || 0,
-                  individualPrice: data.price || 0,
-                  totalPrice: data.price || 0,
-                  isFilled: true
-                };
-              }
-              return p;
-            });
-
-            const emptyCount = newList.filter(p => !p.isFilled).length;
-            if (emptyCount < 2) {
-              newList.push(getEmptyParticularRow());
-            }
-            return newList;
-          });
+        if (matched) {
+          selectParticularForItem(id, matched);
+          return;
         }
-      } catch (error) {
-        toast.error("Particular not found or error fetching details");
+
+        // 2. Fallback API lookup if not found in preloaded list
+        try {
+          const res = await getParticularDetailsById(item.particularId.trim());
+          if (res?.data) {
+            selectParticularForItem(id, res.data);
+          } else {
+            toast.error("Particular not found");
+          }
+        } catch (error) {
+          toast.error("Particular not found or error fetching details");
+        }
       }
     }
-  }
-};
+  };
 
   const updateParticularRow = (id, field, value) => {
     setParticularsList(prevList =>
@@ -453,12 +511,12 @@ const CreateBill = () => {
       customerName: (bill.customerName || "CASH CUSTOMER").toUpperCase(),
       grandTotal: bill.total || 0,
       paidAmount: bill.totalPaid || 0,
-      tax: (bill.total || 0) - (bill.totalWithGst || 0),
+      tax: (bill.total || 0) - (bill.actualTotal !== undefined && bill.actualTotal !== null ? bill.actualTotal : (bill.totalWithGst || bill.total || 0)),
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
       taxPercent: effectiveTaxPct,
-      subtotal: bill.totalWithGst || bill.total || 0,
+      subtotal: bill.actualTotal !== undefined && bill.actualTotal !== null ? bill.actualTotal : (bill.totalWithGst || bill.total || 0),
       gstin: (bill.customerGstNo || "").toUpperCase()
     };
 
@@ -473,11 +531,8 @@ const CreateBill = () => {
   const getFormattedBillNumberWithGst = (gstPct) => {
     let num = billNumber?.billNumber || billNumber || '';
     if (!num) return '';
-    if (gstPct === 0) {
-      return num.endsWith('-E') ? num : `${num}-E`;
-    } else {
-      return num.endsWith('-E') ? num.slice(0, -2) : num;
-    }
+    const cleanNum = String(num).replace(/-E$/i, '');
+    return gstPct === 0 ? `${cleanNum}-E` : cleanNum;
   };
 
   const getFormattedBillNumber = () => {
@@ -485,14 +540,35 @@ const CreateBill = () => {
   };
 
   const handleSave = async (printAfter = false, overrideGstPercent = null) => {
+    if (isSaving) return;
+
     try {
-      const filledItems = particularsList.filter(p => p.isFilled);
-      if (filledItems.length === 0) {
-        toast.error("Please add at least one particular.");
+      // 1. Employee Name Validation
+      const empName = (selectedEmployee || employeeSearch || "").trim();
+      if (!empName) {
+        toast.error("Please select or enter an Employee Name.");
         return;
       }
 
-      const finalCustomerName = (selectedCustomer.customerName || customerSearch.trim() || "CASH CUSTOMER").toUpperCase();
+      // 2. Customer Name Validation
+      const custName = (selectedCustomer.customerName || customerSearch || "").trim();
+      if (!custName) {
+        toast.error("Please select or enter a Customer Name.");
+        return;
+      }
+
+      // 3. Particulars Item Validation
+      const filledItems = particularsList.filter(p => p.isFilled);
+      if (filledItems.length === 0) {
+        toast.error("Please add or select at least one particular item.");
+        return;
+      }
+
+      setIsSaving(true);
+      setSavingType(printAfter ? 'print' : 'save');
+
+      const finalEmployeeName = empName;
+      const finalCustomerName = custName;
 
       const activeGstPct = overrideGstPercent !== null ? overrideGstPercent : totals.gstPercentage;
 
@@ -521,16 +597,17 @@ const CreateBill = () => {
 
       const payload = {
         billNumber: billNoToUse,
-        employee: (selectedEmployee || employeeSearch || "").toUpperCase(),
+        employee: finalEmployeeName,
         customerName: finalCustomerName,
-        customerEmail: (selectedCustomer.customerEmail || '').toUpperCase(),
+        customerEmail: selectedCustomer.customerEmail || '',
         customerMobileNo: selectedCustomer.customerMobileNo || '',
-        customerGstNo: activeGstPct > 0 ? ((selectedCustomer.customerGstNo || '').toUpperCase()) : '',
+        customerGstNo: activeGstPct > 0 ? (selectedCustomer.customerGstNo || '') : '',
         payment: paymentType.toUpperCase(),
         totalPaid: calculatedTotalPaid,
         total: finalTotalToPay,
         creditAmount: enableCredit ? Number((finalTotalToPay - calculatedTotalPaid).toFixed(2)) : 0,
-        totalWithGst: Number(subtotalWithoutGst.toFixed(2)),
+        actualTotal: Number(subtotalWithoutGst.toFixed(2)),
+        totalWithGst: Number(finalTotalToPay.toFixed(2)),
         totalItems: filledItems.length,
         discount: Number(disc.toFixed(2)),
         tdsAmount: Number(tds.toFixed(2)),
@@ -554,6 +631,8 @@ const CreateBill = () => {
           toast.success(`Bill saved successfully (${activeGstPct}% GST)!`);
           handleShowReceipt(res.data, printAfter, activeGstPct);
 
+          setSelectedEmployee('');
+          setEmployeeSearch('');
           setCustomerSearch('');
           setSelectedCustomer({ customerName: '', customerGstNo: '', customerMobileNo: '', customerEmail: '' });
           setParticularsList(Array(5).fill(null).map(() => getEmptyParticularRow()));
@@ -563,11 +642,25 @@ const CreateBill = () => {
           setPriceDiscount('');
           setTdsAmount('');
           setShowExtra(false);
-          fetchInitialData();
+          setTotals({
+            totalItems: 0,
+            totalBillsWithoutGst: 0,
+            gstPercentage: 0,
+            gstAmount: 0,
+            discount: 0,
+            tdsAmount: 0,
+            totalPaidCredits: 0,
+            totalCredits: 0,
+            totalToPay: 0
+          });
+          fetchNextBillNumber();
         }
       }
     } catch (error) {
       toast.error(`Failed to ${isEditMode ? 'update' : 'save'} bill`);
+    } finally {
+      setIsSaving(false);
+      setSavingType(null);
     }
   };
 
@@ -689,16 +782,63 @@ const CreateBill = () => {
                     <tr key={item.id}>
                       <td>
                         {!item.isFilled ? (
-                          <input
-                            type="text"
-                            placeholder="Enter Item ID & hit Enter"
-                            value={item.particularId}
-                            onChange={(e) => updateParticularRow(item.id, 'particularId', e.target.value)}
-                            onKeyDown={(e) => handleParticularAdd(e, item.id)}
-                            className="form-control particular-add-input"
-                          />
+                          <div className="particular-search-wrapper" style={{ position: 'relative' }}>
+                            <input
+                              type="text"
+                              placeholder="Type Item ID or Name..."
+                              value={item.particularId}
+                              onChange={(e) => {
+                                updateParticularRow(item.id, 'particularId', e.target.value);
+                                setActiveParticularDropdownRowId(item.id);
+                              }}
+                              onFocus={() => setActiveParticularDropdownRowId(item.id)}
+                              onBlur={() => setTimeout(() => setActiveParticularDropdownRowId(null), 200)}
+                              onKeyDown={(e) => handleParticularAdd(e, item.id)}
+                              className="form-control particular-add-input"
+                            />
+                            {activeParticularDropdownRowId === item.id && item.particularId && item.particularId.trim() !== '' && (
+                              <ul
+                                className="customer-dropdown-list particular-dropdown-list"
+                                style={{
+                                  position: 'absolute',
+                                  top: '100%',
+                                  left: 0,
+                                  right: 0,
+                                  zIndex: 1000,
+                                  maxHeight: '200px',
+                                  overflowY: 'auto',
+                                  background: '#fff',
+                                  border: '1px solid #ccc',
+                                  borderRadius: '4px',
+                                  listStyle: 'none',
+                                  padding: 0,
+                                  margin: 0,
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                }}
+                              >
+                                {allParticulars
+                                  .filter(p =>
+                                    String(p.particularId || '').toLowerCase().includes(item.particularId.trim().toLowerCase()) ||
+                                    String(p.particularName || p.name || '').toLowerCase().includes(item.particularId.trim().toLowerCase())
+                                  )
+                                  .slice(0, 10)
+                                  .map((p, idx) => (
+                                    <li
+                                      key={idx}
+                                      onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        selectParticularForItem(item.id, p);
+                                      }}
+                                      style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
+                                    >
+                                      <span className="fw-bold" style={{ color: '#002142' }}>{p.particularId}</span> - {(p.particularName || p.name || '').toUpperCase()} (₹{p.price || 0})
+                                    </li>
+                                  ))}
+                              </ul>
+                            )}
+                          </div>
                         ) : (
-                          item.particularName
+                          <span className="fw-bold">{item.particularName}</span>
                         )}
                       </td>
                       <td>
@@ -903,9 +1043,35 @@ const CreateBill = () => {
             )}
           </div>
 
-          <div className="save-actions">
-            <button className="btn btn-primary px-4 me-3" onClick={() => handleSave(false)}>Save</button>
-            <button className="btn btn-secondary px-4" onClick={() => handleSave(true)}>Save and Print</button>
+          <div className="save-actions d-flex align-items-center">
+            <button
+              className="btn btn-primary px-4 me-3 d-flex align-items-center gap-2"
+              onClick={() => handleSave(false)}
+              disabled={isSaving}
+            >
+              {isSaving && savingType === 'save' ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>{isEditMode ? 'Updating...' : 'Saving...'}</span>
+                </>
+              ) : (
+                isEditMode ? 'Update' : 'Save'
+              )}
+            </button>
+            <button
+              className="btn btn-secondary px-4 d-flex align-items-center gap-2"
+              onClick={() => handleSave(true)}
+              disabled={isSaving}
+            >
+              {isSaving && savingType === 'print' ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>{isEditMode ? 'Updating & Printing...' : 'Saving & Printing...'}</span>
+                </>
+              ) : (
+                isEditMode ? 'Update and Print' : 'Save and Print'
+              )}
+            </button>
           </div>
         </div>
 

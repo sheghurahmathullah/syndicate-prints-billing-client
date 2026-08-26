@@ -1,4 +1,4 @@
-/* Add Daily Expenses Container - Company Navy Theme */
+/* Add Daily Expenses Container - Professional Form Theme */
 .add-daily-expenses-container {
   min-height: calc(100vh - 4.5rem);
   background: #f8fafc;
@@ -14,98 +14,78 @@
   display: none;
 }
 
-/* Executive Floating Banner */
+/* Form Header Banner */
 .daily-expenses-header {
   background: #002142;
   color: white;
-  padding: 26px 36px;
-  border-radius: 20px;
+  padding: 22px 30px;
+  border-radius: 14px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 12px 35px -5px rgba(0, 33, 66, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 33, 66, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 2;
 }
 
-.banner-icon-box {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  flex-shrink: 0;
-}
-
 .daily-expenses-header h2 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: #ffffff;
   margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .daily-expenses-header p {
   color: #93c5fd;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
 }
 
 /* Total Cash Balance Widget Card */
 .total-cash-widget {
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 10px 18px;
-  border-radius: 14px;
-  min-width: 230px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  min-width: 220px;
 }
 
 .widget-label {
   color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   margin-bottom: 6px;
 }
 
 .widget-input-group {
   display: flex;
   align-items: center;
-  gap: 0;
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-  border: 1.5px solid #cbd5e1;
+  border: 1px solid #cbd5e1;
 }
 
 .currency-prefix {
-  font-weight: 800;
-  color: #ffffff;
-  background-color: #002142;
+  font-weight: 700;
+  color: #475569;
+  background-color: #f1f5f9;
   padding: 6px 12px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid #cbd5e1;
 }
 
 .widget-input {
   border: none;
   background: transparent;
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: #002142;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #0f172a;
   width: 100%;
   padding: 6px 12px;
   outline: none;
@@ -114,78 +94,98 @@
 /* Operations Card Sections */
 .ops-card {
   background: #ffffff;
-  border-radius: 18px;
-  padding: 24px 28px;
-  box-shadow: 0 4px 20px rgba(0, 33, 66, 0.06);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
 }
 
 .ops-card-title {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #002142;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f0f4f8;
-}
-
-.ops-card-icon {
-  color: #002142;
-  font-size: 1.3rem;
+  color: #0f172a;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #f1f5f9;
 }
 
 .ops-subcard-title {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #002142;
+  color: #1e293b;
 }
 
-.text-emerald {
-  color: #002142 !important;
+/* Rich Form Controls (Standardized Clean Form Inputs) */
+.add-daily-expenses-container .rich-form-group {
+  margin-bottom: 0;
 }
 
-.bg-emerald {
-  background-color: #002142 !important;
-}
-
-.bg-emerald-badge {
-  background-color: #f0f4f8;
-  color: #002142;
-  border: 1px solid #cbd5e1;
-  font-weight: 700;
+.add-daily-expenses-container .rich-form-label {
+  display: block;
   font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
 }
 
-/* Attached Addon Amount Input */
+.add-daily-expenses-container .rich-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.add-daily-expenses-container .rich-form-control {
+  width: 100%;
+  padding: 9px 13px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.add-daily-expenses-container .rich-form-control:focus {
+  border-color: #002142;
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
+}
+
+/* Light Currency Addon for Amount Inputs */
 .ops-amount-group {
   display: flex;
   align-items: stretch;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1.5px solid #cbd5e1;
+  border: 1px solid #cbd5e1;
   background-color: #ffffff;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease-in-out;
 }
 
 .ops-amount-group:focus-within {
   border-color: #002142;
-  box-shadow: 0 0 0 3.5px rgba(0, 33, 66, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
 }
 
-.ops-amount-addon {
-  background-color: #002142;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.95rem;
+.ops-currency-addon {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.9rem;
   padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
   flex-shrink: 0;
+  border-right: 1px solid #cbd5e1;
+}
+
+.ops-light-addon {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
 }
 
 .ops-amount-input {
@@ -193,42 +193,29 @@
   outline: none !important;
   box-shadow: none !important;
   padding: 8px 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 600;
+  font-size: 0.92rem;
   color: #0f172a;
   width: 100%;
   background: transparent;
 }
 
-/* Custom File Upload Box */
+/* File Upload Control */
 .custom-file-upload-box {
-  border: 1.5px dashed #002142;
-  border-radius: 12px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
   background: #f8fafc;
-  padding: 12px 18px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .custom-file-upload-box:hover {
-  background: #f0f4f8;
-  border-color: #001730;
-}
-
-.upload-icon-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #002142;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
+  background: #f1f5f9;
+  border-color: #002142;
 }
 
 .upload-text-box {
@@ -237,9 +224,9 @@
 }
 
 .upload-title {
-  font-weight: 700;
-  color: #002142;
-  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.88rem;
 }
 
 .upload-sub {
@@ -250,21 +237,21 @@
 /* Expense Items Grid */
 .expense-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
 }
 
 .ops-item-box {
   background-color: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 
 .ops-item-label {
-  font-weight: 700;
-  color: #002142;
-  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.85rem;
   margin-bottom: 6px;
   display: block;
 }
@@ -273,57 +260,92 @@
 .ops-dynamic-row {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 10px 14px;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.15s ease;
 }
 
 .ops-dynamic-row:hover {
-  background: #f0f4f8;
-  border-color: #cbd5e1;
+  background: #f1f5f9;
 }
 
 .ops-inner-input {
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   font-size: 0.88rem;
+  color: #0f172a;
 }
 
 .ops-inner-input:focus {
   border-color: #002142;
-  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
 }
 
 .btn-trash-icon {
   background: transparent;
   border: none;
   color: #ef4444;
-  font-size: 1rem;
+  font-size: 0.95rem;
   padding: 4px;
   cursor: pointer;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
 
 .btn-trash-icon:hover {
-  color: #b91c1c;
+  color: #dc2626;
   background: #fef2f2;
 }
 
 .btn-ops-outline {
-  border: 1.5px solid #002142;
+  border: 1px solid #cbd5e1;
   color: #002142;
   background: #ffffff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  border-radius: 8px;
-  padding: 6px 14px;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border-radius: 6px;
+  padding: 5px 12px;
+  transition: all 0.15s ease;
 }
 
 .btn-ops-outline:hover {
   background: #002142;
   color: #ffffff;
+  border-color: #002142;
+}
+
+.btn-ops-primary {
+  background-color: #002142;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-ops-primary:hover {
+  background-color: #001730;
+  color: #ffffff;
+}
+
+.bg-emerald-badge {
+  background-color: #f1f5f9;
+  color: #002142 !important;
+  border: 1px solid #cbd5e1;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.ops-diff-badge {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background-color: #002142 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  box-shadow: 0 1px 3px rgba(0, 33, 66, 0.15);
+  line-height: 1.2;
 }
 
 @media (max-width: 768px) {
@@ -331,7 +353,7 @@
     padding: 1rem;
   }
   .daily-expenses-header {
-    padding: 20px;
+    padding: 16px 20px;
   }
   .ops-card {
     padding: 16px;

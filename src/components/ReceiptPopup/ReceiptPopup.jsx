@@ -6,14 +6,14 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
   const SHOP_NAME = "SYNDICATE PRINTERS";
   const SHOP_ADDRESS_LINE1 = "BHARATHY SALAI, OPP JAMBAZAR POLICE STATION,";
   const SHOP_ADDRESS_LINE2 = "ROYAPETTAH, CHENNAI - 14";
-  const SHOP_CONTACT =
-    "PH: +91 9840031990 | EMAIL: printsyndicate2023@gmail.com";
+  const SHOP_CONTACT = "PH: +91 9840031990";
   const SHOP_GSTIN = "33ALSPS7215E1ZW";
+
   const handlePrintReceipt = () => {
     window.print();
   };
 
-  // Format date and time to match receipt format: YYYY-MM-DD HH:MM:S
+  // Format date and time to match receipt format: YYYY-MM-DD HH:MM:SS
   const formatDateTime = (dateString) => {
     if (!dateString) return new Date().toLocaleString();
     const date = new Date(dateString);
@@ -22,7 +22,7 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
     const day = String(date.getDate()).padStart(2, "0");
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = date.getSeconds(); // No padding to match image format
+    const seconds = String(date.getSeconds()).padStart(2, "0");
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
@@ -50,14 +50,17 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
     return 0;
   };
 
-  const taxPercent = calculateTaxPercent();
+  // Get bill number
+  const billNumber =
+    orderDetails.invoiceNumber || orderDetails.orderId || "N/A";
+
+  const calculatedTax = calculateTaxPercent();
   const isNonGst =
-    taxPercent < 1 && (!orderDetails.tax || orderDetails.tax < 0.01);
+    String(billNumber).toUpperCase().endsWith("-E") ||
+    (calculatedTax < 1 && (!orderDetails.tax || orderDetails.tax < 0.01));
+  const taxPercent = isNonGst ? 0 : (calculatedTax > 0 ? calculatedTax : 18);
 
   // Calculate net amount and credit
-  // For credit orders: NET AMOUNT = GRAND TOTAL - CREDIT (pending amount)
-  // CREDIT = pendingAmount
-  // TOTAL PAID = paidAmount
   const creditAmount =
     orderDetails.creditType === "CREDIT" ? orderDetails.pendingAmount || 0 : 0;
   const netAmount =
@@ -69,185 +72,100 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
       ? orderDetails.paidAmount || 0
       : orderDetails.grandTotal;
 
-  // Get bill number - use invoiceNumber if available, otherwise use orderId
-  const billNumber =
-    orderDetails.invoiceNumber || orderDetails.orderId || "N/A";
-
-  // Extract EST NO from invoice number (format: XX-XX)
+  // Extract EST NO from invoice number
   const extractEstNo = (invoiceNumber) => {
     if (!invoiceNumber) return "N/A";
-    // Try to extract pattern like "14-24" from invoice number
     const match = invoiceNumber.match(/(\d+)-(\d+)/);
     if (match) {
       return match[0];
     }
-    // If no pattern found, use last part or return as is
     return invoiceNumber.split("-").slice(-2).join("-") || invoiceNumber;
   };
 
   const estNo = extractEstNo(billNumber);
 
-  // Render Non-GST Bill (BILL ESTIMATE format)
+  // TEMPLATE 1: NON-GST BILL (ATM Thermal Roll Style)
   if (isNonGst) {
     return (
       <div className="receipt-popup-overlay">
         <div className="receipt-popup non-gst-receipt">
-          <style>{`
-            @media print {
-              .bill-estimate-title {
-                font-size: 9px !important;
-                letter-spacing: 0.6px !important;
-              }
-              .non-gst-transaction-row {
-                font-size: 9px !important;
-              }
-              .non-gst-table th,
-              .non-gst-table td {
-                font-size: 9px !important;
-              }
-              .non-gst-summary {
-                margin: 2px 0 !important;
-                padding: 1px 0 !important;
-              }
-              .non-gst-summary-row {
-                padding: 1px 0 !important;
-                margin: 0 !important;
-                font-size: 10px !important;
-              }
-              .non-gst-total-amount-row {
-                padding: 1px 0 !important;
-                margin: 0 !important;
-                font-size: 11px !important;
-              }
-              .non-gst-footer-message {
-                font-size: 9px !important;
-              }
-            }
-          `}</style>
           <div id="receipt-print-area" className="receipt-print-area">
             {/* BILL ESTIMATE Header */}
             <div className="non-gst-header">
-              <h1
-                className="bill-estimate-title"
-                style={{ fontSize: "15px", fontWeight: "bold" }}
-              >
-                BILL ESTIMATE
-              </h1>
+              <h1 className="bill-estimate-title">BILL ESTIMATE</h1>
             </div>
+
+            <div className="pos-dashed-line"></div>
 
             {/* Transaction Details */}
-            <div className="non-gst-transaction-details">
-              <div className="non-gst-transaction-row">
-                <span className="non-gst-left">
-                  <strong>EST NO :</strong> {estNo}
-                </span>
-                <span className="non-gst-right">
-                  <strong>DATE :</strong>{" "}
-                  {formatDateTime(orderDetails.createdAt)}
-                </span>
+            <div className="pos-transaction-details">
+              <div className="pos-transaction-row">
+                <span className="pos-left"><strong>EST NO:</strong> {estNo}</span>
+                <span className="pos-right"><strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}</span>
               </div>
-              <div className="non-gst-transaction-row">
-                <span className="non-gst-left">
-                  <strong>ATTENDED BY :</strong> {orderDetails.username || "1"}
-                </span>
-                <span className="non-gst-right">
-                  <strong>CUSTOMER :</strong> {orderDetails.customerName}
-                </span>
+              <div className="pos-transaction-row">
+                <span className="pos-left"><strong>ATTENDED BY:</strong> {(orderDetails.username || "1").toUpperCase()}</span>
+                <span className="pos-right"><strong>CUSTOMER:</strong> {(orderDetails.customerName || "CASH CUSTOMER").toUpperCase()}</span>
               </div>
             </div>
 
-            {/* Items Table */}
-            <div className="non-gst-table-container">
-              <table className="non-gst-table">
-                <thead>
-                  <tr>
-                    <th>ITEM</th>
-                    <th className="text-center">QTY</th>
-                    <th className="text-right">RATE</th>
-                    <th className="text-right">AMT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orderDetails.items &&
-                    orderDetails.items.map((item, index) => {
-                      const itemAmount = item.price * item.quantity;
-                      return (
-                        <tr key={index}>
-                          <td>{item.name}</td>
-                          <td className="text-center">{item.quantity}</td>
-                          <td className="text-right">
-                            ₹{item.price.toFixed(2)}
-                          </td>
-                          <td className="text-right">
-                            ₹{itemAmount.toFixed(2)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+            <div className="pos-dashed-line"></div>
+
+            {/* POS Column Items Layout */}
+            <div className="pos-items-container">
+              <div className="pos-item-row pos-header-row">
+                <span className="pos-col-item-nongst">ITEM</span>
+                <span className="pos-col-qty">QTY</span>
+                <span className="pos-col-rate">RATE</span>
+                <span className="pos-col-amt">AMT</span>
+              </div>
+              <div className="pos-dashed-line"></div>
+
+              {orderDetails.items &&
+                orderDetails.items.map((item, index) => {
+                  const itemAmount = item.price * item.quantity;
+                  return (
+                    <div key={index} className="pos-item-row">
+                      <span className="pos-col-item-nongst">{(item.name || "").toUpperCase()}</span>
+                      <span className="pos-col-qty">{item.quantity}</span>
+                      <span className="pos-col-rate">₹{item.price.toFixed(2)}</span>
+                      <span className="pos-col-amt">₹{itemAmount.toFixed(2)}</span>
+                    </div>
+                  );
+                })}
             </div>
+
+            <div className="pos-dashed-line"></div>
 
             {/* Summary */}
-            <div
-              className="non-gst-summary"
-              style={{ margin: "3px 0", padding: "2px 0" }}
-            >
-              <div
-                className="non-gst-summary-row non-gst-total-amount-row"
-                style={{ padding: "2px 0", margin: "0" }}
-              >
-                <span>
-                  <strong>TOTAL AMOUNT</strong>
-                </span>
+            <div className="pos-summary">
+              <div className="pos-summary-row pos-total-row">
+                <span><strong>TOTAL AMOUNT</strong></span>
                 <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
               </div>
               {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
-                <div
-                  className="non-gst-summary-row"
-                  style={{ padding: "2px 0", margin: "0" }}
-                >
-                  <span>
-                    <strong>CREDIT</strong>
-                  </span>
+                <div className="pos-summary-row">
+                  <span><strong>CREDIT</strong></span>
                   <span>₹{creditAmount.toFixed(2)}</span>
                 </div>
               )}
               {orderDetails.creditType === "CREDIT" && (
-                <>
-                  <div
-                    className="non-gst-summary-row"
-                    style={{ padding: "2px 0", margin: "0" }}
-                  >
-                    <span>
-                      <strong>NET AMOUNT</strong>
-                    </span>
-                    <span>₹{netAmount.toFixed(0)}</span>
-                  </div>
-                </>
+                <div className="pos-summary-row">
+                  <span><strong>NET AMOUNT</strong></span>
+                  <span>₹{netAmount.toFixed(0)}</span>
+                </div>
               )}
-              <div
-                className="non-gst-summary-row"
-                style={{ padding: "3px 0", margin: "0" }}
-              >
-                <span>
-                  <strong>TOTAL PAID</strong>
-                </span>
+              <div className="pos-summary-row">
+                <span><strong>TOTAL PAID</strong></span>
                 <span>₹{totalPaid.toFixed(2)}</span>
               </div>
             </div>
 
+            <div className="pos-dashed-line"></div>
+
             {/* Footer */}
-            <div
-              className="non-gst-footer"
-              style={{ margin: "4px 0", paddingTop: "4px" }}
-            >
-              <p
-                className="non-gst-footer-message"
-                style={{ marginTop: "3px", paddingTop: "3px" }}
-              >
-                * GST EXTRA AS APPLICABLE
-              </p>
+            <div className="pos-footer">
+              <p className="pos-footer-message">* GST EXTRA AS APPLICABLE</p>
             </div>
           </div>
 
@@ -265,7 +183,7 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
     );
   }
 
-  // Render GST Bill (Current design)
+  // TEMPLATE 2: GST BILL (ATM Thermal Roll Style with Clear Logo)
   return (
     <div className="receipt-popup-overlay">
       <div className="receipt-popup">
@@ -284,121 +202,90 @@ const ReceiptPopup = ({ orderDetails, onClose }) => {
             <p className="company-gstin">
               <strong>GSTIN:</strong> {SHOP_GSTIN || "N/A"}
             </p>
-            {orderDetails.gstin && !isNonGst && (
+            {orderDetails.gstin && (
               <p className="customer-gstin">
-                <strong>CUSTOMER GSTIN:</strong> {orderDetails.gstin}
+                <strong>CUSTOMER GSTIN:</strong> {orderDetails.gstin.toUpperCase()}
               </p>
             )}
           </div>
 
+          <div className="pos-dashed-line"></div>
+
           {/* Transaction Details */}
-          <div className="receipt-transaction-details">
-            <div className="transaction-row-two-columns">
-              <span className="transaction-left">
-                <strong>BILL NO:</strong> {billNumber}
-              </span>
-              <span className="transaction-right">
-                <strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}
-              </span>
+          <div className="pos-transaction-details">
+            <div className="pos-transaction-row">
+              <span className="pos-left"><strong>BILL NO:</strong> {billNumber}</span>
+              <span className="pos-right"><strong>DATE:</strong> {formatDateTime(orderDetails.createdAt)}</span>
             </div>
-
-            {/* Divider */}
-            <div className="receipt-divider"></div>
-
-            <div className="transaction-row-two-columns">
-              <span className="transaction-left">
-                <strong>ATTENDED BY:</strong> {orderDetails.username || "STAFF"}
-              </span>
-              <span className="transaction-right">
-                <strong>CUSTOMER:</strong> {orderDetails.customerName}
-              </span>
+            <div className="pos-transaction-row">
+              <span className="pos-left"><strong>ATTENDED BY:</strong> {(orderDetails.username || "STAFF").toUpperCase()}</span>
+              <span className="pos-right"><strong>CUSTOMER:</strong> {(orderDetails.customerName || "CASH CUSTOMER").toUpperCase()}</span>
             </div>
           </div>
 
-          {/* Divider after transaction details */}
-          <div className="receipt-divider"></div>
+          <div className="pos-dashed-line"></div>
 
-          {/* Items Table */}
-          <div className="receipt-table-container">
-            <table className="receipt-table">
-              <thead>
-                <tr>
-                  <th>ITEM</th>
-                  <th className="text-center">QTY</th>
-                  <th className="text-right">RATE</th>
-                  <th className="text-right">GST</th>
-                  <th className="text-right">AMT</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderDetails.items &&
-                  orderDetails.items.map((item, index) => {
-                    const itemAmount = item.price * item.quantity;
-                    return (
-                      <tr key={index}>
-                        <td>{item.name}</td>
-                        <td className="text-center">{item.quantity}</td>
-                        <td className="text-right">₹{item.price.toFixed(2)}</td>
-                        <td className="text-right">
-                          {taxPercent >= 1 ? `${taxPercent.toFixed(0)}%` : "0%"}
-                        </td>
-                        <td className="text-right">₹{itemAmount.toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+          {/* POS Column Items Layout */}
+          <div className="pos-items-container">
+            <div className="pos-item-row pos-header-row">
+              <span className="pos-col-item">ITEM</span>
+              <span className="pos-col-qty">QTY</span>
+              <span className="pos-col-rate">RATE</span>
+              <span className="pos-col-gst">GST</span>
+              <span className="pos-col-amt">AMT</span>
+            </div>
+            <div className="pos-dashed-line"></div>
+
+            {orderDetails.items &&
+              orderDetails.items.map((item, index) => {
+                const itemAmount = item.price * item.quantity;
+                return (
+                  <div key={index} className="pos-item-row">
+                    <span className="pos-col-item">{(item.name || "").toUpperCase()}</span>
+                    <span className="pos-col-qty">{item.quantity}</span>
+                    <span className="pos-col-rate">₹{item.price.toFixed(2)}</span>
+                    <span className="pos-col-gst">{taxPercent > 0 ? `${taxPercent.toFixed(0)}%` : "18%"}</span>
+                    <span className="pos-col-amt">₹{itemAmount.toFixed(2)}</span>
+                  </div>
+                );
+              })}
           </div>
+
+          <div className="pos-dashed-line"></div>
 
           {/* Summary */}
-          <div className="receipt-summary">
-            <div className="receipt-summary-row">
-              <span>
-                <strong>GST (SGST + CGST):</strong>
-              </span>
-              <span>
-                ₹{orderDetails.tax ? orderDetails.tax.toFixed(2) : "0.00"}
-              </span>
+          <div className="pos-summary">
+            <div className="pos-summary-row">
+              <span><strong>GST (SGST + CGST):</strong></span>
+              <span>₹{orderDetails.tax ? orderDetails.tax.toFixed(2) : "0.00"}</span>
             </div>
-            <div className="receipt-summary-row receipt-total-amount-row">
-              <span>
-                <strong>TOTAL AMOUNT:</strong>
-              </span>
+            <div className="pos-summary-row pos-total-row">
+              <span><strong>TOTAL AMOUNT:</strong></span>
               <span>₹{orderDetails.grandTotal.toFixed(2)}</span>
             </div>
-            <div className="receipt-divider"></div>
             {orderDetails.creditType === "CREDIT" && creditAmount > 0 && (
-              <div className="receipt-summary-row">
-                <span>
-                  <strong>CREDIT:</strong>
-                </span>
+              <div className="pos-summary-row">
+                <span><strong>CREDIT:</strong></span>
                 <span>₹{creditAmount.toFixed(2)}</span>
               </div>
             )}
             {orderDetails.creditType === "CREDIT" && (
-              <>
-                <div className="receipt-summary-row">
-                  <span>
-                    <strong>NET AMOUNT:</strong>
-                  </span>
-                  <span>₹{netAmount.toFixed(2)}</span>
-                </div>
-                <div className="receipt-divider"></div>
-              </>
+              <div className="pos-summary-row">
+                <span><strong>NET AMOUNT:</strong></span>
+                <span>₹{netAmount.toFixed(2)}</span>
+              </div>
             )}
-            <div className="receipt-summary-row">
-              <span>
-                <strong>TOTAL PAID:</strong>
-              </span>
+            <div className="pos-summary-row">
+              <span><strong>TOTAL PAID:</strong></span>
               <span>₹{totalPaid.toFixed(2)}</span>
             </div>
           </div>
 
+          <div className="pos-dashed-line"></div>
+
           {/* Footer */}
-          <div className="receipt-footer">
-            <p className="footer-message">
-              THANKS FOR CHOOSING US..WELCOME AGAIN
-            </p>
+          <div className="pos-footer">
+            <p className="pos-footer-message">THANKS FOR CHOOSING US..WELCOME AGAIN</p>
           </div>
         </div>
 

@@ -56,6 +56,15 @@ const Menubar = () => {
           <span className="link-text">Dashboard</span>
         </Link>
 
+        <Link
+          className={`sidebar-link ${isActive("/bills/create") ? "active" : ""}`}
+          to="/bills/create"
+          title="New Bills"
+        >
+          <i className="bi bi-plus-circle"></i>
+          <span className="link-text">New Bills</span>
+        </Link>
+
         {/* Explore hidden as requested */}
 
         <div
@@ -72,14 +81,6 @@ const Menubar = () => {
         <div className={`submenu-wrapper ${billsOpen ? 'open' : ''}`}>
           <div className="submenu">
             <div className="submenu-content">
-              <Link
-                className={`sidebar-link submenu-link ${isActive("/bills/create") ? "active" : ""}`}
-                to="/bills/create"
-                title="Create Bill"
-              >
-                <i className="bi bi-plus-circle"></i>
-                <span className="link-text">Bills</span>
-              </Link>
               <Link
                 className={`sidebar-link submenu-link ${isActive("/bills/today") ? "active" : ""}`}
                 to="/bills/today"

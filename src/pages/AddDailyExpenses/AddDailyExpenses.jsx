@@ -206,9 +206,15 @@ const AddDailyExpenses = () => {
     
     // Auto-calculate diff when current or old reading changes
     if (field === "currentReading" || field === "oldReading") {
-      const current = parseFloat(updated[index].currentReading) || 0;
-      const old = parseFloat(updated[index].oldReading) || 0;
-      updated[index].diff = Math.max(0, current - old).toString();
+      const currentStr = updated[index].currentReading;
+      const oldStr = updated[index].oldReading;
+      if (currentStr !== "" || oldStr !== "") {
+        const current = parseFloat(currentStr) || 0;
+        const old = parseFloat(oldStr) || 0;
+        updated[index].diff = (current - old).toString();
+      } else {
+        updated[index].diff = "0";
+      }
     }
     
     setMachineReadings(updated);
@@ -344,20 +350,15 @@ const AddDailyExpenses = () => {
       {/* Header Banner */}
       <div className="daily-expenses-header">
         <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-          <div className="d-flex align-items-center gap-3">
-            <div className="banner-icon-box">
-              <i className="bi bi-calendar-check-fill"></i>
-            </div>
-            <div>
-              <h2 className="mb-1">Daily Operations Expense Ledger</h2>
-              <p className="mb-0">Record cash balances, itemized daily expenses, payments & machine counter readings</p>
-            </div>
+          <div>
+            <h2 className="mb-1">Daily Operations Expense Ledger</h2>
+            <p className="mb-0">Record cash balances, itemized daily expenses, payments & machine counter readings</p>
           </div>
           
           {/* Top Cash Card Widget */}
           <div className="total-cash-widget">
             <div className="widget-label">
-              <i className="bi bi-wallet2 me-1"></i> Total Cash Balance
+              Total Cash Balance
             </div>
             <div className="widget-input-group">
               <span className="currency-prefix">₹</span>
@@ -384,7 +385,6 @@ const AddDailyExpenses = () => {
         {/* Date & Branch Card */}
         <div className="ops-card mb-4">
           <h4 className="ops-card-title">
-            <i className="bi bi-geo-alt-fill ops-card-icon"></i>
             Branch & Ledger Date
           </h4>
           <div className="row g-3">
@@ -392,7 +392,6 @@ const AddDailyExpenses = () => {
               <div className="rich-form-group">
                 <label className="rich-form-label">Ledger Date <span className="text-danger">*</span></label>
                 <div className="rich-input-group">
-                  <i className="bi bi-calendar-date-fill rich-input-icon ops-icon"></i>
                   <input
                     type="date"
                     className="rich-form-control"
@@ -407,7 +406,6 @@ const AddDailyExpenses = () => {
               <div className="rich-form-group">
                 <label className="rich-form-label">Operating Branch <span className="text-danger">*</span></label>
                 <div className="rich-input-group">
-                  <i className="bi bi-building-fill rich-input-icon ops-icon"></i>
                   <select
                     className="rich-form-control"
                     value={selectedBranch}
@@ -430,7 +428,6 @@ const AddDailyExpenses = () => {
         {/* Cash in Hand, Last Closed, Shortage & Image Card */}
         <div className="ops-card mb-4">
           <h4 className="ops-card-title">
-            <i className="bi bi-cash-stack ops-card-icon"></i>
             Cash Balances, Last Closed, Shortage & Voucher Receipt
           </h4>
           <div className="row g-3">
@@ -438,7 +435,7 @@ const AddDailyExpenses = () => {
               <div className="rich-form-group">
                 <label className="rich-form-label">Cash in Hand</label>
                 <div className="ops-amount-group">
-                  <span className="ops-amount-addon">₹</span>
+                  <span className="ops-currency-addon">₹</span>
                   <input
                     type="number"
                     min="0"
@@ -461,11 +458,11 @@ const AddDailyExpenses = () => {
                 <label className="rich-form-label d-flex align-items-center justify-content-between">
                   <span>Last Closed</span>
                   <span className="badge bg-light text-primary border me-1 fw-semibold" style={{ fontSize: "11px" }}>
-                    <i className="bi bi-magic me-1"></i>Auto-calculated
+                    Auto-calculated
                   </span>
                 </label>
                 <div className="ops-amount-group">
-                  <span className="ops-amount-addon">₹</span>
+                  <span className="ops-currency-addon">₹</span>
                   <input
                     type="number"
                     className="ops-amount-input bg-light text-secondary fw-bold"
@@ -484,7 +481,7 @@ const AddDailyExpenses = () => {
               <div className="rich-form-group">
                 <label className="rich-form-label">Shortage</label>
                 <div className="ops-amount-group">
-                  <span className="ops-amount-addon">₹</span>
+                  <span className="ops-currency-addon">₹</span>
                   <input
                     type="number"
                     min="0"
@@ -506,9 +503,6 @@ const AddDailyExpenses = () => {
               <div className="rich-form-group">
                 <label className="rich-form-label">Upload Proof Image / Receipt</label>
                 <label className="custom-file-upload-box">
-                  <div className="upload-icon-circle">
-                    <i className="bi bi-cloud-arrow-up-fill"></i>
-                  </div>
                   <div className="upload-text-box">
                     <span className="upload-title">
                       {cashImage ? cashImage.name : "Click to select receipt / voucher photo"}
@@ -533,7 +527,6 @@ const AddDailyExpenses = () => {
         {dailyExpenseItems.length > 0 && (
           <div className="ops-card mb-4">
             <h4 className="ops-card-title">
-              <i className="bi bi-receipt-cutoff ops-card-icon"></i>
               Itemized Daily Operating Expenses
             </h4>
             <div className="expense-items-grid">
@@ -541,7 +534,7 @@ const AddDailyExpenses = () => {
                 <div key={item.expenseItemId} className="ops-item-box">
                   <label className="ops-item-label">{item.name}</label>
                   <div className="ops-amount-group">
-                    <span className="ops-amount-addon">₹</span>
+                    <span className="ops-currency-addon">₹</span>
                     <input
                       type="number"
                       min="0"
@@ -572,11 +565,17 @@ const AddDailyExpenses = () => {
             {/* Other Expenses */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-node-plus-fill me-2 text-emerald"></i>
                 Other Ad-hoc Expenses
               </h5>
               {otherExpenses.map((expense, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-6">Expense Category</div>
+                      <div className="col-5">Amount (₹)</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-6">
                       <input
@@ -589,7 +588,7 @@ const AddDailyExpenses = () => {
                     </div>
                     <div className="col-5">
                       <div className="input-group input-group-sm">
-                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <span className="input-group-text ops-light-addon fw-bold">₹</span>
                         <input
                           type="number"
                           min="0"
@@ -610,7 +609,7 @@ const AddDailyExpenses = () => {
                           onClick={() => removeOtherExpense(index)}
                           title="Remove Row"
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -622,18 +621,24 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addOtherExpense}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Other Expense
+                + Add Other Expense
               </button>
             </div>
 
             {/* Advance Payments */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-cash-coin me-2 text-emerald"></i>
                 Staff / Vendor Advance Payments
               </h5>
               {advancePayments.map((payment, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-6">Beneficiary / Purpose</div>
+                      <div className="col-5">Amount (₹)</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-6">
                       <input
@@ -646,7 +651,7 @@ const AddDailyExpenses = () => {
                     </div>
                     <div className="col-5">
                       <div className="input-group input-group-sm">
-                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <span className="input-group-text ops-light-addon fw-bold">₹</span>
                         <input
                           type="number"
                           min="0"
@@ -667,7 +672,7 @@ const AddDailyExpenses = () => {
                           onClick={() => removeAdvancePayment(index)}
                           title="Remove Row"
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -679,7 +684,7 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addAdvancePayment}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Advance Payment
+                + Add Advance Payment
               </button>
             </div>
           </div>
@@ -691,11 +696,17 @@ const AddDailyExpenses = () => {
             {/* Check Payments */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-card-checklist me-2 text-emerald"></i>
                 Cheque Payments Issued
               </h5>
               {checkPayments.map((payment, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-6">Cheque No.</div>
+                      <div className="col-5">Amount (₹)</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-6">
                       <input
@@ -708,7 +719,7 @@ const AddDailyExpenses = () => {
                     </div>
                     <div className="col-5">
                       <div className="input-group input-group-sm">
-                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <span className="input-group-text ops-light-addon fw-bold">₹</span>
                         <input
                           type="number"
                           min="0"
@@ -728,7 +739,7 @@ const AddDailyExpenses = () => {
                           className="btn-trash-icon"
                           onClick={() => removeCheckPayment(index)}
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -740,18 +751,24 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addCheckPayment}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Cheque Payment
+                + Add Cheque Payment
               </button>
             </div>
 
             {/* Cash Deposits */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-bank2 me-2 text-emerald"></i>
                 Bank Cash Deposits
               </h5>
               {cashDeposits.map((deposit, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-6">Deposit Ref / Sl. No.</div>
+                      <div className="col-5">Amount (₹)</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-6">
                       <input
@@ -764,7 +781,7 @@ const AddDailyExpenses = () => {
                     </div>
                     <div className="col-5">
                       <div className="input-group input-group-sm">
-                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <span className="input-group-text ops-light-addon fw-bold">₹</span>
                         <input
                           type="number"
                           min="0"
@@ -784,7 +801,7 @@ const AddDailyExpenses = () => {
                           className="btn-trash-icon"
                           onClick={() => removeCashDeposit(index)}
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -796,7 +813,7 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addCashDeposit}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Bank Cash Deposit
+                + Add Bank Cash Deposit
               </button>
             </div>
           </div>
@@ -808,11 +825,17 @@ const AddDailyExpenses = () => {
             {/* Other Incomes */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-graph-up-arrow me-2 text-emerald"></i>
                 Other Ancillary Incomes
               </h5>
               {otherIncomes.map((income, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-6">Source / Reason</div>
+                      <div className="col-5">Amount (₹)</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-6">
                       <input
@@ -825,7 +848,7 @@ const AddDailyExpenses = () => {
                     </div>
                     <div className="col-5">
                       <div className="input-group input-group-sm">
-                        <span className="input-group-text bg-emerald text-white fw-bold">₹</span>
+                        <span className="input-group-text ops-light-addon fw-bold">₹</span>
                         <input
                           type="number"
                           min="0"
@@ -845,7 +868,7 @@ const AddDailyExpenses = () => {
                           className="btn-trash-icon"
                           onClick={() => removeOtherIncome(index)}
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -857,18 +880,26 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addOtherIncome}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Income
+                + Add Income
               </button>
             </div>
 
             {/* Machine Readings */}
             <div className="col-lg-6">
               <h5 className="ops-subcard-title mb-3">
-                <i className="bi bi-speedometer2 me-2 text-emerald"></i>
                 Machine Counter Meter Readings
               </h5>
               {machineReadings.map((reading, index) => (
                 <div key={index} className="ops-dynamic-row mb-2">
+                  {index === 0 && (
+                    <div className="row g-2 mb-1 px-1 text-muted fw-bold text-uppercase" style={{ fontSize: "0.72rem", letterSpacing: "0.03em" }}>
+                      <div className="col-4">Machine Name</div>
+                      <div className="col-3">Current</div>
+                      <div className="col-2">Old</div>
+                      <div className="col-2 text-center">Diff</div>
+                      <div className="col-1"></div>
+                    </div>
+                  )}
                   <div className="row g-2 align-items-center">
                     <div className="col-4">
                       <input
@@ -904,8 +935,10 @@ const AddDailyExpenses = () => {
                       />
                     </div>
                     <div className="col-2">
-                      <span className="badge bg-emerald-badge w-100 py-2">
-                        {reading.diff ? `+${reading.diff}` : '0'}
+                      <span className="ops-diff-badge">
+                        {reading.diff !== undefined && reading.diff !== "" ? (
+                          parseFloat(reading.diff) > 0 ? `+${reading.diff}` : `${reading.diff}`
+                        ) : '0'}
                       </span>
                     </div>
                     <div className="col-1 text-end">
@@ -915,7 +948,7 @@ const AddDailyExpenses = () => {
                           className="btn-trash-icon"
                           onClick={() => removeMachineReading(index)}
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash"></i>
                         </button>
                       )}
                     </div>
@@ -927,7 +960,7 @@ const AddDailyExpenses = () => {
                 className="btn btn-ops-outline mt-2"
                 onClick={addMachineReading}
               >
-                <i className="bi bi-plus-circle-fill me-1"></i> Add Machine Counter
+                + Add Machine Counter
               </button>
             </div>
           </div>
@@ -941,7 +974,7 @@ const AddDailyExpenses = () => {
             onClick={resetForm}
             disabled={loading}
           >
-            <i className="bi bi-arrow-counterclockwise me-1"></i> Reset Form
+            Reset Form
           </button>
           <button
             type="submit"
@@ -954,10 +987,7 @@ const AddDailyExpenses = () => {
                 Saving Daily Expenses...
               </>
             ) : (
-              <>
-                <i className="bi bi-cloud-check-fill me-2"></i>
-                Save Daily Expenses Ledger
-              </>
+              "Save Daily Expenses Ledger"
             )}
           </button>
         </div>

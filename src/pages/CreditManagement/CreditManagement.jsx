@@ -56,10 +56,14 @@ const CreditManagement = () => {
       );
 
       const pageData = response.data;
-      if (pageData && pageData.content) {
-        setBills(pageData.content);
-        setTotalPages(pageData.totalPages || 0);
-        setTotalElements(pageData.totalElements || 0);
+      if (pageData) {
+        const contentList = Array.isArray(pageData) ? pageData : (pageData.content || []);
+        setBills(contentList);
+        setTotalPages(pageData.totalPages || 1);
+        const count = (pageData.totalElements !== undefined && pageData.totalElements !== null && pageData.totalElements > 0)
+          ? pageData.totalElements
+          : contentList.length;
+        setTotalElements(count);
       } else {
         setBills([]);
         setTotalPages(0);
@@ -187,7 +191,7 @@ const CreditManagement = () => {
       items: items,
       creditType: bill.billStatus === "CREDIT" ? "CREDIT" : "CASH",
       pendingAmount: Math.max(0, (bill.total || 0) - (bill.totalPaid || 0)),
-      taxPercent: 0,
+      taxPercent: bill.gstPercentage ? bill.gstPercentage : (bill.billNumber && String(bill.billNumber).toUpperCase().endsWith("-E") ? 0 : 18),
       subtotal: bill.total || 0,
       gstin: bill.customerGstNo || "",
     };
@@ -237,8 +241,8 @@ const CreditManagement = () => {
           </div>
           <div className="kpi-details">
             <span className="kpi-label">Total Credit Bills</span>
-            <h3 className="kpi-value">{totalElements}</h3>
-            <span className="kpi-subtext">Filtered records</span>
+            <h3 className="kpi-value">{totalElements > 0 ? totalElements : bills.length}</h3>
+            <span className="kpi-subtext">Showing {bills.length} item{bills.length !== 1 ? 's' : ''}</span>
           </div>
         </div>
 
@@ -387,7 +391,7 @@ const CreditManagement = () => {
                 <th className="text-end">Paid (₹)</th>
                 <th className="text-end">Balance (₹)</th>
                 <th className="text-center">Status</th>
-                <th className="text-center" style={{ width: "130px" }}>Actions</th>
+                <th className="text-center" style={{ width: "100px" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -422,7 +426,7 @@ const CreditManagement = () => {
                         {page * pageSize + index + 1}
                       </td>
                       <td>
-                        <span className="bill-num-badge">#{bill.billNumber}</span>
+                        <span className="bill-num-badge">{bill.billNumber}</span>
                       </td>
                       <td className="text-muted small">
                         {formatDate(bill.date || bill.createdAt)}
@@ -465,11 +469,10 @@ const CreditManagement = () => {
                             title="Update Credit / Receive Payment"
                             onClick={() => handleOpenSettleModal(bill)}
                           >
-                            <i className="bi bi-cash-stack"></i>
-                            <span>Update</span>
+                            <i className="bi bi-pencil-square"></i>
                           </button>
                           <button
-                            className="btn btn-action print-btn"
+                            className="btn btn-action print-icon-btn"
                             title="View Receipt Invoice"
                             onClick={() => handleViewReceipt(bill)}
                           >
@@ -486,66 +489,55 @@ const CreditManagement = () => {
         </div>
 
         {/* Pagination Section */}
-        <div className="credit-pagination-footer">
-          <div className="page-size-selector">
-            <label className="form-label mb-0 small text-muted me-2">Rows per page:</label>
+        <div className="custom-pagination-container d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="pageSizeSelect" className="form-label mb-0 small fw-bold text-muted">Rows per page:</label>
             <select
+              id="pageSizeSelect"
               className="form-select form-select-sm shadow-sm"
+              style={{ width: "auto" }}
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
                 setPage(0);
               }}
-              style={{ width: "75px" }}
             >
+              <option value="5">5</option>
               <option value="10">10</option>
-              <option value="25">25</option>
+              <option value="20">20</option>
               <option value="50">50</option>
             </select>
-            <span className="text-muted small ms-3">
-              Total Records: <strong>{totalElements}</strong>
-            </span>
           </div>
 
-          {totalPages > 0 && (
-            <div className="pagination-controls">
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                disabled={page === 0}
-                onClick={() => setPage(0)}
-                title="First Page"
-              >
-                <i className="bi bi-chevron-double-left"></i>
-              </button>
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                disabled={page === 0}
-                onClick={() => setPage(page - 1)}
-              >
-                <i className="bi bi-chevron-left me-1"></i> Prev
-              </button>
+          <div className="custom-pagination">
+            <button
+              className="page-nav-btn"
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+            >
+              <i className="bi bi-chevron-left me-1"></i> PREVIOUS
+            </button>
 
-              <span className="page-indicator mx-2 small fw-semibold text-dark">
-                Page {page + 1} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                disabled={page >= totalPages - 1}
-                onClick={() => setPage(page + 1)}
-              >
-                Next <i className="bi bi-chevron-right ms-1"></i>
-              </button>
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                disabled={page >= totalPages - 1}
-                onClick={() => setPage(totalPages - 1)}
-                title="Last Page"
-              >
-                <i className="bi bi-chevron-double-right"></i>
-              </button>
+            <div className="page-numbers">
+              {Array.from({ length: totalPages === 0 ? 1 : totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`page-num-btn ${page === idx ? 'active' : ''}`}
+                  onClick={() => setPage(idx)}
+                >
+                  {idx + 1}
+                </button>
+              ))}
             </div>
-          )}
+
+            <button
+              className="page-nav-btn"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(page + 1)}
+            >
+              NEXT <i className="bi bi-chevron-right ms-1"></i>
+            </button>
+          </div>
         </div>
       </div>
 

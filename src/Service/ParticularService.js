@@ -57,3 +57,8 @@ export const getParticularDetailsById = (particularId) =>
   axios.get(`${API_URL}api/v1.0/admin/getParticularDetails/${particularId}`, {
     headers: getAuthHeaders(),
   });
+
+export const getAllParticularsForBill = () =>
+  axios.get(`${API_URL}api/v1.0/admin/getAllParticularsForBill`, {
+    headers: getAuthHeaders(),
+  });

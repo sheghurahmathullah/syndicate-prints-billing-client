@@ -91,7 +91,7 @@ const TodayBills = () => {
       items: items,
       creditType: bill.creditAmount > 0 ? "CREDIT" : "CASH",
       pendingAmount: bill.creditAmount || 0,
-      taxPercent: bill.gstPercentage || 0,
+      taxPercent: bill.gstPercentage ? bill.gstPercentage : (bill.billNumber && String(bill.billNumber).toUpperCase().endsWith("-E") ? 0 : 18),
       subtotal: bill.totalWithGst || bill.total || 0,
       gstin: bill.customerGstNo || "",
     };
