@@ -22,15 +22,35 @@ const ViewBills = () => {
   const [pageSize, setPageSize] = useState(15);
   const [selectedBill, setSelectedBill] = useState(null);
   const [printBill, setPrintBill] = useState(null);
+  const [kpi, setKpi] = useState({
+    totalAmount: 0,
+    paidAmount: 0,
+    creditAmount: 0,
+    todayOrderCount: 0,
+    completedOrders: 0,
+    todayCreditOrderCount: 0,
+  });
 
   const fetchBills = async () => {
     setLoading(true);
     try {
       const response = await getAllBills(page, pageSize, dateFilter, null, null, null, customerFilter);
-      const pageData = response.data.page || response.data;
-      setBills(response.data.content || []);
-      setTotalPages(pageData.totalPages || 0);
-      setTotalElements(pageData.totalElements || 0);
+      const data = response.data;
+      if (data.bills) {
+        setBills(data.bills.content || []);
+        const pageData = data.bills.page || data.bills;
+        setTotalPages(pageData.totalPages || 0);
+        setTotalElements(pageData.totalElements || 0);
+      } else {
+        setBills(data.content || []);
+        const pageData = data.page || data;
+        setTotalPages(pageData.totalPages || 0);
+        setTotalElements(pageData.totalElements || 0);
+      }
+
+      if (data.kpi) {
+        setKpi(data.kpi);
+      }
     } catch (error) {
       console.error("Error fetching bills:", error);
       toast.error("Failed to load bills");
@@ -144,6 +164,68 @@ const ViewBills = () => {
         <p className="mb-0 text-white-50" style={{ fontSize: '0.9rem' }}>Comprehensive oversight, filtering, and administration of all your generated bills</p>
       </div>
 
+      <div className="kpi-cards-grid">
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-green">
+            <i className="bi bi-currency-rupee"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">TOTAL REVENUE</div>
+            <h3 className="kpi-value">₹{(kpi.totalAmount || 0).toFixed(2)}</h3>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-blue">
+            <i className="bi bi-receipt"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">TOTAL ORDERS</div>
+            <h3 className="kpi-value">{kpi.todayOrderCount || 0}</h3>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-cyan">
+            <i className="bi bi-check-circle"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">PAID ORDERS</div>
+            <h3 className="kpi-value">{kpi.completedOrders || 0}</h3>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-purple">
+            <i className="bi bi-cart-dash"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">CREDIT ORDERS</div>
+            <h3 className="kpi-value">{kpi.todayCreditOrderCount || 0}</h3>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-orange">
+            <i className="bi bi-cash-coin"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">PAID AMOUNT</div>
+            <h3 className="kpi-value">₹{(kpi.paidAmount || 0).toFixed(2)}</h3>
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper icon-red">
+            <i className="bi bi-exclamation-circle"></i>
+          </div>
+          <div className="kpi-content">
+            <div className="kpi-label">CREDIT BALANCE</div>
+            <h3 className="kpi-value">₹{(kpi.creditAmount || 0).toFixed(2)}</h3>
+          </div>
+        </div>
+      </div>
+
       <div className="filter-card mb-4">
         <div className="filter-group">
           <label htmlFor="dateFilter" className="filter-label">
@@ -154,7 +236,6 @@ const ViewBills = () => {
             className="form-select form-select-sm shadow-sm modern-select"
             value={dateFilter}
             onChange={handleFilterChange}
-            style={{ width: "180px" }}
           >
             <option value="today">Today</option>
             <option value="yesterday">Yesterday</option>

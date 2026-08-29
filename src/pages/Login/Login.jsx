@@ -37,8 +37,8 @@ const Login = () => {
         return;
       }
 
-      if(loginType === "employee" && response.data.role !== "ROLE_USER") {
-        toast.error("Access denied: Not an employee account. Login in admin tab.");
+      if(loginType === "employee" && response.data.role !== "ROLE_USER" && response.data.role !== "ROLE_MANAGER") {
+        toast.error("Access denied: Not an employee/manager account. Login in admin tab.");
         setLoading(false);
         return;
       }
@@ -187,7 +187,7 @@ const Login = () => {
               <i className="bi bi-info-circle"></i>
               {loginType === "admin"
                 ? "Admin accounts have full system access"
-                : "Employee accounts have limited access"}
+                : "Employee & Manager accounts have role-based access"}
             </p>
           </div>
         </div>

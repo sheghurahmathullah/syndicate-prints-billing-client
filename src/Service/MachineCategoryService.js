@@ -47,3 +47,9 @@ export const deleteMachineCategory = async (categoryId) => {
     headers: getAuthHeaders(),
   });
 };
+
+export const fetchTodayMachineCategoryReadingCounts = async () => {
+  return await axios.get(`${API_URL}api/v1.0/admin/todayMachineCategoryReadingCounts`, {
+    headers: getAuthHeaders(),
+  });
+};

@@ -33,7 +33,7 @@ import CreateBill from "./pages/Bills/CreateBill.jsx";
 import ViewBills from "./pages/Bills/ViewBills.jsx";
 import TodayBills from "./pages/Bills/TodayBills.jsx";
 import DailyExpenseReport from "./pages/Reports/DailyExpenseReport.jsx";
-
+import ManagePageAccess from "./pages/ManagePageAccess/ManagePageAccess.jsx";
 
 const LoginRoute = ({ element }) => {
   const { auth } = useContext(AppContext);
@@ -43,14 +43,31 @@ const LoginRoute = ({ element }) => {
   return element;
 };
 
-const ProtectedRoute = ({ element, allowedRoles }) => {
-  const { auth } = useContext(AppContext);
+const ProtectedRoute = ({ element, allowedRoles, pageIdentifier }) => {
+  const { auth, pageAccessRules } = useContext(AppContext);
   if (!auth.token) {
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(auth.role)) {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  // Dynamic Page Access Check
+  if (pageIdentifier && pageAccessRules && pageAccessRules.length > 0) {
+    const rule = pageAccessRules.find(r => r.page === pageIdentifier);
+    if (rule) {
+      const roleKey = auth.role === "ROLE_ADMIN" ? "admin" 
+                    : auth.role === "ROLE_MANAGER" ? "manager" 
+                    : "employee";
+      
+      // Admin always has access unless explicitly disabled in DB, but as per user "admin can access all the pages"
+      if (auth.role === "ROLE_ADMIN" || rule[roleKey]) {
+         // allow
+      } else {
+        return <Navigate to="/dashboard" replace />;
+      }
+    }
   }
 
   return element;
@@ -67,8 +84,24 @@ const App = () => {
       <div className="main-content">
         <Toaster />
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/explore" element={<Explore />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute
+                element={<Dashboard />}
+                pageIdentifier="DASHBOARD"
+              />
+            }
+          />
+          <Route
+            path="/explore"
+            element={
+              <ProtectedRoute
+                element={<Explore />}
+                pageIdentifier="EXPLORE"
+              />
+            }
+          />
           
           {/* Bills Route (Accessible to all authenticated users) */}
           <Route
@@ -76,6 +109,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<CreateBill />}
+                pageIdentifier="BILLS_CREATE"
               />
             }
           />
@@ -85,6 +119,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<CreateBill />}
+                pageIdentifier="BILLS_EDIT"
               />
             }
           />
@@ -94,6 +129,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ViewBills />}
+                pageIdentifier="BILLS_ALL"
               />
             }
           />
@@ -103,19 +139,27 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<TodayBills />}
+                pageIdentifier="BILLS_TODAY"
               />
             }
           />
 
-          
-          <Route path="/orders" element={<OrderHistory />} />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute
+                element={<OrderHistory />}
+                pageIdentifier="ORDERS"
+              />
+            }
+          />
 
           <Route
             path="/credits"
             element={
               <ProtectedRoute
                 element={<CreditManagement />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="CREDITS"
               />
             }
           />
@@ -124,7 +168,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<CreditManagement />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="CREDITS"
               />
             }
           />
@@ -135,7 +179,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageCategory />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="CATEGORY"
               />
             }
           />
@@ -144,7 +188,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageUsers />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="USERS"
               />
             }
           />
@@ -153,7 +197,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageBranches />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="BRANCHES"
               />
             }
           />
@@ -162,7 +206,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageCustomers />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="CUSTOMERS"
               />
             }
           />
@@ -171,7 +215,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<CustomerView />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="CUSTOMER_VIEW"
               />
             }
           />
@@ -180,7 +224,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageItems />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="ITEMS"
               />
             }
           />
@@ -189,7 +233,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageMachineCategory />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="MACHINE_CATEGORY"
               />
             }
           />
@@ -198,7 +242,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageMachine />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="MACHINE"
               />
             }
           />
@@ -207,7 +251,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManagePaperCategory />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="PAPER_CATEGORY"
               />
             }
           />
@@ -216,7 +260,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManagePaperGroup />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="PAPER_GROUP"
               />
             }
           />
@@ -225,7 +269,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManagePaper />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="PAPER"
               />
             }
           />
@@ -234,7 +278,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageParticular />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="PARTICULARS"
               />
             }
           />
@@ -243,7 +287,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageEmployee />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="EMPLOYEES"
               />
             }
           />
@@ -252,7 +296,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<EmployeeView />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="EMPLOYEE_VIEW"
               />
             }
           />
@@ -261,7 +305,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<ManageExpenseItem />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="EXPENSE_ITEM"
               />
             }
           />
@@ -270,7 +314,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<AddDailyExpenses />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="DAILY_EXPENSES"
               />
             }
           />
@@ -279,7 +323,7 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<AddMonthlyExpenses />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="MONTHLY_EXPENSE"
               />
             }
           />
@@ -289,24 +333,40 @@ const App = () => {
             element={
               <ProtectedRoute
                 element={<DailyExpenseReport />}
-                allowedRoles={["ROLE_ADMIN"]}
+                pageIdentifier="REPORTS_DAILY_EXPENSE"
               />
             }
           />
 
-          <Route path="/analytics" 
-            element={ 
-            <ProtectedRoute 
-              element={ <Analytics />} 
-              allowedRoles={["ROLE_ADMIN"]}
-              />  }  />
+          <Route
+            path="/manage-page-access"
+            element={
+              <ProtectedRoute
+                element={<ManagePageAccess />}
+                pageIdentifier="MANAGE_PAGE_ACCESS"
+              />
+            }
+          />
 
-          <Route path="/settings" 
-          element={
-            <ProtectedRoute
-            element={ <Settings /> }
-            allowedRoles={["ROLE_ADMIN"]}
-          /> } />
+          <Route
+            path="/analytics" 
+            element={ 
+              <ProtectedRoute 
+                element={<Analytics />} 
+                pageIdentifier="ANALYTICS"
+              />
+            }
+          />
+
+          <Route
+            path="/settings" 
+            element={
+              <ProtectedRoute
+                element={<Settings />}
+                pageIdentifier="SETTINGS"
+              />
+            }
+          />
 
           <Route path="/login" element={<LoginRoute element={<Login />} />} />
           <Route path="/" element={<Login />} />

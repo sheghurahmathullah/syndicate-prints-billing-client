@@ -315,15 +315,21 @@
 }
 
 .btn-ops-primary {
-  background-color: #002142;
-  color: #ffffff;
-  border: none;
-  font-weight: 600;
+  background-color: #002142 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  padding: 12px 32px !important;
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.25) !important;
+  transition: all 0.2s ease-in-out !important;
 }
 
 .btn-ops-primary:hover {
-  background-color: #001730;
-  color: #ffffff;
+  background-color: #001730 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 33, 66, 0.35) !important;
 }
 
 .bg-emerald-badge {

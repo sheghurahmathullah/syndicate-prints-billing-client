@@ -538,50 +538,7 @@ const DailyExpenseReport = () => {
         </div>
       </div>
 
-      {/* Executive Dashboard KPI Metrics Grid (3 Cards: Sales, Spent, Cash) */}
-      <div className="dashboard-kpi-grid mb-4">
-        {/* KPI 1: Total Earned (Sales) */}
-        <div className="kpi-card kpi-earned">
-          <div className="kpi-top-row">
-            <span className="kpi-title-text">Total Earned (Sales)</span>
-            <div className="kpi-badge-icon blue">
-              <i className="bi bi-graph-up-arrow"></i>
-            </div>
-          </div>
-          <div className="kpi-main-amount text-primary">
-            ₹{totals.totalSales.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-          </div>
-          <div className="kpi-bottom-subtext">Aggregate revenue across selected records</div>
-        </div>
 
-        {/* KPI 2: Total Spent (Expenses) */}
-        <div className="kpi-card kpi-spent">
-          <div className="kpi-top-row">
-            <span className="kpi-title-text">Total Spent (Expenses)</span>
-            <div className="kpi-badge-icon red">
-              <i className="bi bi-receipt-cutoff"></i>
-            </div>
-          </div>
-          <div className="kpi-main-amount text-danger">
-            ₹{totals.totalExpenses.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-          </div>
-          <div className="kpi-bottom-subtext">Combined itemized & ad-hoc expenses</div>
-        </div>
-
-        {/* KPI 3: Cash In Hand */}
-        <div className="kpi-card kpi-cash">
-          <div className="kpi-top-row">
-            <span className="kpi-title-text">Total Cash In Hand</span>
-            <div className="kpi-badge-icon cyan">
-              <i className="bi bi-cash-stack"></i>
-            </div>
-          </div>
-          <div className="kpi-main-amount text-info">
-            ₹{totals.cashInHand.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-          </div>
-          <div className="kpi-bottom-subtext">Physical drawer closing cash balance</div>
-        </div>
-      </div>
 
       {/* Filter Card */}
       <div className="filter-card-blue mb-4">

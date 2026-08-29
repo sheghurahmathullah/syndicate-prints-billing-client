@@ -5,35 +5,91 @@
   border-radius: 12px;
 }
 
-.branches-header {
+.manage-header-card {
+  background-color: #ffffff;
+  padding: 0.9rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.branches-header h2 {
-  font-weight: 700;
-  color: var(--primary-color, #2c3e50);
-  margin-bottom: 0.25rem;
+.header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.header-icon-badge {
+  width: 42px;
+  height: 42px;
+  background: #002142;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.25rem;
+  box-shadow: 0 3px 8px rgba(0, 33, 66, 0.2);
+}
+
+.btn-premium-add {
+  background: #002142;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.btn-premium-add:hover {
+  background: #001730;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 33, 66, 0.35);
+  color: #ffffff;
+}
+
+.btn-premium-add:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 33, 66, 0.2);
+}
+
+.btn-premium-add i {
+  font-size: 1.1rem;
 }
 
 .add-branch-btn {
+  background: #002142;
+  color: #ffffff;
+  border: none;
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  padding: 0.6rem 1.2rem;
+  padding: 0.65rem 1.35rem;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 33, 66, 0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .add-branch-btn:hover {
+  background: #001730;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 33, 66, 0.35);
+  color: #ffffff;
 }
 
 .branch-form-section, .branch-list-section {

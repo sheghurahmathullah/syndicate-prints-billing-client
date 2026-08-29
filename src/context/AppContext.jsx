@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, useMemo } from "react";
 import { fetchItems } from "../Service/ItemService.js";
 import { fetchUsers } from "../Service/UserService.js";
+import { getActivePageAccesses } from "../Service/PageAccessService.js";
 
 export const AppContext = createContext(null);
 
@@ -14,6 +15,7 @@ export const AppContextProvider = (props) => {
   });
   const [cartItems, setCartItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [pageAccessRules, setPageAccessRules] = useState([]);
 
   const addToCart = (item) => {
     // Find existing item by itemId
@@ -83,30 +85,43 @@ export const AppContextProvider = (props) => {
         setCategories([]);
         setItemsData([]);
         setUsers([]);
+        setPageAccessRules([]);
         return;
       }
 
       try {
-        const promises = [fetchItems()];
-        if (auth.role === "ROLE_ADMIN") {
-          promises.push(fetchUsers());
-        }
+        const itemsPromise = fetchItems();
+        const pageAccessPromise = getActivePageAccesses(auth.token);
+        const usersPromise = auth.role === "ROLE_ADMIN" ? fetchUsers() : Promise.resolve({ data: [] });
 
-        const results = await Promise.allSettled(promises);
+        const [itemsRes, pageAccessRes, usersRes] = await Promise.allSettled([
+          itemsPromise,
+          pageAccessPromise,
+          usersPromise,
+        ]);
+
         if (cancelled) return;
 
-        if (results[0].status === "fulfilled") {
-          setItemsData(results[0].value?.data || []);
+        if (itemsRes.status === "fulfilled") {
+          setItemsData(itemsRes.value?.data || []);
         } else {
-          console.error("Failed to load items", results[0].reason);
+          console.error("Failed to load items", itemsRes.reason);
           setItemsData([]);
         }
 
+        if (pageAccessRes.status === "fulfilled") {
+          setPageAccessRules(pageAccessRes.value || []);
+        } else {
+          console.error("Failed to load page access rules", pageAccessRes.reason);
+          setPageAccessRules([]);
+        }
+
         if (auth.role === "ROLE_ADMIN") {
-          if (results[1] && results[1].status === "fulfilled") {
-            setUsers(results[1].value?.data || []);
+          if (usersRes.status === "fulfilled") {
+            setUsers(usersRes.value?.data || []);
           } else {
-            console.error("Failed to load users", results[1]?.reason);
+            console.error("Failed to load users", usersRes.reason);
+            setUsers([]);
           }
         } else {
           setUsers([]);
@@ -147,7 +162,9 @@ export const AppContextProvider = (props) => {
     updateQuantity,
     updateCustomPrice,
     clearCart,
-  }), [categories, auth, users, itemsData, cartItems]);
+    pageAccessRules,
+    setPageAccessRules,
+  }), [categories, auth, users, itemsData, cartItems, pageAccessRules]);
 
   return (
     <AppContext.Provider value={contextValue}>

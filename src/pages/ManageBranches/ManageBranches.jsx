@@ -61,13 +61,23 @@ const ManageBranches = () => {
 
   return (
     <div className="branches-page text-dark">
-      <div className="branches-header">
-        <div>
-          <h2>Manage Branches</h2>
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-building"></i>
+          </div>
+          <div>
+            <h4 className="mb-0 fw-bold text-dark">Manage Branches</h4>
+            <p className="mb-0 text-muted small d-none d-sm-block">
+              Add, update and oversee organizational branches
+            </p>
+          </div>
         </div>
+
         {!isFormOpen && (
-          <button className="btn btn-primary add-branch-btn" onClick={onAddClick}>
-            <i className="bi bi-plus-lg"></i> Add Branch
+          <button className="btn-premium-add" onClick={onAddClick}>
+            <i className="bi bi-plus-lg"></i>
+            <span>Add Branch</span>
           </button>
         )}
       </div>

@@ -60,13 +60,23 @@ const ManageParticular = () => {
 
   return (
     <div className="manage-page fade-in">
-      <div className="page-header mb-3 d-flex justify-content-between align-items-center">
-        <div>
-          <h4 className="mb-0">Manage Particulars</h4>
+      <div className="manage-header-card mb-3">
+        <div className="header-title-box">
+          <div className="header-icon-badge">
+            <i className="bi bi-list-columns-reverse"></i>
+          </div>
+          <div>
+            <h4 className="mb-0 fw-bold text-dark">Manage Particulars</h4>
+            <p className="mb-0 text-muted small d-none d-sm-block">
+              Add, update and oversee billing particulars
+            </p>
+          </div>
         </div>
+
         {!showForm && (
-          <button className="btn btn-primary btn-sm" onClick={handleAddClick}>
-            <i className="bi bi-plus-lg"></i> Add Particular
+          <button className="btn-premium-add" onClick={handleAddClick}>
+            <i className="bi bi-plus-lg"></i>
+            <span>Add Particular</span>
           </button>
         )}
       </div>

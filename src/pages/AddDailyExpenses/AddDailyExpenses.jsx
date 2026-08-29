@@ -2,6 +2,7 @@ import "./AddDailyExpenses.css";
 import { useState, useEffect } from "react";
 import { fetchBranches } from "../../Service/BranchService.js";
 import { fetchExpenseItemsByType, saveDailyExpenses, fetchLastClosedAmount } from "../../Service/DailyExpensesService.js";
+import { fetchTodayMachineCategoryReadingCounts } from "../../Service/MachineCategoryService.js";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 
@@ -48,11 +49,11 @@ const AddDailyExpenses = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  // Fetch branches on mount
+  // Fetch branches and machine category reading counts on mount
   useEffect(() => {
     const initData = async () => {
       setInitialLoading(true);
-      await Promise.all([loadBranches(), loadDailyExpenseItems()]);
+      await Promise.all([loadBranches(), loadDailyExpenseItems(), loadMachineReadingsData()]);
       setInitialLoading(false);
     };
     initData();
@@ -102,6 +103,27 @@ const AddDailyExpenses = () => {
     } catch (error) {
       console.error("Error fetching daily expense items:", error);
       toast.error("Failed to load daily expense items");
+    }
+  };
+
+  const loadMachineReadingsData = async () => {
+    try {
+      const response = await fetchTodayMachineCategoryReadingCounts();
+      if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
+        const initialReadings = response.data.map((item) => {
+          const rawOld = item.totalReadingCount !== undefined && item.totalReadingCount !== null ? item.totalReadingCount : 0;
+          const roundedOld = Math.round(rawOld);
+          return {
+            machine: item.categoryName || "",
+            currentReading: "",
+            oldReading: roundedOld.toString(),
+            diff: "0"
+          };
+        });
+        setMachineReadings(initialReadings);
+      }
+    } catch (error) {
+      console.error("Error loading machine category reading counts:", error);
     }
   };
 
@@ -208,10 +230,17 @@ const AddDailyExpenses = () => {
     if (field === "currentReading" || field === "oldReading") {
       const currentStr = updated[index].currentReading;
       const oldStr = updated[index].oldReading;
-      if (currentStr !== "" || oldStr !== "") {
-        const current = parseFloat(currentStr) || 0;
-        const old = parseFloat(oldStr) || 0;
-        updated[index].diff = (current - old).toString();
+      
+      const currentVal = parseFloat(currentStr);
+      const oldVal = parseFloat(oldStr);
+      
+      if (!isNaN(currentVal) && !isNaN(oldVal)) {
+        const current = Math.round(currentVal);
+        const old = Math.round(oldVal);
+        updated[index].diff = Math.round(current - old).toString();
+      } else if (!isNaN(currentVal)) {
+        const current = Math.round(currentVal);
+        updated[index].diff = Math.round(current).toString();
       } else {
         updated[index].diff = "0";
       }
@@ -287,13 +316,18 @@ const AddDailyExpenses = () => {
             amount: parseFloat(oi.amount) || 0
           })) || [],
         machineReading: machineReadings
-          .filter(mr => mr.machine && mr.currentReading)
-          .map(mr => ({
-            machine: mr.machine,
-            currentReading: parseFloat(mr.currentReading) || 0,
-            oldReading: parseFloat(mr.oldReading) || 0,
-            difference: parseFloat(mr.diff) || 0
-          })) || []
+          .filter(mr => mr.machine && (mr.currentReading || mr.oldReading))
+          .map(mr => {
+            const current = Math.round(parseFloat(mr.currentReading) || 0);
+            const old = Math.round(parseFloat(mr.oldReading) || 0);
+            const diffVal = Math.round(parseFloat(mr.diff) || (current - old));
+            return {
+              machine: mr.machine,
+              currentReading: current,
+              oldReading: old,
+              difference: diffVal
+            };
+          }) || []
       };
 
       console.log("Sending payload:", JSON.stringify(payload, null, 2));
@@ -334,7 +368,7 @@ const AddDailyExpenses = () => {
     setCheckPayments([{ checkNo: "", amount: "" }]);
     setCashDeposits([{ refNo: "", amount: "" }]);
     setOtherIncomes([{ reason: "", amount: "" }]);
-    setMachineReadings([{ machine: "", currentReading: "", oldReading: "", diff: "" }]);
+    loadMachineReadingsData();
   };
 
   if (initialLoading) {
@@ -904,7 +938,7 @@ const AddDailyExpenses = () => {
                     <div className="col-4">
                       <input
                         type="text"
-                        className="form-control form-control-sm ops-inner-input"
+                        className="form-control form-control-sm ops-inner-input fw-bold"
                         placeholder="Machine Name"
                         value={reading.machine}
                         onChange={(e) => updateMachineReading(index, "machine", e.target.value)}
