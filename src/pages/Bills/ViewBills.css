@@ -1,13 +1,24 @@
 .view-bills-container {
-  padding: 24px;
-  background-color: #f4f7f9;
+  padding: 1.25rem;
+  background-color: #f8fafc;
   min-height: calc(100vh - 60px);
 }
 
-/* Banner Styling */
+/* Banner Styling - Compact corporate navy theme */
 .machine-banner {
-  background: #002142;
-  border-left: 4px solid #e64051;
+  background: linear-gradient(135deg, #002142 0%, #001229 100%);
+  border-top: 3px solid #e64051;
+  border-radius: 12px;
+  padding: 1rem 1.25rem !important;
+  box-shadow: 0 4px 15px rgba(0, 33, 66, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.machine-banner h4 {
+  color: #ffffff;
+  letter-spacing: 1px;
+  font-size: 1.25rem;
 }
 
 .tracking-wider {
@@ -18,36 +29,37 @@
 .filter-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  padding: 16px 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  padding: 0.85rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   animation: slideDown 0.4s ease-out;
   border: 1px solid #edf2f7;
+  margin-bottom: 1.25rem;
 }
 
 .filter-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .filter-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .filter-divider {
   width: 1px;
-  height: 32px;
+  height: 28px;
   background-color: #e2e8f0;
 }
 
 .filter-label {
   font-weight: 600;
   color: #475569;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -55,26 +67,27 @@
 }
 
 .modern-select {
-  border: 1px solid #dee2e6;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
   background-color: #fff;
   transition: all 0.3s ease;
-  color: #495057;
+  color: #334155;
 }
 
 .modern-select:focus {
-  border-color: #002952;
-  box-shadow: 0 0 0 0.25rem rgba(0, 41, 82, 0.15);
+  border-color: #002142;
+  box-shadow: 0 0 0 0.2rem rgba(0, 33, 66, 0.15);
 }
 
 /* Table Styling */
 .table-responsive {
-  border-radius: 8px;
+  border-radius: 12px;
   overflow-x: auto !important;
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
   width: 100%;
+  border: 1px solid #edf2f7;
 }
 
 .data-table {
@@ -86,21 +99,21 @@
 }
 
 .data-table th {
-  background-color: #002142; /* Match company color */
+  background-color: #002142;
   color: white;
-  padding: 14px 16px;
-  font-weight: 600;
-  font-size: 0.85rem;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #001730;
 }
 
 .data-table td {
-  padding: 14px 16px;
+  padding: 0.85rem 1rem;
   vertical-align: middle;
   border-bottom: 1px solid #edf2f7;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #2d3748;
 }
 
@@ -122,7 +135,7 @@
 }
 
 .modern-action-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
@@ -147,12 +160,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-15px); }
+  from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -167,23 +180,25 @@
 }
 
 .premium-loader {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   position: relative;
   animation: spin 1s linear infinite;
 }
+
 .premium-loader::before, .premium-loader::after {
   content: "";
   box-sizing: border-box;
   position: absolute;
   inset: 0px;
   border-radius: 50%;
-  border: 5px solid #e2e8f0;
+  border: 4px solid #e2e8f0;
   animation: prixClipFix 2s linear infinite;
 }
+
 .premium-loader::after {
-  inset: 8px;
+  inset: 6px;
   transform: rotate3d(90, 90, 0, 180deg);
   border-color: #002142;
 }
@@ -299,7 +314,6 @@
   color: #64748b;
 }
 
-/* Search input with icon */
 .customer-search-wrapper .modern-select {
   padding-right: 28px;
 }
@@ -307,17 +321,17 @@
 /* KPI Cards Grid - Responsive columns */
 .kpi-cards-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 /* KPI Card Layout */
 .kpi-card {
   background: #ffffff;
   border-radius: 12px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 1rem 1.15rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -330,18 +344,18 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 /* Icon Wrapper on the Left */
 .kpi-icon-wrapper {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   flex-shrink: 0 !important;
 }
 
@@ -356,25 +370,27 @@
 }
 
 .kpi-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #64748b;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.15rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kpi-value {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #002142; /* Primary corporate theme color */
+  color: #002142;
   margin: 0;
   line-height: 1.1;
   white-space: nowrap;
 }
 
-/* Icon Palette matching reference image */
+/* Icon Palette */
 .icon-green {
   background-color: #e8f5e9;
   color: #2e7d32;
@@ -405,74 +421,103 @@
   color: #c62828;
 }
 
-/* Default Date Filter width on Desktop */
 #dateFilter.modern-select {
   width: 180px;
 }
 
 /* Responsive Overrides */
 
-/* Large screens and Laptops */
-@media (max-width: 1400px) {
+/* Ultra Wide Monitors (1600px and above) */
+@media (min-width: 1600px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Large & Standard Laptops / Desktop (1024px to 1599px) */
+@media (min-width: 1024px) and (max-width: 1599px) {
   .kpi-cards-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
   }
 }
 
-/* Tablets / Medium screen monitors */
-@media (max-width: 992px) {
+/* Tablets & Small Laptops (768px to 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
   .kpi-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
   }
   
   .filter-card {
     gap: 16px;
-    padding: 16px 20px;
+    padding: 0.85rem 1.15rem;
   }
 }
 
-/* Mobile & Small Screen Devices */
-@media (max-width: 768px) {
+/* Small Tablets / Phablets (480px to 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
   .view-bills-container {
-    padding: 12px;
+    padding: 0.75rem;
     min-height: calc(100vh - 50px);
   }
 
   .machine-banner {
-    padding: 16px 12px !important;
-    margin-bottom: 16px !important;
+    padding: 0.85rem 1rem !important;
+    margin-bottom: 1rem !important;
   }
 
   .machine-banner h4 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .machine-banner p {
-    font-size: 0.8rem !important;
+    font-size: 0.78rem !important;
   }
 
   .kpi-cards-grid {
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
     margin-bottom: 1rem;
+  }
+
+  .kpi-card {
+    padding: 0.65rem 0.75rem !important;
+    gap: 0.6rem !important;
+    border-radius: 10px;
+  }
+
+  .kpi-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+
+  .kpi-label {
+    font-size: 0.62rem;
+  }
+
+  .kpi-value {
+    font-size: 1.1rem;
   }
 
   .filter-card {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
-    padding: 16px;
+    gap: 10px;
+    padding: 0.85rem;
   }
 
   .filter-group {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    gap: 6px;
+    gap: 4px;
   }
   
   .filter-label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   .filter-divider {
@@ -485,7 +530,7 @@
 
   .modern-select {
     width: 100% !important;
-    height: 38px;
+    height: 36px;
   }
 
   #dateFilter.modern-select {
@@ -494,9 +539,9 @@
 
   .custom-pagination-container {
     flex-direction: column;
-    gap: 12px;
+    gap: 0.85rem;
     align-items: center !important;
-    padding: 8px;
+    padding: 6px;
   }
 
   .custom-pagination-container .d-flex {
@@ -505,16 +550,82 @@
   }
 }
 
-@media (max-width: 576px) {
+/* Mobile Devices (< 480px) */
+@media (max-width: 479px) {
+  .view-bills-container {
+    padding: 0.5rem;
+    min-height: calc(100vh - 50px);
+  }
+
+  .machine-banner {
+    padding: 0.75rem 0.85rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .machine-banner h4 {
+    font-size: 0.95rem;
+  }
+
+  .machine-banner p {
+    font-size: 0.72rem !important;
+  }
+
   .kpi-cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
   }
 
   .kpi-card {
-    padding: 0.9rem 1.1rem;
+    padding: 0.6rem 0.5rem !important;
+    gap: 0.5rem !important;
+    border-radius: 8px;
+  }
+
+  .kpi-icon-wrapper {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+
+  .kpi-label {
+    font-size: 0.58rem;
   }
 
   .kpi-value {
-    font-size: 1.25rem;
+    font-size: 0.98rem;
+  }
+
+  .filter-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0.75rem;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .customer-search-wrapper {
+    width: 100% !important;
+  }
+
+  .modern-select {
+    width: 100% !important;
+    height: 34px;
+  }
+
+  #dateFilter.modern-select {
+    width: 100% !important;
+  }
+
+  .custom-pagination-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center !important;
   }
 }

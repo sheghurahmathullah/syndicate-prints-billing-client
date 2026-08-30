@@ -1,47 +1,40 @@
 .today-bills-container {
-  padding: 1.5rem;
+  padding: 1.25rem;
   min-height: 100vh;
   background-color: #f8fafc;
 }
 
+/* Today's Banner - Compact modern navy banner */
 .today-banner {
-  background: linear-gradient(135deg, #004e92, #000428);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #002142 0%, #001229 100%);
+  border-top: 3px solid #e64051;
+  border-radius: 12px;
+  padding: 1rem 1.25rem !important;
+  box-shadow: 0 4px 15px rgba(0, 33, 66, 0.12);
   position: relative;
-}
-
-.today-banner::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/></svg>');
-  pointer-events: none;
+  overflow: hidden;
 }
 
 .today-banner h4 {
-  color: #fff;
+  color: #ffffff;
   letter-spacing: 1px;
+  font-size: 1.25rem;
 }
 
-/* KPI Cards Grid - Desktop Default 4 Columns */
+/* KPI Cards Grid - Desktop Default 3 Columns x 2 Rows */
 .kpi-cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 1.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-/* KPI Card Layout: Icon on LEFT, Data directly beside it (tight small gap, flex-start) */
+/* KPI Card Layout */
 .kpi-card {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 1.1rem 1.25rem;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -54,22 +47,22 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
-/* Icon Wrapper on the Left */
+/* Icon Wrapper */
 .kpi-icon-wrapper {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   flex-shrink: 0 !important;
 }
 
-/* Content directly beside the icon */
+/* Content directly beside icon */
 .kpi-content {
   display: flex !important;
   flex-direction: column !important;
@@ -80,25 +73,27 @@
 }
 
 .kpi-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #64748b;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.15rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kpi-value {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #002142;
   margin: 0;
   line-height: 1.1;
   white-space: nowrap;
 }
 
-/* Icon Palette matching reference image */
+/* Icon Palette */
 .icon-green {
   background-color: #e8f5e9;
   color: #2e7d32;
@@ -133,6 +128,8 @@
 .filter-card {
   border: 1px solid #edf2f7;
   border-radius: 12px;
+  background: #ffffff;
+  padding: 0.85rem 1.15rem !important;
 }
 
 /* Table container & responsive scrollbar */
@@ -147,7 +144,7 @@
 
 /* Custom Scrollbar for Table */
 .today-bills-container .table-responsive::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 .today-bills-container .table-responsive::-webkit-scrollbar-track {
@@ -166,22 +163,23 @@
 
 /* Minimum width to preserve full table readability */
 .today-bills-container .bills-table {
-  min-width: 900px;
+  min-width: 850px;
+  margin-bottom: 0;
 }
 
 .today-bills-container .bills-table th {
-  background-color: #f8fafc;
-  color: #475569;
+  background-color: #002142;
+  color: #ffffff;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   letter-spacing: 0.5px;
-  padding: 1rem 1.25rem;
-  border-bottom: 2px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid #001730;
 }
 
 .today-bills-container .bills-table td {
-  padding: 1rem 1.25rem;
+  padding: 0.85rem 1rem;
   vertical-align: middle;
   font-size: 0.9rem;
 }
@@ -218,8 +216,8 @@
 .premium-loader {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(13, 110, 253, 0.2);
-  border-top-color: #0d6efd;
+  border: 4px solid rgba(0, 33, 66, 0.15);
+  border-top-color: #002142;
   border-radius: 50%;
   animation: premium-spin 1s linear infinite;
 }
@@ -238,30 +236,69 @@
 }
 
 /* Responsive Grid Breakpoints */
-@media (min-width: 992px) {
-  .kpi-cards-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
 
-@media (min-width: 576px) and (max-width: 991px) {
+/* Ultra Wide Monitors (1600px and above) */
+@media (min-width: 1600px) {
   .kpi-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 1rem;
   }
 }
 
-@media (max-width: 768px) {
+/* Large & Standard Laptops / Desktop (1024px to 1599px) */
+@media (min-width: 1024px) and (max-width: 1599px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Tablets & Small Laptops (768px to 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+  }
+}
+
+/* Small Tablets / Phablets (480px to 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
   .today-bills-container {
-    padding: 0.85rem;
+    padding: 0.75rem;
   }
 
   .today-banner {
-    padding: 1rem !important;
+    padding: 0.85rem 1rem !important;
   }
 
   .today-banner h4 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
+  }
+
+  .kpi-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+
+  .kpi-card {
+    padding: 0.65rem 0.75rem !important;
+    gap: 0.6rem !important;
+    border-radius: 10px;
+  }
+
+  .kpi-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+
+  .kpi-label {
+    font-size: 0.62rem;
+  }
+
+  .kpi-value {
+    font-size: 1.1rem;
   }
 
   .filter-card .d-flex {
@@ -272,30 +309,75 @@
 
   .filter-card input {
     max-width: 100% !important;
+    width: 100% !important;
   }
 
   .custom-pagination-container {
     flex-direction: column;
-    gap: 1rem;
-    align-items: stretch !important;
+    gap: 0.85rem;
+    align-items: center !important;
   }
 
   .custom-pagination {
     justify-content: center;
+    flex-wrap: wrap;
   }
 }
 
-@media (max-width: 575px) {
+/* Mobile Devices (< 480px) */
+@media (max-width: 479px) {
+  .today-bills-container {
+    padding: 0.5rem;
+  }
+
+  .today-banner {
+    padding: 0.75rem 0.85rem !important;
+  }
+
+  .today-banner h4 {
+    font-size: 0.95rem;
+  }
+
   .kpi-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
   }
 
   .kpi-card {
-    padding: 1rem;
+    padding: 0.6rem 0.5rem !important;
+    gap: 0.5rem !important;
+    border-radius: 8px;
+  }
+
+  .kpi-icon-wrapper {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+
+  .kpi-label {
+    font-size: 0.58rem;
   }
 
   .kpi-value {
-    font-size: 1.3rem;
+    font-size: 0.98rem;
+  }
+
+  .filter-card .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+
+  .filter-card input {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .custom-pagination-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center !important;
   }
 }

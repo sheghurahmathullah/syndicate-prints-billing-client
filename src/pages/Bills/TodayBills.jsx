@@ -119,11 +119,14 @@ const TodayBills = () => {
 
   return (
     <div className="today-bills-container fade-in">
-      <div className="today-banner position-relative text-center text-white mb-4 rounded px-3 py-4 shadow-sm">
-        <h4 className="fw-bold mb-2 text-uppercase tracking-wider">
-          Today's Bills Dashboard
-        </h4>
-        <p className="mb-0 text-white-50" style={{ fontSize: "0.9rem" }}>
+      <div className="today-banner position-relative text-center text-white mb-3 shadow-sm">
+        <div className="d-flex align-items-center justify-content-center gap-2">
+          <i className="bi bi-calendar2-check fs-4 text-danger"></i>
+          <h4 className="fw-bold mb-0 text-uppercase tracking-wider">
+            Today's Bills Dashboard
+          </h4>
+        </div>
+        <p className="mb-0 text-white-50 small mt-1">
           Real-time overview of today's sales, credits, and generated bills
         </p>
       </div>
@@ -190,20 +193,33 @@ const TodayBills = () => {
         </div>
       </div>
 
-      <div className="filter-card mb-4 bg-white p-3 rounded shadow-sm">
-        <div className="d-flex align-items-center">
-          <label htmlFor="todaySearch" className="form-label mb-0 me-3 fw-bold text-muted text-nowrap">
-            <i className="bi bi-search text-primary me-2"></i> Search Bills:
-          </label>
-          <input
-            id="todaySearch"
-            type="text"
-            className="form-control form-control-sm shadow-sm"
-            placeholder="Search by customer name or bill number..."
-            style={{ maxWidth: "300px" }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Filter & Search Card (Matching Analytics Page Design System) */}
+      <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
+        <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
+          <div className="d-flex align-items-center gap-3 flex-wrap w-100">
+            <div className="d-flex align-items-center">
+              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ width: '42px', height: '42px', color: '#e64051' }}>
+                <i className="bi bi-search fs-5"></i>
+              </div>
+              <div>
+                <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter Today's Bills</h6>
+                <small className="text-muted" style={{ fontSize: '0.8rem' }}>Search by customer name or bill number</small>
+              </div>
+            </div>
+
+            <div className="vr d-none d-md-block mx-2" style={{ height: '30px', opacity: 0.1 }}></div>
+
+            <div className="flex-grow-1" style={{ minWidth: '220px' }}>
+              <input
+                type="text"
+                className="form-control fw-semibold shadow-none py-2"
+                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.9rem' }}
+                placeholder="Search customer name or bill #..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

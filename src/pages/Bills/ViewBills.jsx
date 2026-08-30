@@ -159,9 +159,12 @@ const ViewBills = () => {
 
   return (
     <div className="view-bills-container fade-in">
-      <div className="machine-banner position-relative text-center text-white mb-4 rounded px-3 py-4 shadow-sm" style={{ backgroundColor: '#002142' }}>
-        <h4 className="fw-bold mb-2 text-uppercase tracking-wider">All Bills Management</h4>
-        <p className="mb-0 text-white-50" style={{ fontSize: '0.9rem' }}>Comprehensive oversight, filtering, and administration of all your generated bills</p>
+      <div className="machine-banner position-relative text-center text-white mb-3 shadow-sm">
+        <div className="d-flex align-items-center justify-content-center gap-2">
+          <i className="bi bi-receipt-cutoff fs-4 text-danger"></i>
+          <h4 className="fw-bold mb-0 text-uppercase tracking-wider">All Bills Management</h4>
+        </div>
+        <p className="mb-0 text-white-50 small mt-1">Comprehensive oversight, filtering, and administration of all your generated bills</p>
       </div>
 
       <div className="kpi-cards-grid">
@@ -226,77 +229,94 @@ const ViewBills = () => {
         </div>
       </div>
 
-      <div className="filter-card mb-4">
-        <div className="filter-group">
-          <label htmlFor="dateFilter" className="filter-label">
-            <i className="bi bi-calendar-event text-primary"></i> Date:
-          </label>
-          <select
-            id="dateFilter"
-            className="form-select form-select-sm shadow-sm modern-select"
-            value={dateFilter}
-            onChange={handleFilterChange}
-          >
-            <option value="today">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="this_week">This Week</option>
-            <option value="last_week">Last Week</option>
-            <option value="this_month">This Month</option>
-            <option value="last_month">Last Month</option>
-            <option value="this_year">This Year</option>
-            <option value="custom_range">Custom Range</option>
-          </select>
-        </div>
+      {/* Filter Card (Matching Analytics Page Design System) */}
+      <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
+        <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
+          <div className="d-flex align-items-center gap-3 flex-wrap me-3 mb-2 mb-md-0">
+            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', color: '#e64051' }}>
+              <i className="bi bi-funnel-fill fs-5"></i>
+            </div>
+            <div>
+              <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter & Search Bills</h6>
+              <small className="text-muted" style={{ fontSize: '0.8rem' }}>Filter by date period and customer name</small>
+            </div>
+          </div>
 
-        <div className="filter-divider"></div>
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <div className="d-flex align-items-center">
+              <label htmlFor="dateFilter" className="text-muted fw-bold me-2 mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.5px' }}>
+                <i className="bi bi-calendar-event me-1 text-danger"></i> PERIOD:
+              </label>
+              <select
+                id="dateFilter"
+                className="form-select fw-semibold shadow-none cursor-pointer py-1 px-2"
+                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
+                value={dateFilter}
+                onChange={handleFilterChange}
+              >
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_year">This Year</option>
+                <option value="custom_range">Custom Range</option>
+              </select>
+            </div>
 
-        <div className="filter-group">
-          <label htmlFor="customerSearch" className="filter-label">
-            <i className="bi bi-person-badge text-primary"></i> Customer:
-          </label>
-          <div className="customer-search-wrapper">
-            <input
-              id="customerSearch"
-              type="text"
-              className="form-control form-control-sm shadow-sm modern-select w-100"
-              placeholder="Search customers..."
-              value={customerSearch}
-              onChange={handleCustomerSearchChange}
-              onFocus={() => { if (customerSearch.trim().length > 0) setShowCustomerDropdown(true); }}
-              onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
-            />
-            {customerSearch && (
-              <i
-                className="bi bi-x-circle-fill text-muted position-absolute"
-                style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', fontSize: '0.85rem' }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  setCustomerSearch("");
-                  setCustomerFilter("");
-                  setPage(0);
-                  setShowCustomerDropdown(false);
-                }}
-              ></i>
-            )}
-            {showCustomerDropdown && customerSearch.trim().length > 0 && (
-              <ul className="customer-dropdown-list">
-                {filteredCustomers.length > 0 ? (
-                  filteredCustomers.map((cust, idx) => (
-                    <li
-                      key={idx}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        handleCustomerSelect(cust.name);
-                      }}
-                    >
-                      {cust.name}
-                    </li>
-                  ))
-                ) : (
-                  <li className="no-results">No customers found</li>
+            <div className="vr d-none d-md-block mx-1" style={{ height: '28px', opacity: 0.15 }}></div>
+
+            <div className="d-flex align-items-center">
+              <label htmlFor="customerSearch" className="text-muted fw-bold me-2 mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.5px' }}>
+                <i className="bi bi-person-badge me-1 text-danger"></i> CUSTOMER:
+              </label>
+              <div className="customer-search-wrapper" style={{ minWidth: '180px' }}>
+                <input
+                  id="customerSearch"
+                  type="text"
+                  className="form-control fw-semibold shadow-none py-1 px-2"
+                  style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
+                  placeholder="Search customer..."
+                  value={customerSearch}
+                  onChange={handleCustomerSearchChange}
+                  onFocus={() => { if (customerSearch.trim().length > 0) setShowCustomerDropdown(true); }}
+                  onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
+                />
+                {customerSearch && (
+                  <i
+                    className="bi bi-x-circle-fill text-muted position-absolute"
+                    style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', fontSize: '0.85rem' }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setCustomerSearch("");
+                      setCustomerFilter("");
+                      setPage(0);
+                      setShowCustomerDropdown(false);
+                    }}
+                  ></i>
                 )}
-              </ul>
-            )}
+                {showCustomerDropdown && customerSearch.trim().length > 0 && (
+                  <ul className="customer-dropdown-list">
+                    {filteredCustomers.length > 0 ? (
+                      filteredCustomers.map((cust, idx) => (
+                        <li
+                          key={idx}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleCustomerSelect(cust.name);
+                          }}
+                        >
+                          {cust.name}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="no-results">No customers found</li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
