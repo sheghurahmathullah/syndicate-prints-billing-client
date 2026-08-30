@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   
   // Backend URL for Vite dev server proxy
   const backendUrl =
-    env.VITE_API_URL || "https://billing-app-server-det4.onrender.com/";
+    env.VITE_API_URL || "http://localhost:8080/";
 
   return {
     plugins: [react()],
@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl,
           changeOrigin: true,
-          secure: true,
+          secure: false,
           rewrite: (path) => path, // Keep /api in the path when forwarding
         },
       },

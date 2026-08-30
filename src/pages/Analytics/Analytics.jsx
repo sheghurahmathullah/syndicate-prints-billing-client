@@ -114,25 +114,26 @@ const Analytics = () => {
 
   return (
     <div className="analytics-container">
-      {/* Header */}
-      <div className="analytics-header mb-4">
+      {/* Compact Redesigned Banner */}
+      <div className="analytics-header mb-3">
         <div className="header-content">
-          <h1>
-            Analytics Dashboard
-          </h1>
-          <p className="header-subtitle">
-            Comprehensive business insights and performance metrics
-          </p>
+          <div className="header-title-icon">
+            <i className="bi bi-graph-up-arrow"></i>
+          </div>
+          <div className="header-text">
+            <h1>Analytics Dashboard</h1>
+            <p className="header-subtitle">Comprehensive business insights and performance metrics</p>
+          </div>
         </div>
       </div>
 
-      {/* Filters Section */}
+      {/* Filters Section (Restored to original place) */}
       <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
         <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
 
           <div className="d-flex align-items-center gap-3 flex-wrap">
             <div className="d-flex align-items-center">
-              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px', color: '#e64051' }}>
+              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '42px', height: '42px', color: '#e64051' }}>
                 <i className="bi bi-calendar3 fs-5"></i>
               </div>
               <div>

@@ -47,8 +47,11 @@
 }
 
 .sidebar-logo {
-  height: 40px;
+  height: 42px;
+  width: 42px;
   object-fit: contain;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 33, 66, 0.1);
 }
 
 .hamburger-btn {
@@ -376,9 +379,8 @@
 
   .mobile-hamburger-btn {
     background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #cbd5e1;
     color: #002142;
-    font-size: 1.5rem;
     width: 40px;
     height: 40px;
     border-radius: 8px;
@@ -387,6 +389,14 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .mobile-hamburger-btn svg {
+    display: block;
+    width: 22px;
+    height: 22px;
   }
 
   .mobile-hamburger-btn:active {
@@ -395,8 +405,11 @@
   }
 
   .mobile-logo {
-    height: 34px;
+    height: 38px;
+    width: 38px;
     object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 33, 66, 0.1);
   }
 
   .mobile-topbar-right {

@@ -1,4 +1,4 @@
-import logo from './logo2.png';
+import logo from './logo.jpg';
 import logo2 from './logo2.png';
 import upload from './upload.png'
 import login from './login-bg.jpg';

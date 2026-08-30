@@ -77,13 +77,20 @@ const Menubar = () => {
       <div className="mobile-topbar">
         <div className="mobile-topbar-left">
           <button className="mobile-hamburger-btn" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle Navigation">
-            <i className="bi bi-list"></i>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002142" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
           </button>
           <img src={assets.logo} alt="Logo" className="mobile-logo" />
         </div>
         <div className="mobile-topbar-right">
           <span className="mobile-user-title">{isAdmin ? "Admin" : "User"}</span>
-          <i className="bi bi-person-circle mobile-user-icon"></i>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e64051" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mobile-user-icon">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
         </div>
       </div>
 
@@ -98,10 +105,17 @@ const Menubar = () => {
             <img src={assets.logo} alt="Logo" className="sidebar-logo" />
           </div>
           <button className="hamburger-btn" onClick={toggleSidebar}>
-            <i className="bi bi-list"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#002142" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
           </button>
           <button className="mobile-close-btn" onClick={() => setMobileOpen(false)}>
-            <i className="bi bi-x-lg"></i>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 
