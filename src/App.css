@@ -14,3 +14,16 @@
   height: 100vh;
   min-width: 0;
 }
+
+@media (max-width: 991px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .main-content {
+    height: auto;
+    min-height: calc(100vh - 58px);
+    width: 100%;
+    overflow-x: hidden;
+  }
+}

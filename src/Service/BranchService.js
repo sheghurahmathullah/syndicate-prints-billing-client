@@ -17,6 +17,12 @@ export const fetchBranches = async (page = 0, size = 10) => {
   });
 };
 
+export const fetchAllBranchesList = async () => {
+  return await axios.get(`${API_URL}api/v1.0/admin/branches/getAllBranchesList`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
+
 export const addBranch = async (branchData) => {
   return await axios.post(`${API_URL}api/v1.0/admin/branches`, branchData, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

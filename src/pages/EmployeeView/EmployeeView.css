@@ -1,72 +1,336 @@
+/* Employee View Container */
 .employee-view-container {
-  padding: 24px;
-  max-width: 1400px;
+  padding: 1.5rem;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
-.employee-banner {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+/* Executive Deep Navy Header Banner */
+.employee-view-header {
+  background: linear-gradient(135deg, #001730 0%, #002142 50%, #0d3b66 100%);
+  border-radius: 14px;
+  padding: 24px 30px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 33, 66, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
   position: relative;
+  overflow: hidden;
 }
 
-.employee-banner::after {
+.employee-view-header::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/></svg>');
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
   pointer-events: none;
 }
 
-.employee-banner h4 {
-  color: #fff;
-  letter-spacing: 1px;
+.header-badge-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.employees-table th {
-  background-color: #f8f9fa;
+.header-icon-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  color: #93c5fd;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-badge-title h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+.text-blue-light {
+  color: #93c5fd;
+  font-size: 0.9rem;
+}
+
+.header-quick-stats {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 18px;
+  border-radius: 10px;
+}
+
+.quick-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #93c5fd;
   font-weight: 600;
-  color: #495057;
-  padding: 12px 16px;
-  border-bottom: 2px solid #dee2e6;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* KPI Summary Cards */
+.emp-kpi-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.emp-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 33, 66, 0.08);
+}
+
+.emp-kpi-card.kpi-blue {
+  border-left: 4px solid #002142;
+}
+
+.emp-kpi-card.kpi-emerald {
+  border-left: 4px solid #10b981;
+}
+
+.emp-kpi-card.kpi-amber {
+  border-left: 4px solid #f59e0b;
+}
+
+.emp-kpi-card.kpi-rose {
+  border-left: 4px solid #ef4444;
+}
+
+.kpi-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.kpi-blue .kpi-icon-wrapper {
+  background: #eff6ff;
+  color: #002142;
+}
+
+.kpi-emerald .kpi-icon-wrapper {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.kpi-amber .kpi-icon-wrapper {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.kpi-rose .kpi-icon-wrapper {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.kpi-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.text-blue-dark {
+  color: #002142;
+}
+
+.text-emerald {
+  color: #059669;
+}
+
+.text-amber {
+  color: #d97706;
+}
+
+.text-rose {
+  color: #dc2626;
+}
+
+.kpi-subtext {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Filter Card Toolbar */
+.filter-card-container {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.filter-header-bar {
+  background: #f8fafc;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.88rem;
+}
+
+.ops-select,
+.ops-input {
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.ops-select:focus,
+.ops-input:focus {
+  border-color: #002142;
+  box-shadow: 0 0 0 3px rgba(0, 33, 66, 0.1);
+}
+
+/* Main Table Styling */
+.emp-table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.emp-custom-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.emp-custom-table thead th {
+  background-color: #002142;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 14px 18px;
+  border: none;
   white-space: nowrap;
 }
 
-.employees-table td {
-  padding: 12px 16px;
-  vertical-align: middle;
+.emp-custom-table tbody tr {
+  transition: background-color 0.15s ease-in-out;
 }
 
-.table-row-hover:hover {
-  background-color: #f8f9fa;
-  transition: background-color 0.2s ease;
+.emp-custom-table tbody tr:hover {
+  background-color: rgba(0, 33, 66, 0.025);
 }
 
-/* Pagination styles reusing the same classes from the rest of the app */
-.custom-pagination-container {
-  background-color: transparent;
+.emp-custom-table tbody td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.92rem;
+  color: #1e293b;
 }
 
+.text-navy {
+  color: #002142 !important;
+}
+
+.emp-avatar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #002142;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  border: 1px solid #dbeafe;
+}
+
+/* Table Badges */
+.badge-bills {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px;
+  font-weight: 800 !important;
+  font-size: 0.88rem !important;
+  display: inline-block;
+}
+
+.badge-credit-active {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fca5a5 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px;
+  font-weight: 800 !important;
+  font-size: 0.88rem !important;
+  display: inline-block;
+}
+
+.badge-credit-zero {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  display: inline-block;
+}
+
+/* Loader */
 .premium-loader-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 0;
 }
 
 .premium-loader {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 40px;
-  height: 40px;
+  border: 4px solid #f1f5f9;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  border-left-color: #0d6efd;
-  animation: spin 1s linear infinite;
+  border-top-color: #002142;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -75,5 +339,57 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Pagination Buttons */
+.btn-outline-navy {
+  border: 1px solid #cbd5e1;
+  color: #002142;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.btn-outline-navy:hover:not(:disabled) {
+  background: #002142;
+  color: #ffffff;
+  border-color: #002142;
+}
+
+.btn-navy-active {
+  background-color: #002142 !important;
+  color: #ffffff !important;
+  border: 1px solid #002142 !important;
+  border-radius: 8px !important;
+}
+
+.btn-outline-navy-num {
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.btn-outline-navy-num:hover {
+  background: #f1f5f9;
+  color: #002142;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .employee-view-container {
+    padding: 1rem;
+  }
+  .employee-view-header {
+    padding: 18px 20px;
+  }
+  .header-badge-title h2 {
+    font-size: 1.15rem;
+  }
+  .emp-custom-table thead th,
+  .emp-custom-table tbody td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
   }
 }

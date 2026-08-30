@@ -9,6 +9,7 @@ const Menubar = () => {
   const location = useLocation();
   const { setAuthData, auth, pageAccessRules } = useContext(AppContext);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [machinesOpen, setMachinesOpen] = useState(false);
   const [paperOpen, setPaperOpen] = useState(false);
@@ -71,17 +72,40 @@ const Menubar = () => {
     hasAccess("REPORTS_DAILY_EXPENSE");
 
   return (
-    <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <div className="sidebar-header">
-        <div className="logo-container">
-          <img src={assets.logo} alt="Logo" className="sidebar-logo" />
+    <>
+      {/* Mobile Top Header Bar - visible only on mobile/tablet screens */}
+      <div className="mobile-topbar">
+        <div className="mobile-topbar-left">
+          <button className="mobile-hamburger-btn" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle Navigation">
+            <i className="bi bi-list"></i>
+          </button>
+          <img src={assets.logo} alt="Logo" className="mobile-logo" />
         </div>
-        <button className="hamburger-btn" onClick={toggleSidebar}>
-          <i className="bi bi-list"></i>
-        </button>
+        <div className="mobile-topbar-right">
+          <span className="mobile-user-title">{isAdmin ? "Admin" : "User"}</span>
+          <i className="bi bi-person-circle mobile-user-icon"></i>
+        </div>
       </div>
 
-      <div className="sidebar-menu">
+      {/* Backdrop overlay when mobile drawer is open */}
+      {mobileOpen && (
+        <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)}></div>
+      )}
+
+      <div className={`sidebar ${isCollapsed ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`}>
+        <div className="sidebar-header">
+          <div className="logo-container">
+            <img src={assets.logo} alt="Logo" className="sidebar-logo" />
+          </div>
+          <button className="hamburger-btn" onClick={toggleSidebar}>
+            <i className="bi bi-list"></i>
+          </button>
+          <button className="mobile-close-btn" onClick={() => setMobileOpen(false)}>
+            <i className="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div className="sidebar-menu" onClick={(e) => { if (e.target.closest('a')) setMobileOpen(false); }}>
         {hasAccess("DASHBOARD") && (
           <Link
             className={`sidebar-link ${isActive("/dashboard") ? "active" : ""}`}
@@ -532,6 +556,7 @@ const Menubar = () => {
         )}
       </div>
     </div>
+  </>
   );
 };
 

@@ -290,15 +290,14 @@ const Analytics = () => {
                     return (
                       <div key={index} className="bar-item">
                         <div className="bar-wrapper">
+                          <span className="bar-value-above">₹{day.amount.toFixed(0)}</span>
                           <div
                             className="bar"
                             style={{
                               height: `${(day.amount / maxTrendRevenue) * 100}%`,
                             }}
                             data-value={`₹${day.amount.toFixed(2)} | ${day.day}`}
-                          >
-                            <span className="bar-value-above">₹{day.amount.toFixed(0)}</span>
-                          </div>
+                          ></div>
                         </div>
                         <span className="bar-label">{shortDate}</span>
                       </div>
@@ -389,17 +388,16 @@ const Analytics = () => {
                     {employeeWiseData.map((emp, index) => (
                       <div key={index} className="bar-item">
                         <div className="bar-wrapper">
+                          <span className="bar-value-above">₹{emp.totalAmount.toFixed(0)}</span>
                           <div
                             className="bar employee-bar"
                             style={{
                               height: `${(emp.totalAmount / maxEmployeeRevenue) * 100}%`,
                             }}
                             data-value={`₹${emp.totalAmount.toFixed(2)}`}
-                          >
-                            <span className="bar-value-above">₹{emp.totalAmount.toFixed(0)}</span>
-                          </div>
+                          ></div>
                         </div>
-                        <span className="bar-label">{emp.employeeName}</span>
+                        <span className="bar-label" title={emp.employeeName}>{emp.employeeName}</span>
                       </div>
                     ))}
                   </div>
@@ -425,30 +423,32 @@ const Analytics = () => {
               </div>
               <div className="table-content">
                 {customerWiseData && customerWiseData.length > 0 ? (
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Rank</th>
-                        <th>Customer</th>
-                        <th>Revenue</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {customerWiseData.map((customer, index) => (
-                        <tr key={index}>
-                          <td>
-                            <span className={`rank-badge rank-${index + 1 > 5 ? 'other' : index + 1}`}>
-                              {index + 1}
-                            </span>
-                          </td>
-                          <td className="customer-name">{customer.customer}</td>
-                          <td className="revenue-cell">
-                            ₹{customer.totalAmount.toFixed(2)}
-                          </td>
+                  <div className="table-responsive">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Rank</th>
+                          <th>Customer</th>
+                          <th>Revenue</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {customerWiseData.map((customer, index) => (
+                          <tr key={index}>
+                            <td>
+                              <span className={`rank-badge rank-${index + 1 > 5 ? 'other' : index + 1}`}>
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="customer-name">{customer.customer}</td>
+                            <td className="revenue-cell">
+                              ₹{customer.totalAmount.toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 ) : (
                   <div className="empty-data">
                     <i className="bi bi-inbox"></i>

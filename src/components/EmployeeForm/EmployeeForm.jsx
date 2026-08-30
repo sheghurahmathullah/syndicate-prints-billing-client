@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { fetchAllBranchesList } from "../../Service/BranchService.js";
 import "./EmployeeForm.css"; // We'll just reuse generic form styles mostly, but create a stub
 
 const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
@@ -16,9 +17,28 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
     resume: ""
   });
   
+  const [branches, setBranches] = useState([]);
+  const [loadingBranches, setLoadingBranches] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [resumePreviewName, setResumePreviewName] = useState(null);
+
+  useEffect(() => {
+    const loadBranches = async () => {
+      try {
+        setLoadingBranches(true);
+        const response = await fetchAllBranchesList();
+        const branchList = Array.isArray(response.data) ? response.data : [];
+        setBranches(branchList);
+      } catch (error) {
+        console.error("Error fetching branches list:", error);
+        toast.error("Failed to load branches list");
+      } finally {
+        setLoadingBranches(false);
+      }
+    };
+    loadBranches();
+  }, []);
 
   useEffect(() => {
     if (initialData) {
@@ -206,16 +226,25 @@ const EmployeeForm = ({ onSubmit, onCancel, initialData }) => {
               <label htmlFor="branch" className="form-label">Branch <span className="text-danger">*</span></label>
               <div className="input-group">
                 <span className="input-group-text"><i className="bi bi-building"></i></span>
-                <input
-                  type="text"
-                  className="form-control"
+                <select
+                  className="form-select"
                   id="branch"
                   name="branch"
                   value={formData.branch}
                   onChange={handleChange}
-                  placeholder="Enter branch name"
                   required
-                />
+                  disabled={loadingBranches}
+                >
+                  <option value="">{loadingBranches ? "Loading branches..." : "Select Branch"}</option>
+                  {branches.map((b) => (
+                    <option key={b.branchId || b.id || b.name} value={b.name}>
+                      {b.name} {b.shopName ? `(${b.shopName})` : ''}
+                    </option>
+                  ))}
+                  {formData.branch && !branches.some((b) => b.name === formData.branch) && (
+                    <option value={formData.branch}>{formData.branch}</option>
+                  )}
+                </select>
               </div>
             </div>
           </div>

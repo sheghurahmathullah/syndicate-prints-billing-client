@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
       "import.meta.env.VITE_API_URL": JSON.stringify(apiUrl),
     },
     server: {
+      host: true,
       proxy: {
         "/api": {
           target: backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl,
