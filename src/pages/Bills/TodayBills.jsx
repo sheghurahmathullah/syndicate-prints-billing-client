@@ -193,32 +193,28 @@ const TodayBills = () => {
         </div>
       </div>
 
-      {/* Filter & Search Card (Matching Analytics Page Design System) */}
+      {/* Filter & Search Card (Fully Responsive for All Devices) */}
       <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
-        <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
-          <div className="d-flex align-items-center gap-3 flex-wrap w-100">
-            <div className="d-flex align-items-center">
-              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ width: '42px', height: '42px', color: '#e64051' }}>
-                <i className="bi bi-search fs-5"></i>
-              </div>
-              <div>
-                <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter Today's Bills</h6>
-                <small className="text-muted" style={{ fontSize: '0.8rem' }}>Search by customer name or bill number</small>
-              </div>
+        <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
+          <div className="d-flex align-items-center mb-3 mb-md-0">
+            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ width: '40px', height: '40px', color: '#e64051' }}>
+              <i className="bi bi-search fs-5"></i>
             </div>
-
-            <div className="vr d-none d-md-block mx-2" style={{ height: '30px', opacity: 0.1 }}></div>
-
-            <div className="flex-grow-1" style={{ minWidth: '220px' }}>
-              <input
-                type="text"
-                className="form-control fw-semibold shadow-none py-2"
-                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.9rem' }}
-                placeholder="Search customer name or bill #..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div>
+              <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter Today's Bills</h6>
+              <small className="text-muted" style={{ fontSize: '0.78rem' }}>Search customer name or bill number</small>
             </div>
+          </div>
+
+          <div className="w-100 ms-md-3 search-input-container">
+            <input
+              type="text"
+              className="form-control fw-semibold shadow-none py-2 px-3 w-100"
+              style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
+              placeholder="Search customer name or bill #..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
       </div>

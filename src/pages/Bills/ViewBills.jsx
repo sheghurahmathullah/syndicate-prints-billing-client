@@ -229,28 +229,28 @@ const ViewBills = () => {
         </div>
       </div>
 
-      {/* Filter Card (Matching Analytics Page Design System) */}
+      {/* Filter Card (Fully Responsive for All Devices) */}
       <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
-        <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
-          <div className="d-flex align-items-center gap-3 flex-wrap me-3 mb-2 mb-md-0">
-            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', color: '#e64051' }}>
+        <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
+          <div className="d-flex align-items-center mb-3 mb-md-0 me-md-3">
+            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ width: '40px', height: '40px', color: '#e64051' }}>
               <i className="bi bi-funnel-fill fs-5"></i>
             </div>
             <div>
               <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter & Search Bills</h6>
-              <small className="text-muted" style={{ fontSize: '0.8rem' }}>Filter by date period and customer name</small>
+              <small className="text-muted" style={{ fontSize: '0.78rem' }}>Filter by date period and customer name</small>
             </div>
           </div>
 
-          <div className="d-flex align-items-center gap-3 flex-wrap">
-            <div className="d-flex align-items-center">
-              <label htmlFor="dateFilter" className="text-muted fw-bold me-2 mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.5px' }}>
+          <div className="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2 gap-sm-3 w-100 w-md-auto">
+            <div className="d-flex align-items-center flex-grow-1">
+              <label htmlFor="dateFilter" className="text-muted fw-bold me-2 mb-0 text-nowrap" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                 <i className="bi bi-calendar-event me-1 text-danger"></i> PERIOD:
               </label>
               <select
                 id="dateFilter"
-                className="form-select fw-semibold shadow-none cursor-pointer py-1 px-2"
-                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
+                className="form-select fw-semibold shadow-none cursor-pointer py-1 px-2 w-100"
+                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.85rem' }}
                 value={dateFilter}
                 onChange={handleFilterChange}
               >
@@ -265,18 +265,18 @@ const ViewBills = () => {
               </select>
             </div>
 
-            <div className="vr d-none d-md-block mx-1" style={{ height: '28px', opacity: 0.15 }}></div>
+            <div className="vr d-none d-md-block mx-1" style={{ height: '26px', opacity: 0.15 }}></div>
 
-            <div className="d-flex align-items-center">
-              <label htmlFor="customerSearch" className="text-muted fw-bold me-2 mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.5px' }}>
+            <div className="d-flex align-items-center flex-grow-1">
+              <label htmlFor="customerSearch" className="text-muted fw-bold me-2 mb-0 text-nowrap" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                 <i className="bi bi-person-badge me-1 text-danger"></i> CUSTOMER:
               </label>
-              <div className="customer-search-wrapper" style={{ minWidth: '180px' }}>
+              <div className="customer-search-wrapper w-100">
                 <input
                   id="customerSearch"
                   type="text"
-                  className="form-control fw-semibold shadow-none py-1 px-2"
-                  style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
+                  className="form-control fw-semibold shadow-none py-1 px-2 w-100"
+                  style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.85rem' }}
                   placeholder="Search customer..."
                   value={customerSearch}
                   onChange={handleCustomerSearchChange}

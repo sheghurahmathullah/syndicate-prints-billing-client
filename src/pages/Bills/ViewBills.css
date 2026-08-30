@@ -456,114 +456,19 @@
   }
 }
 
-/* Small Tablets / Phablets (480px to 767px) */
-@media (min-width: 480px) and (max-width: 767px) {
+/* Mobile Devices & Small Screens (<= 767px) */
+@media (max-width: 767px) {
   .view-bills-container {
-    padding: 0.75rem;
-    min-height: calc(100vh - 50px);
-  }
-
-  .machine-banner {
-    padding: 0.85rem 1rem !important;
-    margin-bottom: 1rem !important;
-  }
-
-  .machine-banner h4 {
-    font-size: 1.05rem;
-  }
-
-  .machine-banner p {
-    font-size: 0.78rem !important;
-  }
-
-  .kpi-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.65rem;
-    margin-bottom: 1rem;
-  }
-
-  .kpi-card {
-    padding: 0.65rem 0.75rem !important;
-    gap: 0.6rem !important;
-    border-radius: 10px;
-  }
-
-  .kpi-icon-wrapper {
-    width: 36px;
-    height: 36px;
-    font-size: 1.05rem;
-  }
-
-  .kpi-label {
-    font-size: 0.62rem;
-  }
-
-  .kpi-value {
-    font-size: 1.1rem;
-  }
-
-  .filter-card {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 0.85rem;
-  }
-
-  .filter-group {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    gap: 4px;
-  }
-  
-  .filter-label {
-    font-size: 0.82rem;
-  }
-
-  .filter-divider {
-    display: none;
-  }
-
-  .customer-search-wrapper {
-    width: 100% !important;
-  }
-
-  .modern-select {
-    width: 100% !important;
-    height: 36px;
-  }
-
-  #dateFilter.modern-select {
-    width: 100% !important;
-  }
-
-  .custom-pagination-container {
-    flex-direction: column;
-    gap: 0.85rem;
-    align-items: center !important;
-    padding: 6px;
-  }
-
-  .custom-pagination-container .d-flex {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-/* Mobile Devices (< 480px) */
-@media (max-width: 479px) {
-  .view-bills-container {
-    padding: 0.5rem;
-    min-height: calc(100vh - 50px);
+    padding: 0.5rem !important;
   }
 
   .machine-banner {
     padding: 0.75rem 0.85rem !important;
-    margin-bottom: 0.85rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   .machine-banner h4 {
-    font-size: 0.95rem;
+    font-size: 0.95rem !important;
   }
 
   .machine-banner p {
@@ -571,61 +476,99 @@
   }
 
   .kpi-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 0.85rem;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.85rem !important;
   }
 
   .kpi-card {
-    padding: 0.6rem 0.5rem !important;
+    padding: 0.55rem 0.6rem !important;
     gap: 0.5rem !important;
-    border-radius: 8px;
+    border-radius: 8px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .kpi-icon-wrapper {
-    width: 30px;
-    height: 30px;
-    font-size: 0.9rem;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.9rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .kpi-content {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    width: 100% !important;
   }
 
   .kpi-label {
-    font-size: 0.58rem;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .kpi-value {
-    font-size: 0.98rem;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .filter-card {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 0.75rem;
+    padding: 0 !important;
+    margin-bottom: 0.85rem !important;
   }
 
-  .filter-group {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    gap: 4px;
+  .filter-card .d-flex {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+  }
+
+  .filter-card label {
+    margin-bottom: 0.25rem !important;
+  }
+
+  .filter-card select,
+  .filter-card input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .filter-card .vr {
+    display: none !important;
   }
 
   .customer-search-wrapper {
     width: 100% !important;
   }
 
-  .modern-select {
-    width: 100% !important;
-    height: 34px;
+  .table-responsive {
+    border-radius: 8px !important;
+    margin-bottom: 0.85rem !important;
   }
 
-  #dateFilter.modern-select {
-    width: 100% !important;
+  .bills-table {
+    min-width: 650px !important;
   }
 
   .custom-pagination-container {
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
     align-items: center !important;
+    padding: 0.5rem !important;
+  }
+
+  .custom-pagination {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
   }
 }
