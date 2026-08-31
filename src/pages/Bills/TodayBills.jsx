@@ -137,8 +137,8 @@ const TodayBills = () => {
             <i className="bi bi-currency-rupee"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">TOTAL REVENUE</div>
             <h3 className="kpi-value">₹{summary.todayBillsTotal.toFixed(2)}</h3>
+            <span className="kpi-label">Total Revenue</span>
           </div>
         </div>
 
@@ -147,8 +147,8 @@ const TodayBills = () => {
             <i className="bi bi-receipt"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">TOTAL ORDERS</div>
             <h3 className="kpi-value">{summary.todayOrderCount}</h3>
+            <span className="kpi-label">Total Orders</span>
           </div>
         </div>
 
@@ -157,8 +157,8 @@ const TodayBills = () => {
             <i className="bi bi-cart-dash"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT ORDERS</div>
             <h3 className="kpi-value">{summary.todayCreditOrderCount}</h3>
+            <span className="kpi-label">Credit Orders</span>
           </div>
         </div>
 
@@ -167,8 +167,8 @@ const TodayBills = () => {
             <i className="bi bi-wallet2"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT TOTAL</div>
             <h3 className="kpi-value">₹{summary.todayCreditOrdersAmount.toFixed(2)}</h3>
+            <span className="kpi-label">Credit Total</span>
           </div>
         </div>
 
@@ -177,8 +177,8 @@ const TodayBills = () => {
             <i className="bi bi-cash-coin"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT PAID</div>
             <h3 className="kpi-value">₹{summary.creditPaidAmount.toFixed(2)}</h3>
+            <span className="kpi-label">Credit Paid</span>
           </div>
         </div>
 
@@ -187,31 +187,28 @@ const TodayBills = () => {
             <i className="bi bi-exclamation-circle"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT BALANCE</div>
             <h3 className="kpi-value">₹{summary.creditBalanceAmount.toFixed(2)}</h3>
+            <span className="kpi-label">Credit Balance</span>
           </div>
         </div>
       </div>
 
-      {/* Filter & Search Card (Fully Responsive for All Devices) */}
-      <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
-        <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
-          <div className="d-flex align-items-center mb-3 mb-md-0">
-            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ width: '40px', height: '40px', color: '#e64051' }}>
-              <i className="bi bi-search fs-5"></i>
-            </div>
-            <div>
-              <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Filter Today's Bills</h6>
-              <small className="text-muted" style={{ fontSize: '0.78rem' }}>Search customer name or bill number</small>
-            </div>
+      {/* Filter & Search Card */}
+      <div className="filter-card mb-3 bg-white rounded-3 shadow-sm border p-2 px-3">
+        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div className="d-flex align-items-center gap-2">
+            <i className="bi bi-funnel-fill text-danger fs-6"></i>
+            <span className="fw-bold text-nowrap" style={{ color: '#002142', fontSize: '0.88rem' }}>
+              Filter Today's Bills:
+            </span>
           </div>
 
-          <div className="w-100 ms-md-3 search-input-container">
+          <div className="flex-grow-1 ms-2" style={{ maxWidth: '450px' }}>
             <input
               type="text"
-              className="form-control fw-semibold shadow-none py-2 px-3 w-100"
-              style={{ border: '1px solid #cbd5e1', borderRadius: '8px', color: '#002142', fontSize: '0.88rem' }}
-              placeholder="Search customer name or bill #..."
+              className="form-control form-control-sm fw-semibold shadow-none"
+              style={{ border: '1px solid #cbd5e1', borderRadius: '6px', color: '#002142', fontSize: '0.85rem' }}
+              placeholder="Search customer name or bill number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -220,7 +217,7 @@ const TodayBills = () => {
       </div>
 
       <div className="table-responsive rounded shadow-sm bg-white pb-2">
-        <table className="bills-table data-table w-100 table mb-0">
+        <table className="bills-table data-table w-100 mb-0">
           <thead>
             <tr>
               <th className="text-center" style={{ width: "60px" }}>S.No</th>

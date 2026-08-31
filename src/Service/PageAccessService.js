@@ -1,9 +1,4 @@
-const getApiUrl = () => {
-  const url = import.meta.env.VITE_API_URL;
-  if (!url || url === "/") return "/";
-  return url.endsWith("/") ? url : url + "/";
-};
-
+import { getApiUrl } from "./apiConfig";
 const API_URL = getApiUrl();
 const BASE_URL = `${API_URL}api/v1.0/page-access`;
 

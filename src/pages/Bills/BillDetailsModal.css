@@ -253,3 +253,55 @@
   background-color: #cbd5e1;
   border-radius: 10px;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 576px) {
+  .bill-modal-overlay {
+    padding: 10px;
+  }
+  .bill-modal-content {
+    max-height: 94vh;
+    border-radius: 10px;
+  }
+  .bill-modal-header {
+    padding: 14px 16px;
+  }
+  .bill-modal-header h5 {
+    font-size: 1rem;
+  }
+  .icon-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 1.05rem;
+  }
+  .bill-modal-body {
+    padding: 12px 14px;
+    max-height: calc(94vh - 60px);
+  }
+  .bill-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+  .info-label {
+    font-size: 0.65rem;
+  }
+  .info-value {
+    font-size: 0.825rem;
+  }
+  .horizontal-summary {
+    max-width: 100%;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .summary-col .summary-label {
+    font-size: 0.675rem;
+  }
+  .summary-col .summary-value {
+    font-size: 0.95rem !important;
+  }
+  .summary-divider-vertical {
+    height: 28px;
+  }
+}
+

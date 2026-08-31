@@ -78,15 +78,16 @@ const ManagePageAccess = () => {
       <div className="security-banner">
         <div className="banner-glow"></div>
         
-        {/* Right Corner Console Badge */}
-        <span className="console-security-badge">
-          <i className="bi bi-shield-lock-fill" style={{ color: '#10b981' }}></i> Access Control Console
-        </span>
-
-        <div className="security-banner-content">
-          <div className="status-badge status-active" style={{ marginBottom: '8px' }}>
+        <div className="banner-top-row">
+          <div className="status-badge status-active">
             <span className="status-dot"></span> Live Sync
           </div>
+          <span className="console-security-badge">
+            <i className="bi bi-shield-lock-fill" style={{ color: '#10b981' }}></i> Access Control Console
+          </span>
+        </div>
+
+        <div className="security-banner-content">
           <h1>Dynamic Route Authorization</h1>
           <p>
             Configure role-based page and action permissions. Changes take effect instantly for all logged-in users.
@@ -96,7 +97,7 @@ const ManagePageAccess = () => {
 
       {/* Statistics Cards */}
       <div className="stats-grid">
-        <div className="stat-card total">
+        <div className={`stat-card total ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
           <div className="stat-icon">
             <i className="bi bi-diagram-3"></i>
           </div>

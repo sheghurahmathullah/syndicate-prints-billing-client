@@ -115,7 +115,7 @@ const Analytics = () => {
   return (
     <div className="analytics-container">
       {/* Compact Redesigned Banner */}
-      <div className="analytics-header mb-3">
+      <div className="analytics-header mb-2">
         <div className="header-content">
           <div className="header-title-icon">
             <i className="bi bi-graph-up-arrow"></i>
@@ -127,29 +127,29 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Filters Section (Restored to original place) */}
-      <div className="filter-card mb-4 bg-white rounded shadow-sm border-0 overflow-hidden">
-        <div className="d-flex flex-wrap align-items-center justify-content-between p-3" style={{ borderLeft: "4px solid #e64051" }}>
+      {/* Filters Section (Compact Page Access style sizing) */}
+      <div className="filter-card mb-3 bg-white rounded-3 shadow-sm border overflow-hidden">
+        <div className="d-flex flex-wrap align-items-center justify-content-between py-2 px-3">
 
           <div className="d-flex align-items-center gap-3 flex-wrap">
             <div className="d-flex align-items-center">
-              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '42px', height: '42px', color: '#e64051' }}>
-                <i className="bi bi-calendar3 fs-5"></i>
+              <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: '32px', height: '32px', color: '#e64051' }}>
+                <i className="bi bi-calendar3" style={{ fontSize: '0.9rem' }}></i>
               </div>
               <div>
-                <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.95rem' }}>Time Period</h6>
-                <small className="text-muted" style={{ fontSize: '0.8rem' }}>Filter analytics data</small>
+                <h6 className="mb-0 fw-bold" style={{ color: '#002142', fontSize: '0.85rem' }}>Time Period</h6>
+                <small className="text-muted" style={{ fontSize: '0.725rem' }}>Filter analytics data</small>
               </div>
             </div>
 
-            <div className="vr d-none d-md-block mx-2" style={{ height: '30px', opacity: 0.1 }}></div>
+            <div className="vr d-none d-md-block mx-1" style={{ height: '24px', opacity: 0.15 }}></div>
 
             <div className="d-flex align-items-center">
               <select
                 value={isCustomDate ? "custom_range" : filter}
                 onChange={handleFilterChange}
-                className="form-select fw-semibold shadow-none cursor-pointer py-2"
-                style={{ minWidth: '160px', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#002142' }}
+                className="form-select form-select-sm fw-semibold shadow-none cursor-pointer py-1 px-2"
+                style={{ minWidth: '145px', border: '1px solid #cbd5e1', borderRadius: '6px', color: '#002142', fontSize: '0.825rem' }}
               >
                 <option value="today">Today</option>
                 <option value="yesterday">Yesterday</option>
@@ -307,19 +307,18 @@ const Analytics = () => {
                 </div>
 
                 {/* Trend Summary */}
-                <div className="trend-summary mt-4 pt-3 border-top d-flex justify-content-around align-items-center">
+                <div className="trend-summary mt-3 pt-2 border-top d-flex justify-content-around align-items-center">
                   <div className="trend-stat text-center">
                     <span className="d-block text-muted small fw-bold text-uppercase mb-1">Total 7 Days Sales</span>
-                    <span className="fs-5 fw-bolder text-primary">₹{total7DaysRevenue.toFixed(2)}</span>
+                    <span className="fs-6 fw-bolder text-primary">₹{total7DaysRevenue.toFixed(2)}</span>
                   </div>
-                  <div className="trend-stat text-center border-start ps-4">
+                  <div className="trend-stat text-center border-start ps-3">
                     <span className="d-block text-muted small fw-bold text-uppercase mb-1">Daily Average</span>
-                    <span className="fs-5 fw-bolder text-success">₹{avg7DaysRevenue.toFixed(2)}</span>
+                    <span className="fs-6 fw-bolder text-success">₹{avg7DaysRevenue.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
-
 
             {/* Payment Method Distribution */}
             <div className="chart-card">
@@ -412,7 +411,7 @@ const Analytics = () => {
             </div>
           </div>
 
-          {/* Tables Section */}
+          {/* Tables Section (Displayed Directly Under Employee Performance Chart) */}
           <div className="tables-grid">
             {/* Top Customers */}
             <div className="table-card">

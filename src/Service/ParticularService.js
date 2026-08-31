@@ -1,10 +1,5 @@
+import { getApiUrl } from "./apiConfig";
 import axios from "axios";
-
-const getApiUrl = () => {
-  const url = import.meta.env.VITE_API_URL;
-  if (!url || url === "/") return "/";
-  return url.endsWith("/") ? url : url + "/";
-};
 
 const API_URL = getApiUrl();
 

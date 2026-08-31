@@ -173,8 +173,8 @@ const ViewBills = () => {
             <i className="bi bi-currency-rupee"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">TOTAL REVENUE</div>
             <h3 className="kpi-value">₹{(kpi.totalAmount || 0).toFixed(2)}</h3>
+            <span className="kpi-label">Total Revenue</span>
           </div>
         </div>
 
@@ -183,8 +183,8 @@ const ViewBills = () => {
             <i className="bi bi-receipt"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">TOTAL ORDERS</div>
             <h3 className="kpi-value">{kpi.todayOrderCount || 0}</h3>
+            <span className="kpi-label">Total Orders</span>
           </div>
         </div>
 
@@ -193,8 +193,8 @@ const ViewBills = () => {
             <i className="bi bi-check-circle"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">PAID ORDERS</div>
             <h3 className="kpi-value">{kpi.completedOrders || 0}</h3>
+            <span className="kpi-label">Paid Orders</span>
           </div>
         </div>
 
@@ -203,8 +203,8 @@ const ViewBills = () => {
             <i className="bi bi-cart-dash"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT ORDERS</div>
             <h3 className="kpi-value">{kpi.todayCreditOrderCount || 0}</h3>
+            <span className="kpi-label">Credit Orders</span>
           </div>
         </div>
 
@@ -213,8 +213,8 @@ const ViewBills = () => {
             <i className="bi bi-cash-coin"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">PAID AMOUNT</div>
             <h3 className="kpi-value">₹{(kpi.paidAmount || 0).toFixed(2)}</h3>
+            <span className="kpi-label">Paid Amount</span>
           </div>
         </div>
 
@@ -223,8 +223,8 @@ const ViewBills = () => {
             <i className="bi bi-exclamation-circle"></i>
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">CREDIT BALANCE</div>
             <h3 className="kpi-value">₹{(kpi.creditAmount || 0).toFixed(2)}</h3>
+            <span className="kpi-label">Credit Balance</span>
           </div>
         </div>
       </div>

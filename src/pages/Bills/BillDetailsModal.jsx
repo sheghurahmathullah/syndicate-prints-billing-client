@@ -47,6 +47,9 @@ const BillDetailsModal = ({ bill, onClose }) => {
   const totalAmount = bill.totalWithGst || bill.total || 0;
   const netAmount = bill.total || totalAmount;
   const totalPaid = bill.totalPaid || 0;
+  const balanceDue = (bill.creditAmount !== undefined && bill.creditAmount !== null) 
+    ? bill.creditAmount 
+    : Math.max(0, netAmount - totalPaid);
 
   return (
     <div className={`bill-modal-overlay ${isClosing ? 'fade-out' : 'fade-in'}`} onClick={handleClose}>
@@ -109,9 +112,9 @@ const BillDetailsModal = ({ bill, onClose }) => {
                       <td className="text-center">
                         <span className="qty-badge">{item.qty || 1}</span>
                       </td>
-                      <td className="text-end text-muted">{item.price?.toFixed(2) || "0.00"}</td>
+                      <td className="text-end text-muted">₹{item.price?.toFixed(2) || "0.00"}</td>
                       <td className="text-end pe-4 fw-semibold text-dark">
-                        {((item.qty || 1) * (item.price || 0)).toFixed(2)}
+                        ₹{((item.qty || 1) * (item.price || 0)).toFixed(2)}
                       </td>
                     </tr>
                   ))
@@ -138,12 +141,12 @@ const BillDetailsModal = ({ bill, onClose }) => {
                 <span className="summary-label text-muted">Total Paid</span>
                 <span className="summary-value fw-bold text-success fs-5">₹ {totalPaid.toFixed(2)}</span>
               </div>
-              {bill.billStatus?.toUpperCase() === 'CREDIT' && (
+              {(bill.billStatus?.toUpperCase() === 'CREDIT' || balanceDue > 0.01) && (
                 <>
                   <div className="summary-divider-vertical"></div>
                   <div className="summary-col">
                     <span className="summary-label text-muted">Balance</span>
-                    <span className="summary-value fw-bold text-danger fs-5">₹ {(bill.creditAmount || 0).toFixed(2)}</span>
+                    <span className="summary-value fw-bold text-danger fs-5">₹ {balanceDue.toFixed(2)}</span>
                   </div>
                 </>
               )}

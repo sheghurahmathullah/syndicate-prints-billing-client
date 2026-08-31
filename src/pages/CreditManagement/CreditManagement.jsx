@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getCreditBills, updateCreditBillStatus } from "../../Service/BillService";
 import toast from "react-hot-toast";
 import ReceiptPopup from "../../components/ReceiptPopup/ReceiptPopup.jsx";
+import BillDetailsModal from "../Bills/BillDetailsModal.jsx";
 import "./CreditManagement.css";
 
 const CreditManagement = () => {
@@ -24,6 +25,7 @@ const CreditManagement = () => {
   // Modals state
   const [settleModalBill, setSettleModalBill] = useState(null);
   const [receiptBill, setReceiptBill] = useState(null);
+  const [selectedBillDetails, setSelectedBillDetails] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Settle Form State
@@ -222,15 +224,6 @@ const CreditManagement = () => {
             Track outstanding customer credit bills, receive credit settlements, and manage payments with real-time balance tracking.
           </p>
         </div>
-        <button
-          className="btn btn-refresh-custom"
-          onClick={fetchCreditBills}
-          disabled={loading}
-          title="Refresh Data"
-        >
-          <i className={`bi bi-arrow-clockwise ${loading ? "spinning" : ""}`}></i>
-          <span>Refresh</span>
-        </button>
       </div>
 
       {/* KPI Overview Cards */}
@@ -242,7 +235,7 @@ const CreditManagement = () => {
           <div className="kpi-details">
             <span className="kpi-label">Total Credit Bills</span>
             <h3 className="kpi-value">{totalElements > 0 ? totalElements : bills.length}</h3>
-            <span className="kpi-subtext">Showing {bills.length} item{bills.length !== 1 ? 's' : ''}</span>
+
           </div>
         </div>
 
@@ -253,7 +246,6 @@ const CreditManagement = () => {
           <div className="kpi-details">
             <span className="kpi-label">Total Bill Amount</span>
             <h3 className="kpi-value">₹{totalBillAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</h3>
-            <span className="kpi-subtext">On current page</span>
           </div>
         </div>
 
@@ -264,7 +256,6 @@ const CreditManagement = () => {
           <div className="kpi-details">
             <span className="kpi-label">Amount Paid</span>
             <h3 className="kpi-value text-success">₹{totalPaidAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</h3>
-            <span className="kpi-subtext">Received so far</span>
           </div>
         </div>
 
@@ -275,7 +266,6 @@ const CreditManagement = () => {
           <div className="kpi-details">
             <span className="kpi-label">Outstanding Balance</span>
             <h3 className="kpi-value text-danger">₹{totalBalanceDue.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</h3>
-            <span className="kpi-subtext">To be collected</span>
           </div>
         </div>
       </div>
@@ -304,24 +294,6 @@ const CreditManagement = () => {
               </button>
             )}
           </div>
-        </div>
-
-        <div className="filter-item">
-          <label className="filter-label">
-            <i className="bi bi-funnel"></i> Bill Status
-          </label>
-          <select
-            className="form-select form-select-sm"
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(0);
-            }}
-          >
-            <option value="CREDIT">Pending Credit</option>
-            <option value="PAID">Paid / Settled</option>
-            <option value="all">All Statuses</option>
-          </select>
         </div>
 
         <div className="filter-item">
@@ -443,7 +415,20 @@ const CreditManagement = () => {
                         </div>
                       </td>
                       <td>
-                        <span className="payment-mode-pill">{bill.payment || "Credit"}</span>
+                        {(() => {
+                          const p = (bill.payment || "Credit").toUpperCase();
+                          let modeClass = "payment-credit";
+                          if (p.includes("UPI")) modeClass = "payment-upi";
+                          else if (p.includes("CASH")) modeClass = "payment-cash";
+                          else if (p.includes("CARD")) modeClass = "payment-card";
+                          else if (p.includes("CHEQUE")) modeClass = "payment-cheque";
+
+                          return (
+                            <span className={`payment-mode-pill ${modeClass}`}>
+                              {bill.payment || "Credit"}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="text-end fw-bold text-dark">
                         ₹{total.toFixed(2)}
@@ -464,6 +449,13 @@ const CreditManagement = () => {
                       </td>
                       <td>
                         <div className="action-buttons-group">
+                          <button
+                            className="btn btn-action view-btn"
+                            title="View Bill Details"
+                            onClick={() => setSelectedBillDetails(bill)}
+                          >
+                            <i className="bi bi-eye"></i>
+                          </button>
                           <button
                             className="btn btn-action settle-btn"
                             title="Update Credit / Receive Payment"
@@ -717,6 +709,14 @@ const CreditManagement = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Bill Details Modal Popup */}
+      {selectedBillDetails && (
+        <BillDetailsModal
+          bill={selectedBillDetails}
+          onClose={() => setSelectedBillDetails(null)}
+        />
       )}
 
       {/* Receipt Popup */}
