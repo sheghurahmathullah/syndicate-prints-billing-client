@@ -659,3 +659,72 @@
     opacity: 1;
   }
 }
+
+/* Comprehensive Responsive Layout Rules */
+@media (max-width: 991px) {
+  .create-bill-container {
+    padding: 12px !important;
+  }
+
+  .bill-card {
+    padding: 15px !important;
+    border-radius: 8px !important;
+  }
+
+  .bill-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .bill-row.row-1 {
+    padding-bottom: 15px !important;
+  }
+
+  .form-group {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .row-3 {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .particulars-section {
+    width: 100% !important;
+    flex: none !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .particulars-table {
+    min-width: 650px !important;
+  }
+
+  .summary-section {
+    width: 100% !important;
+    flex: none !important;
+    padding: 15px !important;
+  }
+
+  .payment-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .payment-type-group {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .bill-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .bill-actions button {
+    width: 100% !important;
+  }
+}

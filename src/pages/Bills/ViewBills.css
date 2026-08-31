@@ -1,7 +1,7 @@
 .view-bills-container {
   padding: 1.25rem;
   background-color: #f8fafc;
-  min-height: calc(100vh - 60px);
+  min-height: 100%;
 }
 
 /* Banner Styling - Compact corporate navy theme */

@@ -1,22 +1,14 @@
-/* White / premium theme: convert dark backgrounds to white surfaces */
-body,
-html {
-  height: 100%;
-  overflow-y: auto;
-  /* subtle off-white page background so white cards read clearly */
-  background-color: #f8f9fa;
-}
-
 .dashboard-wrapper {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background: #f8f9fa;
 }
+
 .dashboard-container {
   padding: 20px;
-  background-color: whitesmoke;
-  min-height: 100vh;
+  background-color: #f8f9fa;
+  min-height: 100%;
   color: #0f1724; /* dark text */
 }
 
