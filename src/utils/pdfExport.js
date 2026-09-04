@@ -189,6 +189,14 @@ export const exportSingleDailyExpenseToPdf = (row) => {
     addSectionTable("Other Ancillary Incomes", ["Income Source / Reason", "Amount"], validInc, [5, 150, 105]);
   }
 
+  // 6.5 Customer Credits Given (Skip if empty)
+  if (row.credits && Object.keys(row.credits).length > 0) {
+    const creditRows = Object.entries(row.credits)
+      .filter(([_, amt]) => (parseFloat(amt) || 0) > 0)
+      .map(([customer, amt]) => [customer, `INR ${parseFloat(amt).toFixed(2)}`]);
+    addSectionTable("Customer Credits Given", ["Customer Name", "Amount"], creditRows, [2, 132, 199]);
+  }
+
   // 7. Machine Counter Readings (Skip if 0 data)
   if (Array.isArray(row.machineReadings) && row.machineReadings.length > 0) {
     const validReadings = row.machineReadings

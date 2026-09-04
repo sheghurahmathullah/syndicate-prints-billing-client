@@ -98,7 +98,7 @@ const BranchList = ({
             </table>
           </div>
 
-          <div className="custom-pagination-container mt-4 mb-2 d-flex justify-content-between align-items-center">
+          <div className="custom-pagination-container mt-4 mb-2 d-flex justify-content-end align-items-center gap-3">
             <div className="d-flex align-items-center gap-2">
               <label htmlFor="pageSize" className="form-label mb-0 small fw-bold text-muted">Rows per page:</label>
               <select 

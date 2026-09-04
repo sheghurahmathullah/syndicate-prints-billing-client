@@ -23,7 +23,8 @@
   text-transform: uppercase;
   font-size: 0.8rem;
   letter-spacing: 0.5px;
-  color: #64748b;
+  color: #0f172a !important; /* Fixed text color for visibility */
+  background-color: #f1f5f9 !important; /* Explicit light background */
   border-bottom: 2px solid #e2e8f0;
   padding: 1rem;
 }
@@ -88,11 +89,11 @@
 .page-nav-btn {
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   color: #0f172a;
   font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
   display: flex;
   align-items: center;
   transition: all 0.2s;
@@ -116,13 +117,14 @@
 }
 
 .page-num-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   border: 1px solid #e2e8f0;
   background: white;
   color: #0f172a;
   font-weight: 700;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,4 +147,41 @@
   background-color: #f8fafc;
   border-radius: 12px;
   border: 1px dashed #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .table th, .table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .custom-pagination-container {
+    flex-direction: column;
+    align-items: flex-end !important;
+    gap: 0.75rem;
+  }
+  
+  .page-num-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+  }
+  
+  .page-nav-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.65rem;
+    border-radius: 4px;
+  }
+}
+
+@media (max-width: 576px) {
+  .table th, .table td {
+    white-space: nowrap;
+  }
+  
+  .action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
 }

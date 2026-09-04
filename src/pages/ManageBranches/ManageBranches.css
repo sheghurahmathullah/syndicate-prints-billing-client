@@ -128,4 +128,47 @@
   .branch-form-section, .branch-list-section {
     padding: 1rem;
   }
+
+  .manage-header-card {
+    padding: 0.75rem 1rem;
+  }
+  
+  .btn-premium-add {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-icon-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .header-title-box h4 {
+    font-size: 1.1rem;
+  }
+
+  /* Branch Banner Responsiveness */
+  .branch-banner {
+    padding: 1.5rem 1rem !important;
+  }
+
+  .branch-banner h3 {
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
+  }
+
+  .branch-banner .badge {
+    position: static !important;
+    display: inline-block;
+    margin: 0 auto 0.5rem auto !important;
+  }
+  
+  .branches-page {
+    padding: 0.75rem;
+  }
 }

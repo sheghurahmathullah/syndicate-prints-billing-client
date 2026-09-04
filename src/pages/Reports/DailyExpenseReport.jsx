@@ -442,6 +442,23 @@ const DailyExpenseReport = () => {
                 ))}
             </div>
           )}
+
+          {/* 6.5 Customer Credits Given */}
+          {hasValidObjectData(selectedRecord.credits) && (
+            <div className="fp-detail-card">
+              <h5 className="fp-detail-card-title text-info">
+                <i className="bi bi-person-lines-fill me-2"></i> Customer Credits Given
+              </h5>
+              {Object.entries(selectedRecord.credits)
+                .filter(([_, amt]) => (parseFloat(amt) || 0) > 0)
+                .map(([customer, amt]) => (
+                  <div key={customer} className="fp-mini-item">
+                    <span className="fp-item-label">{customer}</span>
+                    <span className="fp-item-value text-info">₹{parseFloat(amt).toFixed(2)}</span>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
 
         {/* 7. Machine Counter Readings Table (Full Width) */}
